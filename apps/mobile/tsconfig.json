@@ -1,17 +1,10 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": ["expo/tsconfig.base", "../../tsconfig.json"],
   "compilerOptions": {
-    "strict": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+    // "strict": true,
+    // "paths": {
+    //   "@/*": ["./apps/mobile/*"]
+    // }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

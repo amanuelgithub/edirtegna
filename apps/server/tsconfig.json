@@ -1,29 +1,23 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
+    "outDir": "./apps/server/dist",
     "paths": {
-      "@app/auth": ["libs/auth/src"],
-      "@app/auth/*": ["libs/auth/src/*"],
-      "@app/users": ["libs/users/src"],
-      "@app/users/*": ["libs/users/src/*"],
-      "@app/trpc": ["libs/trpc/src"],
-      "@app/trpc/*": ["libs/trpc/src/*"]
+      "@app/auth": ["./apps/server/libs/auth/src"],
+      "@app/auth/*": ["./apps/server/libs/auth/src/*"],
+      "@app/users": ["./apps/server/libs/users/src"],
+      "@app/users/*": ["./apps/server/libs/users/src/*"],
+      "@app/trpc": ["./apps/server/libs/trpc/src"],
+      "@app/trpc/*": ["./apps/server/libs/trpc/src/*"],
+      "@app/test": ["./apps/server/libs/test/src"],
+      "@app/test/*": ["./apps/server/libs/test/src/*"]
     }
+    // "baseUrl": "./"
   }
 }
