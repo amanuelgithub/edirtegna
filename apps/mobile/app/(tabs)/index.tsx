@@ -4,17 +4,22 @@ import { useEffect, useState } from "react";
 import { trpc } from "@mobile/utils/trpc";
 
 export default function HomeScreen() {
-  const [greeting, setGreeting] = useState("");
+  // const [greeting, setGreeting] = useState("");
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    trpc.hello.query({ name: "Amanuel" }).then((res) => {
-      setGreeting(res.greeting);
+    // trpc.hello.query({ name: "Amanuel" }).then((res) => {
+    //   setGreeting(res.greeting);
+    // });
+
+    trpc.getUsers.query({}).then((res) => {
+      setUsers(res);
     });
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>{greeting}</Text>
+      <Text>{JSON.stringify(users, null, 2)}</Text>
     </View>
   );
 }

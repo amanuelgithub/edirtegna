@@ -2,22 +2,30 @@ import { INestApplication, Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { TrpcService } from './trpc.service';
+import { UsersService } from '@app/users';
 
 @Injectable()
 export class TrpcRouter {
-  constructor(private readonly trpcService: TrpcService) {}
+  constructor(
+    private readonly trpcService: TrpcService,
+    private readonly usersService: UsersService,
+  ) {}
 
   appRouter = this.trpcService.router({
-    hello: this.trpcService.procedure
+    getUsers: this.trpcService.procedure
       .input(
         z.object({
-          name: z.string().optional(),
+          // name: z.string().optional(),
         }),
       )
-      .query(({ input }) => {
-        const { name } = input;
+      .query(async () => {
+        // const { name } = input;
+
+        const users = await this.usersService.findAll();
+        console.log('users', users);
+
         return {
-          greeting: `Hello ${name ? name : `Bilbo`}`,
+          data: users,
         };
       }),
   });
