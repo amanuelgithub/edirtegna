@@ -1,4 +1,6 @@
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text, } from "react-native";
+
+import { Button } from 'react-native-paper';
 
 import { useEffect, useState } from "react";
 import { trpc } from "@mobile/utils/trpc";
@@ -6,7 +8,6 @@ import { trpc } from "@mobile/utils/trpc";
 export default function HomeScreen() {
   const usersQuery = trpc.users.findUsers.useQuery();
   const mutation = trpc.users.create.useMutation();
-
 
   useEffect(() => {
     console.log(usersQuery.data);
@@ -27,7 +28,9 @@ export default function HomeScreen() {
           </View>
         );
       })}
-    <Button onPress={addUser} title="Add User" />
+    <Button icon="camera" mode="contained" onPress={addUser}>
+    Add User
+  </Button>
     </View>
   );
 }
