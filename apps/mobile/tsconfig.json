@@ -1,7 +1,7 @@
 {
   "extends": ["expo/tsconfig.base", "../../tsconfig.json"],
   "compilerOptions": {
-    // "strict": true,
+    "strict": true
     // "paths": {
     //   "@/*": ["./apps/mobile/*"]
     // }

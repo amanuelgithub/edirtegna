@@ -1,23 +1,19 @@
 {
-  "extends": "../../tsconfig.json",
+ "extends": "../../tsconfig.json", 
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./apps/server/dist",
-    "paths": {
-      "@app/auth": ["./apps/server/libs/auth/src"],
-      "@app/auth/*": ["./apps/server/libs/auth/src/*"],
-      "@app/users": ["./apps/server/libs/users/src"],
-      "@app/users/*": ["./apps/server/libs/users/src/*"],
-      "@app/trpc": ["./apps/server/libs/trpc/src"],
-      "@app/trpc/*": ["./apps/server/libs/trpc/src/*"],
-      "@app/test": ["./apps/server/libs/test/src"],
-      "@app/test/*": ["./apps/server/libs/test/src/*"]
-    }
-    // "baseUrl": "./"
-  }
+    // "target": "ESNext",
+    "target": "es2017",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    // "moduleResolution": "nodenext",
+    // "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    // "skipLibCheck": true,
+    "outDir": "./apps/server/dist"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }
