@@ -1,15 +1,15 @@
-import { DataSource } from "typeorm";
-import { UserEntity } from "./entities";
+import { DataSource } from 'typeorm';
+import { UserEntity } from './entities';
 
 export const AppDataSource = new DataSource({
-  type: "mysql",
-  host: "localhost",
+  type: 'mysql',
+  host: 'localhost',
   port: 3306,
-  username: "root",
-  password: "P@ss1234",
-  database: "edirtegna",
+  username: 'root',
+  password: 'P@ss1234',
+  database: 'edirtegna',
   synchronize: true,
-  logging: true,
+  //   logging: true,
   entities: [UserEntity],
   //   subscribers: [],
   //   migrations: [],

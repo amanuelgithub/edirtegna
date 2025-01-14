@@ -4,10 +4,14 @@
   "description": "A modern platform for connecting individuals with Edir groups—Ethiopian community-based support networks—using location-based search, seamless member management, and digital contribution tracking. Simplify the process of finding, joining, and managing Edirs, fostering a stronger sense of community wherever you are.  ",
   "scripts": {
     "dev": "pnpm --filter server dev",
-    "mobile:start": "pnpm --filter mobile run start"
+    "mobile:start": "pnpm --filter mobile run start",
+    "format": "pnpm --filter server run format"
   },
   "keywords": [],
   "author": "Amanuel Girma <amanuelgirma070@gmail.com>",
   "license": "UNLICENSED",
-  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
+  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
+  "devDependencies": {
+    "prettier": "3.4.2"
+  }
 }
