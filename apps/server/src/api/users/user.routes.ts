@@ -1,7 +1,6 @@
-import { router, publicProcedure } from "@server/src/trpc";
-import { z } from "zod";
-import { usersService } from "./users.service";
-import { UserEntity } from "@server/src/core/database";
+import { router, publicProcedure } from '@server/src/trpc';
+import { z } from 'zod';
+import { usersService } from './users.service';
 
 export const userRouter = router({
   // create: publicProcedure.input(user: Partial<UserEntity>)
@@ -10,7 +9,7 @@ export const userRouter = router({
       z.object({
         id: z.number().optional(),
         name: z.string(),
-      })
+      }),
     )
     .mutation((input) => {
       return usersService.create(input.input);
@@ -24,7 +23,7 @@ export const userRouter = router({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .query((input) => {
       return usersService.findOne(input.input.id, input.ctx.req, input.ctx.res);
@@ -35,7 +34,7 @@ export const userRouter = router({
       z.object({
         id: z.number(),
         name: z.string(),
-      })
+      }),
     )
     .query(({ input, ctx }) => {
       return usersService.update(input.id, input, ctx.req, ctx.res);

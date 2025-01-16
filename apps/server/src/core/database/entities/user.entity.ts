@@ -1,12 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity("users")
+@Entity('users')
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   //   @Column()
   //   name: string;
-  @Column({ type: "varchar", length: 255 }) // Explicitly define the type
+  @Column({ type: 'varchar', length: 255 }) // Explicitly define the type
   name: string;
 }
