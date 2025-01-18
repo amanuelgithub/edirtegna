@@ -1,6 +1,6 @@
 import { authRouter } from '../api/auth';
 import { userRouter } from '../api/users';
-import { router } from './trpc';
+import { router } from '@server/src/trpc';
 
 export const appRouter = router({
   auth: authRouter,

@@ -1,27 +1,29 @@
-import "reflect-metadata";
-import express from "express";
-import cors from "cors";
-import * as trpcExpress from "@trpc/server/adapters/express";
-import { createContext, appRouter } from "./trpc";
+import 'reflect-metadata';
+import express from 'express';
+import cors from 'cors';
+import * as trpcExpress from '@trpc/server/adapters/express';
+// import { createContext, appRouter } from "./trpc";
+import { createContext } from './trpc';
+import { appRouter } from './routes/router';
 
 const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: 'http://localhost:3000',
     credentials: true,
-  })
+  }),
 );
 app.use(
-  "/api/trpc",
+  '/api/trpc',
   trpcExpress.createExpressMiddleware({
     router: appRouter,
     createContext,
-  })
+  }),
 );
 
-app.get("/", (req, res) => {
-  res.send("Server is working fine 👍 👍 👍 ");
+app.get('/', (req, res) => {
+  res.send('Server is working fine 👍 👍 👍 ');
 });
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
