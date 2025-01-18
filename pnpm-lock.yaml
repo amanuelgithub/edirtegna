@@ -11,6 +11,9 @@ importers:
       prettier:
         specifier: 3.4.2
         version: 3.4.2
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
 
   apps/mobile:
     dependencies:
@@ -55,7 +58,7 @@ importers:
         version: 7.0.4(expo@52.0.25(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
       expo-router:
         specifier: ~4.0.16
-        version: 4.0.16(qyuf42ghohmeof3knakmedccie)
+        version: 4.0.16(fd6943d6d23b919898712654788a0468)
       expo-secure-store:
         specifier: ~14.0.1
         version: 14.0.1(expo@52.0.25(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@expo/metro-runtime@4.0.0(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))
@@ -132,12 +135,15 @@ importers:
       react-test-renderer:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
-      typescript:
-        specifier: ^5.3.3
-        version: 5.7.3
 
   apps/server:
     dependencies:
+      '@edirtegna/trpc':
+        specifier: workspace:^
+        version: link:../../packages/trpc
+      '@edirtegna/trpc-server':
+        specifier: workspace:^
+        version: link:../../packages/trpc-server
       '@trpc/server':
         specifier: ^10.45.2
         version: 10.45.2
@@ -193,6 +199,28 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.19.2
+
+  packages/trpc:
+    dependencies:
+      '@trpc/server':
+        specifier: ^10.45.2
+        version: 10.45.2
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+
+  packages/trpc-server:
+    dependencies:
+      '@trpc/server':
+        specifier: ^10.45.2
+        version: 10.45.2
+      '@types/node':
+        specifier: ^20.3.1
+        version: 20.17.12
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+    devDependencies:
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -8556,7 +8584,7 @@ snapshots:
     dependencies:
       invariant: 2.2.4
 
-  expo-router@4.0.16(qyuf42ghohmeof3knakmedccie):
+  expo-router@4.0.16(fd6943d6d23b919898712654788a0468):
     dependencies:
       '@expo/metro-runtime': 4.0.0(react-native@0.76.6(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))
       '@expo/server': 0.5.0(typescript@5.7.3)
