@@ -10,6 +10,7 @@ export default function Index() {
       }}
     >
       <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text className="text-indigo-700 font-bold text-2xl">Nativewind Test</Text>
     </View>
   );
 }
