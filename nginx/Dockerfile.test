@@ -69,7 +69,7 @@
    # Set Node env as test
    ENV NODE_ENV test
    
-   # Set Appropredirtegnae Timezone
+   # Set Appropriate Timezone
    ENV TZ Africa/Addis_Ababa
    
    # Define build arguments

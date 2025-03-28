@@ -1,30 +1,30 @@
 version: "3.9"
 
 services:
-  edirapi:
-    image: edirapi:1.0.0
+  iat-api:
+    image: iat-api:1.0.0
     build:
       context: ./backend/
       target: api
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime
-      - /home/svr3/edirapi-logs:/usr/src/app/logs
+      - /home/svr3/iat-api-logs:/usr/src/app/logs
       - images:/usr/src/app/images:rw
     env_file:
       - backend/env/test.env
     networks:
-      # - edirfront-end-net
-      - edirdb-net
-      - edirredis-net
+      - iat-front-end-net
+      - iat-db-net
+      - iat-redis-net
     depends_on:
-      - edirdb
-      - edirredis
-      - edirworker
+      - iat-db
+      - iat-redis
+      - iat-worker
 
-  edirworker:
-    image: edirworker:1.0.0
-    container_name: edirworker
+  iat-worker:
+    image: iat-worker:1.0.0
+    container_name: iat-worker
     build:
       context: ./backend/
       target: worker
@@ -35,18 +35,18 @@ services:
     env_file:
       - backend/env/test.env
     networks:
-      # - edirfront-end-net
-      - edirdb-net
-      - edirredis-net
+      - iat-front-end-net
+      - iat-db-net
+      - iat-redis-net
     depends_on:
-      - edirdb
-      - edirredis
+      - iat-db
+      - iat-redis
 
-  edirdb:
-    container_name: edirdb
+  iat-db:
+    container_name: iat-db
     image: mariadb:11.0.2
     volumes:
-      - edirdb-data:/var/lib/mysql
+      - iat-db-data:/var/lib/mysql
       - ./DATA/db_data:/var/lib/mysql
     restart: unless-stopped
     environment:
@@ -60,11 +60,11 @@ services:
     env_file:
       - ./backend/env/test.env
     networks:
-      - edirdb-net
+      - iat-db-net
 
-  edirnginx:
-    container_name: edirnginx
-    image: edirnginx:1.0.0
+  iat-nginx:
+    container_name: iat-nginx
+    image: iat-nginx:1.0.0
     build:
       context: .
       dockerfile: ./nginx/Dockerfile.test
@@ -72,28 +72,28 @@ services:
     env_file:
       - ./backend/env/test.env
     # depends_on:
-    #   - edirapi
+    #   - iat-api
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - edirnginx-letsencrypt:/etc/letsencrypt
+      - iat-nginx-letsencrypt:/etc/letsencrypt
       - images:/usr/share/nginx/html/images:ro
     networks:
-      # - edirfront-end-net
-      - edirapp-net
+      - iat-front-end-net
+      - iat-app-net
 
-  # ediradminer:
-  #   container_name: ediradminer
-  #   image: adminer:4.8.1
-  #   restart: unless-stopped
-  #   networks:
-  #     - edirdb-net
-  #     # - edirfront-end-net
+  iat-adminer:
+    container_name: iat-adminer
+    image: adminer:4.8.1
+    restart: unless-stopped
+    networks:
+      - iat-db-net
+      - iat-front-end-net
 
-  edirredis:
+  iat-redis:
     image: redis:7.0.5
-    container_name: edirredis
+    container_name: iat-redis
     hostname: redis
     restart: unless-stopped
     sysctls:
@@ -101,23 +101,23 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --bind edirredis --requirepass "${REDIS_PASSWORD}" --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+      - redis-server --bind iat-redis --requirepass "${REDIS_PASSWORD}" --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
     environment:
-      REDIS_HOST: edirredis
+      REDIS_HOST: iat-redis
     env_file:
       - ./backend/env/test.env
     # ports:
     #   - ${REDIS_PORT}:6379
     networks:
-      - edirredis-net
+      - iat-redis-net
 
 networks:
-  edirdb-net:
-  # edirfront-end-net:
-  edirredis-net:
-  edirapp-net:
+  iat-db-net:
+  iat-front-end-net:
+  iat-redis-net:
+  iat-app-net:
 
 volumes:
-  edirnginx-letsencrypt:
-  edirdb-data:
+  iat-nginx-letsencrypt:
+  iat-db-data:
   images:

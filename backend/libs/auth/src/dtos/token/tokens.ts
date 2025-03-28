@@ -5,7 +5,7 @@ export class TokenPayload {
   // token expiry time
   exp: number;
   // time token issued at
-  edirtegna: number;
+  iat: number;
   // token type: Bearer | Refresh
   typ: string;
   // "http://localhost:8080/auth/realms/tp_admin"

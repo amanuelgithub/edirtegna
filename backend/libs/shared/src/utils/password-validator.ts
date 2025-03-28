@@ -47,8 +47,8 @@ export function IsPasswordValid(validationOptions?: ValidationOptions) {
       reversed: false,
       l33t: false,
       base_guesses: 1,
-      uppercase_varedirtegnaions: 1,
-      l33t_varedirtegnaions: 1,
+      uppercase_variations: 1,
+      l33t_variations: 1,
       guesses: 1,
       guesses_log10: 0
     }

@@ -1,13 +1,13 @@
 services:
-  edirapi:
-    container_name: edirapi
+  iat-api:
+    container_name: iat-api
     build:
       context: ./backend/
       target: development
     volumes:
       - ./backend:/usr/src/app
       - /etc/localtime:/etc/localtime
-      - edirtegna_api_node_modules:/usr/src/app/node_modules
+      - iat_api_node_modules:/usr/src/app/node_modules
     environment:
       NODE_ENV: development
     ports:
@@ -15,32 +15,32 @@ services:
     restart: unless-stopped
     command: npm run start:api:dev
     depends_on:
-      - edirdb
+      - iat-db
     networks:
-      # - edirfront-end-net
-      - edirdb-net
-      - edirredis-net
+      - iat-front-end-net
+      - iat-db-net
+      - iat-redis-net
 
-  edirworker:
-    container_name: edirworker
+  iat-worker:
+    container_name: iat-worker
     build:
       context: ./backend/
       target: development
     volumes:
       - ./backend:/usr/src/app
-      - edirtegna_api_node_modules:/app/node_modules
+      - iat_api_node_modules:/app/node_modules
       - /etc/localtime:/etc/localtime
     environment:
       NODE_ENV: development
     restart: unless-stopped
     command: npm run start:job:dev
     networks:
-      # - edirfront-end-net
-      - edirdb-net
-      - edirredis-net
+      - iat-front-end-net
+      - iat-db-net
+      - iat-redis-net
 
-  edirdb:
-    container_name: edirdb
+  iat-db:
+    container_name: iat-db
     image: mariadb:11.0.2
     volumes:
       - ./DATA/db_data:/var/lib/mysql
@@ -56,10 +56,10 @@ services:
     env_file:
       - ./backend/env/development.env
     networks:
-      - edirdb-net
+      - iat-db-net
 
-  # ediradmin:
-  #   container_name: ediradmin
+  # iat-admin:
+  #   container_name: iat-admin
   #   build:
   #     dockerfile: Dockerfile.dev
   #     context: ./apps/
@@ -68,19 +68,19 @@ services:
   #       GID: $GROUP_ID
   #   volumes:
   #     - ./apps:/app
-  #     - edirtegna_ui_node_modules:/app/node_modules
+  #     - iat_ui_node_modules:/app/node_modules
   #     - /etc/localtime:/etc/localtime
   #   command: npm run start:admin
   #   restart: on-failure:5
   #   depends_on:
-  #     - edirapi
+  #     - iat-api
   #   ports:
   #     - 4200:4200
   #   networks:
-  #     # - edirfront-end-net
+  #     - iat-front-end-net
 
-  # edircustomer:
-  #   container_name: edircustomer
+  # iat-customer:
+  #   container_name: iat-customer
   #   build:
   #     dockerfile: Dockerfile.dev
   #     context: ./apps/
@@ -89,19 +89,19 @@ services:
   #       GID: $GROUP_ID
   #   volumes:
   #     - ./apps:/app
-  #     - edirtegna_ui_node_modules:/app/node_modules
+  #     - iat_ui_node_modules:/app/node_modules
   #     - /etc/localtime:/etc/localtime
   #   command: npm run start:customer
   #   restart: on-failure:5
   #   depends_on:
-  #     - edirapi
+  #     - iat-api
   #   ports:
   #     - "4201:4201"
   #   networks:
-  #     # - edirfront-end-net
+  #     - iat-front-end-net
 
-  edirnginx:
-    container_name: edirnginx
+  iat-nginx:
+    container_name: iat-nginx
     build:
       context: .
       dockerfile: ./nginx/Dockerfile.dev
@@ -116,21 +116,21 @@ services:
     ports:
       - 80:80
     networks:
-      # - edirfront-end-net
+      - iat-front-end-net
 
-  ediradminer:
-    container_name: ediradminer
+  iat-adminer:
+    container_name: iat-adminer
     image: adminer:4.8.1
     restart: unless-stopped
     ports:
       - 8085:8080
     networks:
-      - edirdb-net
-      # - edirfront-end-net
+      - iat-db-net
+      - iat-front-end-net
 
-  edirredis:
+  iat-redis:
     image: redis:7.0.12
-    container_name: edirredis
+    container_name: iat-redis
     hostname: redis
     restart: unless-stopped
     sysctls:
@@ -138,41 +138,41 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --bind edirredis --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+      - redis-server --bind iat-redis --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
     environment:
-      REDIS_HOST: edirredis
+      REDIS_HOST: iat-redis
     env_file:
       - ./backend/env/development.env
     ports:
       - ${REDIS_PORT}:6379
     networks:
-      - edirredis-net
+      - iat-redis-net
 
-  edirredis-commander:
+  iat-redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: edirredis-commander
+    container_name: iat-redis-commander
     env_file:
       - ./backend/env/development.env
     environment:
-      REDIS_HOSTS: edirredis
-      REDIS_HOST: edirredis
-      REDIS_PORT: edirredis:6379
+      REDIS_HOSTS: iat-redis
+      REDIS_HOST: iat-redis
+      REDIS_PORT: iat-redis:6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       HTTP_USER: ${REDIS_COMMANDER_HTTP_USER}
       HTTP_PASSWORD: ${REDIS_COMMANDER_HTTP_PASSWORD}
     ports:
       - 8086:8081
     networks:
-      # - edirfront-end-net
-      - edirredis-net
+      - iat-front-end-net
+      - iat-redis-net
 
 networks:
-  edirdb-net:
-  # edirfront-end-net:
-  edirredis-net:
+  iat-db-net:
+  iat-front-end-net:
+  iat-redis-net:
     driver: bridge
 volumes:
-  edirtegna_api_node_modules:
-  edirtegna_ui_node_modules:
-    # docker-compose --env-file ./backend/env/development.env -p edirtegna -f ./docker-compose.dev.yml up --build -d
+  iat_api_node_modules:
+  iat_ui_node_modules:
+    # docker-compose --env-file ./backend/env/development.env -p iat -f ./docker-compose.dev.yml up --build -d
     # docker-compose --env-file ./backend/env/development.env -f ./docker-compose.dev.yml build

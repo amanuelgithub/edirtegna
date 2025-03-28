@@ -59,7 +59,7 @@ export class TokenService {
       role: user.role?.name,
       roleId: user.roleId,
       realm: user.realm,
-      edirtegna: NOW_SECONDS,
+      iat: NOW_SECONDS,
       typ: 'Bearer',
       iss: this.issuer,
       exp: accessExp,

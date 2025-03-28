@@ -24,7 +24,7 @@ export interface IFlattener {
  * Class for flattening and unflattening an object / array
  *
  * This could've been a simple function but is rather a class
- * because we are instantedirtegnaing it during the constructor phase of
+ * because we are instantiating it during the constructor phase of
  * JSONCache class by calling it with stringifier & parser options.
  */
 export class Flattener implements IFlattener {

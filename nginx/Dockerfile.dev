@@ -43,7 +43,7 @@
     # Set Node env as development
     ENV NODE_ENV development
     
-    # Set Appropredirtegnae Timezone
+    # Set Appropriate Timezone
     ENV TZ Africa/Addis_Ababa
     
     # Define build arguments
