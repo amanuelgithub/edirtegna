@@ -1,0 +1,178 @@
+services:
+  edirapi:
+    container_name: edirapi
+    build:
+      context: ./backend/
+      target: development
+    volumes:
+      - ./backend:/usr/src/app
+      - /etc/localtime:/etc/localtime
+      - edirtegna_api_node_modules:/usr/src/app/node_modules
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    command: npm run start:api:dev
+    depends_on:
+      - edirdb
+    networks:
+      # - edirfront-end-net
+      - edirdb-net
+      - edirredis-net
+
+  edirworker:
+    container_name: edirworker
+    build:
+      context: ./backend/
+      target: development
+    volumes:
+      - ./backend:/usr/src/app
+      - edirtegna_api_node_modules:/app/node_modules
+      - /etc/localtime:/etc/localtime
+    environment:
+      NODE_ENV: development
+    restart: unless-stopped
+    command: npm run start:job:dev
+    networks:
+      # - edirfront-end-net
+      - edirdb-net
+      - edirredis-net
+
+  edirdb:
+    container_name: edirdb
+    image: mariadb:11.0.2
+    volumes:
+      - ./DATA/db_data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
+    env_file:
+      - ./backend/env/development.env
+    networks:
+      - edirdb-net
+
+  # ediradmin:
+  #   container_name: ediradmin
+  #   build:
+  #     dockerfile: Dockerfile.dev
+  #     context: ./apps/
+  #     args:
+  #       UID: $USER_ID
+  #       GID: $GROUP_ID
+  #   volumes:
+  #     - ./apps:/app
+  #     - edirtegna_ui_node_modules:/app/node_modules
+  #     - /etc/localtime:/etc/localtime
+  #   command: npm run start:admin
+  #   restart: on-failure:5
+  #   depends_on:
+  #     - edirapi
+  #   ports:
+  #     - 4200:4200
+  #   networks:
+  #     # - edirfront-end-net
+
+  # edircustomer:
+  #   container_name: edircustomer
+  #   build:
+  #     dockerfile: Dockerfile.dev
+  #     context: ./apps/
+  #     args:
+  #       UID: $USER_ID
+  #       GID: $GROUP_ID
+  #   volumes:
+  #     - ./apps:/app
+  #     - edirtegna_ui_node_modules:/app/node_modules
+  #     - /etc/localtime:/etc/localtime
+  #   command: npm run start:customer
+  #   restart: on-failure:5
+  #   depends_on:
+  #     - edirapi
+  #   ports:
+  #     - "4201:4201"
+  #   networks:
+  #     # - edirfront-end-net
+
+  edirnginx:
+    container_name: edirnginx
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile.dev
+      args:
+        UID: $USER_ID
+        GID: $GROUP_ID
+    restart: on-failure:5
+    environment:
+      NODE_ENV: development
+    env_file:
+      - ./backend/env/development.env
+    ports:
+      - 80:80
+    networks:
+      # - edirfront-end-net
+
+  ediradminer:
+    container_name: ediradminer
+    image: adminer:4.8.1
+    restart: unless-stopped
+    ports:
+      - 8085:8080
+    networks:
+      - edirdb-net
+      # - edirfront-end-net
+
+  edirredis:
+    image: redis:7.0.12
+    container_name: edirredis
+    hostname: redis
+    restart: unless-stopped
+    sysctls:
+      net.core.somaxconn: "4096"
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --bind edirredis --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+    environment:
+      REDIS_HOST: edirredis
+    env_file:
+      - ./backend/env/development.env
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - edirredis-net
+
+  edirredis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: edirredis-commander
+    env_file:
+      - ./backend/env/development.env
+    environment:
+      REDIS_HOSTS: edirredis
+      REDIS_HOST: edirredis
+      REDIS_PORT: edirredis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      HTTP_USER: ${REDIS_COMMANDER_HTTP_USER}
+      HTTP_PASSWORD: ${REDIS_COMMANDER_HTTP_PASSWORD}
+    ports:
+      - 8086:8081
+    networks:
+      # - edirfront-end-net
+      - edirredis-net
+
+networks:
+  edirdb-net:
+  # edirfront-end-net:
+  edirredis-net:
+    driver: bridge
+volumes:
+  edirtegna_api_node_modules:
+  edirtegna_ui_node_modules:
+    # docker-compose --env-file ./backend/env/development.env -p edirtegna -f ./docker-compose.dev.yml up --build -d
+    # docker-compose --env-file ./backend/env/development.env -f ./docker-compose.dev.yml build

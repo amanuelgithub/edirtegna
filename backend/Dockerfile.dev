@@ -1,0 +1,14 @@
+#-------------------
+# Dockerfile.dev
+#-------------------
+
+FROM node:18-alpine As development
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci --loglevel verbose --fetch-timeout=600000
+
+COPY . .
+

@@ -1,0 +1,78 @@
+# ---------------------------------------
+# Development
+# ---------------------------------------
+    FROM alpine:3.14
+
+    RUN apk add --no-cache \
+        gcc \
+        libc-dev \
+        make \
+        openssl-dev \
+        pcre-dev \
+        zlib-dev \
+        linux-headers \
+        curl \
+        gnupg \
+        libxslt-dev \
+        gd-dev \
+        geoip-dev \
+        gettext
+    
+    ENV NGINX_VERSION nginx-1.26.0
+    ENV MORE_HEADERS_VERSION 0.37
+    
+    RUN mkdir -p /usr/src && \
+        curl -fSL https://nginx.org/download/${NGINX_VERSION}.tar.gz -o nginx.tar.gz && \
+        curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v${MORE_HEADERS_VERSION}.tar.gz -o more-headers.tar.gz && \
+        tar -zxC /usr/src -f nginx.tar.gz && \
+        tar -zxC /usr/src -f more-headers.tar.gz && \
+        rm nginx.tar.gz more-headers.tar.gz && \
+        cd /usr/src/${NGINX_VERSION} && \
+        ./configure --with-compat --add-dynamic-module=/usr/src/headers-more-nginx-module-${MORE_HEADERS_VERSION} --with-http_gzip_static_module && \
+        make && make install
+    
+    ENV PATH="/usr/local/nginx/sbin:${PATH}"
+    
+    # Create nginx user and group
+    RUN addgroup -S nginx && adduser -S nginx -G nginx
+    
+    
+    # Create log directory
+    RUN mkdir -p /var/log/nginx
+    
+    # Set Node env as development
+    ENV NODE_ENV development
+    
+    # Set Appropredirtegnae Timezone
+    ENV TZ Africa/Addis_Ababa
+    
+    # Define build arguments
+    ARG UID
+    ARG GID
+    
+    # Define user and group environment variables
+    ENV UID=$UID
+    ENV GID=$GID
+    
+    # User and group id fallback
+    ENV UID=${UID:-1001}
+    ENV GID=${GID:-1001}
+    
+    # Copy entrypoint
+    COPY ./nginx/entrypoint.sh /entrypoint.sh
+    
+    COPY ./nginx/public/404.html /usr/share/nginx/html/404.html
+    COPY ./nginx/public/assets /usr/share/nginx/html/assets
+    
+    # Make entrypoint executable
+    RUN chmod +x /entrypoint.sh
+    
+    # Copy nginx config development template
+    COPY ./nginx/configs/nginx-dev.conf  /etc/nginx/nginx-dev.conf
+    
+    # Indicate Entry point script
+    ENTRYPOINT [ "../entrypoint.sh" ]
+    
+    CMD ["nginx", "-g", "daemon off;"]
+    
+

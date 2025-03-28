@@ -1,0 +1,104 @@
+services:
+  edirapi:
+    image: edirapi:1.0.0
+    build:
+      context: ./backend/
+      target: api
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /home/edirapi-logs:/usr/src/app/logs
+    env_file:
+      - backend/env/production.env
+    networks:
+      - edirfront-end-net
+      - edirdb-net
+      - edirredis-net
+    depends_on:
+      - edirdb
+      - edirredis
+      - edirworker
+
+  edirworker:
+    image: edirworker:1.0.0
+    container_name: edirworker
+    build:
+      context: ./backend/
+      target: worker
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime
+    env_file:
+      - backend/env/production.env
+    networks:
+      - edirfront-end-net
+      - edirdb-net
+      - edirredis-net
+    depends_on:
+      - edirdb
+      - edirredis
+
+  edirdb:
+    container_name: edirdb
+    image: mariadb:11.0.2
+    volumes:
+      - ./DATA/db_data:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
+    env_file:
+      - ./backend/env/production.env
+    networks:
+      - edirdb-net
+
+  edirnginx:
+    container_name: edirnginx
+    image: edirnginx:1.0.0
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    restart: on-failure:5
+    env_file:
+      - ./backend/env/production.env
+    depends_on:
+      - edirapi
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - edirnginx-letsencrypt:/etc/letsencrypt
+    networks:
+      - edirfront-end-net
+
+  edirredis:
+    image: redis:7.0.5
+    container_name: edirredis
+    hostname: redis
+    restart: unless-stopped
+    sysctls:
+      net.core.somaxconn: "4096"
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --bind edirredis --requirepass "${REDIS_PASSWORD}" --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+    environment:
+      REDIS_HOST: edirredis
+    env_file:
+      - ./backend/env/production.env
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - edirredis-net
+
+networks:
+  edirdb-net:
+  edirfront-end-net:
+  edirredis-net:
+volumes:
+  edirnginx-letsencrypt:
