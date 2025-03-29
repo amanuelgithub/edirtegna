@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient'; // Ensure compatibility with iOS
 import { Ionicons } from '@expo/vector-icons'; // Import Expo's built-in icons
+import { useOnboarding } from '@/context/OnboardingContext';
 
 const loginSchema = z.object({
   // identifier: z.string().email('Invalid email address'),
@@ -31,6 +32,8 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 export default function SignInScreen() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+
+  const { onboardingCompleted, completeOnboarding } = useOnboarding();
 
   const {
     control,
@@ -92,7 +95,7 @@ export default function SignInScreen() {
                   keyboardType="phone-pad"
                   // autoCapitalize="none"
                   textContentType="telephoneNumber"
-                  autoComplete="tel"
+                  // autoComplete="tel"
                   maxLength={9} // Adjust the max length as neededa
                   numberOfLines={1} // Prevents multiline input
                 />
@@ -211,6 +214,25 @@ export default function SignInScreen() {
           <Text className="text-center text-blue-800 font-medium underline">
             Verify Otp
           </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="mt-4"
+          onPress={() => completeOnboarding('false')}
+        >
+          <View
+            style={{
+              backgroundColor: '#34d399',
+              borderRadius: 8,
+              paddingVertical: 16,
+            }}
+            className="shadow-sm"
+          >
+            <Text className="text-white text-center font-bold">
+              reset onboarding
+              {/* {loginMutation.isPending ? 'Logging in...' : 'Login'} */}
+            </Text>
+          </View>
         </TouchableOpacity>
 
         {/* Sign Up Button */}
