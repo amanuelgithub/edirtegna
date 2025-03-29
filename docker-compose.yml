@@ -1,27 +1,27 @@
 services:
-  iat-api:
-    image: iat-api:1.0.0
+  edirtegna-api:
+    image: edirtegna-api:1.0.0
     build:
       context: ./backend/
       target: api
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime
-      - /home/iat-api-logs:/usr/src/app/logs
+      - /home/edirtegna-api-logs:/usr/src/app/logs
     env_file:
       - backend/env/production.env
     networks:
-      - iat-front-end-net
-      - iat-db-net
-      - iat-redis-net
+      - edirtegna-front-end-net
+      - edirtegna-db-net
+      - edirtegna-redis-net
     depends_on:
-      - iat-db
-      - iat-redis
-      - iat-worker
+      - edirtegna-db
+      - edirtegna-redis
+      - edirtegna-worker
 
-  iat-worker:
-    image: iat-worker:1.0.0
-    container_name: iat-worker
+  edirtegna-worker:
+    image: edirtegna-worker:1.0.0
+    container_name: edirtegna-worker
     build:
       context: ./backend/
       target: worker
@@ -31,15 +31,15 @@ services:
     env_file:
       - backend/env/production.env
     networks:
-      - iat-front-end-net
-      - iat-db-net
-      - iat-redis-net
+      - edirtegna-front-end-net
+      - edirtegna-db-net
+      - edirtegna-redis-net
     depends_on:
-      - iat-db
-      - iat-redis
+      - edirtegna-db
+      - edirtegna-redis
 
-  iat-db:
-    container_name: iat-db
+  edirtegna-db:
+    container_name: edirtegna-db
     image: mariadb:11.0.2
     volumes:
       - ./DATA/db_data:/var/lib/mysql
@@ -55,11 +55,11 @@ services:
     env_file:
       - ./backend/env/production.env
     networks:
-      - iat-db-net
+      - edirtegna-db-net
 
-  iat-nginx:
-    container_name: iat-nginx
-    image: iat-nginx:1.0.0
+  edirtegna-nginx:
+    container_name: edirtegna-nginx
+    image: edirtegna-nginx:1.0.0
     build:
       context: .
       dockerfile: ./nginx/Dockerfile
@@ -67,18 +67,18 @@ services:
     env_file:
       - ./backend/env/production.env
     depends_on:
-      - iat-api
+      - edirtegna-api
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - iat-nginx-letsencrypt:/etc/letsencrypt
+      - edirtegna-nginx-letsencrypt:/etc/letsencrypt
     networks:
-      - iat-front-end-net
+      - edirtegna-front-end-net
 
-  iat-redis:
+  edirtegna-redis:
     image: redis:7.0.5
-    container_name: iat-redis
+    container_name: edirtegna-redis
     hostname: redis
     restart: unless-stopped
     sysctls:
@@ -86,19 +86,19 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --bind iat-redis --requirepass "${REDIS_PASSWORD}" --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+      - redis-server --bind edirtegna-redis --requirepass "${REDIS_PASSWORD}" --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
     environment:
-      REDIS_HOST: iat-redis
+      REDIS_HOST: edirtegna-redis
     env_file:
       - ./backend/env/production.env
     ports:
       - ${REDIS_PORT}:6379
     networks:
-      - iat-redis-net
+      - edirtegna-redis-net
 
 networks:
-  iat-db-net:
-  iat-front-end-net:
-  iat-redis-net:
+  edirtegna-db-net:
+  edirtegna-front-end-net:
+  edirtegna-redis-net:
 volumes:
-  iat-nginx-letsencrypt:
+  edirtegna-nginx-letsencrypt:

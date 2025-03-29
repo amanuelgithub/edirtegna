@@ -3,7 +3,7 @@
 help:
 	@echo ""
 	@echo "***************************************"
-	@echo "Welcome to iat.et Deployment!"
+	@echo "Welcome to edirtegna.et Deployment!"
 	@echo "***************************************"
 	@echo ""
 	@echo "Available commands:"
@@ -25,11 +25,11 @@ prod-stop:
 	docker compose --env-file ./.env -p wecare -f ./docker-compose.yml up --build --scale api=32 -d && docker stop adminer
 
 test-up:
-	@echo "\nStarting Deployment Test at https://iat.et...\n"
+	@echo "\nStarting Deployment Test at https://edirtegna.et...\n"
 	docker compose --env-file ./backend/env/test.env -p wecare -f ./docker-compose.test.yml up --build --scale wecare-api=4 -d
 
 test-down:
-	@echo "\nStopping Deployment Test at https://iat.et...\n"
+	@echo "\nStopping Deployment Test at https://edirtegna.et...\n"
 	docker compose --env-file ./backend/env/test.env -p wecare -f ./docker-compose.test.yml down
 
 dev-up:

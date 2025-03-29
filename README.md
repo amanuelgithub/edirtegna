@@ -1,4 +1,4 @@
-IAT PROJECT
+EDIRTEGNA PROJECT
 ADMIN CREATED: {
 name: 'System Root',
 destination: '+251911756708',
@@ -9,3 +9,8 @@ pinCode: null,
 password: 'Ogpy0M',
 userId: 2
 }
+
+## iat - edirtegan conversion
+
+- excluded files
+  package-lock.json,tokens.ts,token.service.ts,flattener.ts,hmac.util.ts,password-validator.ts,Dockerfile.dev,Dockerfile.test,entrypoint.sh

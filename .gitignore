@@ -39,7 +39,7 @@
 
 /docs
 
-**/env/*
+# **/env/*
 !**/env/test.env
 
 **/.angular

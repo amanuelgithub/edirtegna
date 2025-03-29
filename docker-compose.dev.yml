@@ -1,13 +1,13 @@
 services:
-  iat-api:
-    container_name: iat-api
+  edirtegna-api:
+    container_name: edirtegna-api
     build:
       context: ./backend/
       target: development
     volumes:
       - ./backend:/usr/src/app
       - /etc/localtime:/etc/localtime
-      - iat_api_node_modules:/usr/src/app/node_modules
+      - edirtegna_api_node_modules:/usr/src/app/node_modules
     environment:
       NODE_ENV: development
     ports:
@@ -15,32 +15,32 @@ services:
     restart: unless-stopped
     command: npm run start:api:dev
     depends_on:
-      - iat-db
+      - edirtegna-db
     networks:
-      - iat-front-end-net
-      - iat-db-net
-      - iat-redis-net
+      - edirtegna-front-end-net
+      - edirtegna-db-net
+      - edirtegna-redis-net
 
-  iat-worker:
-    container_name: iat-worker
+  edirtegna-worker:
+    container_name: edirtegna-worker
     build:
       context: ./backend/
       target: development
     volumes:
       - ./backend:/usr/src/app
-      - iat_api_node_modules:/app/node_modules
+      - edirtegna_api_node_modules:/app/node_modules
       - /etc/localtime:/etc/localtime
     environment:
       NODE_ENV: development
     restart: unless-stopped
     command: npm run start:job:dev
     networks:
-      - iat-front-end-net
-      - iat-db-net
-      - iat-redis-net
+      - edirtegna-front-end-net
+      - edirtegna-db-net
+      - edirtegna-redis-net
 
-  iat-db:
-    container_name: iat-db
+  edirtegna-db:
+    container_name: edirtegna-db
     image: mariadb:11.0.2
     volumes:
       - ./DATA/db_data:/var/lib/mysql
@@ -56,10 +56,10 @@ services:
     env_file:
       - ./backend/env/development.env
     networks:
-      - iat-db-net
+      - edirtegna-db-net
 
-  # iat-admin:
-  #   container_name: iat-admin
+  # edirtegna-admin:
+  #   container_name: edirtegna-admin
   #   build:
   #     dockerfile: Dockerfile.dev
   #     context: ./apps/
@@ -68,19 +68,19 @@ services:
   #       GID: $GROUP_ID
   #   volumes:
   #     - ./apps:/app
-  #     - iat_ui_node_modules:/app/node_modules
+  #     - edirtegna_ui_node_modules:/app/node_modules
   #     - /etc/localtime:/etc/localtime
   #   command: npm run start:admin
   #   restart: on-failure:5
   #   depends_on:
-  #     - iat-api
+  #     - edirtegna-api
   #   ports:
   #     - 4200:4200
   #   networks:
-  #     - iat-front-end-net
+  #     - edirtegna-front-end-net
 
-  # iat-customer:
-  #   container_name: iat-customer
+  # edirtegna-customer:
+  #   container_name: edirtegna-customer
   #   build:
   #     dockerfile: Dockerfile.dev
   #     context: ./apps/
@@ -89,19 +89,19 @@ services:
   #       GID: $GROUP_ID
   #   volumes:
   #     - ./apps:/app
-  #     - iat_ui_node_modules:/app/node_modules
+  #     - edirtegna_ui_node_modules:/app/node_modules
   #     - /etc/localtime:/etc/localtime
   #   command: npm run start:customer
   #   restart: on-failure:5
   #   depends_on:
-  #     - iat-api
+  #     - edirtegna-api
   #   ports:
   #     - "4201:4201"
   #   networks:
-  #     - iat-front-end-net
+  #     - edirtegna-front-end-net
 
-  iat-nginx:
-    container_name: iat-nginx
+  edirtegna-nginx:
+    container_name: edirtegna-nginx
     build:
       context: .
       dockerfile: ./nginx/Dockerfile.dev
@@ -116,21 +116,21 @@ services:
     ports:
       - 80:80
     networks:
-      - iat-front-end-net
+      - edirtegna-front-end-net
 
-  iat-adminer:
-    container_name: iat-adminer
+  edirtegna-adminer:
+    container_name: edirtegna-adminer
     image: adminer:4.8.1
     restart: unless-stopped
     ports:
       - 8085:8080
     networks:
-      - iat-db-net
-      - iat-front-end-net
+      - edirtegna-db-net
+      - edirtegna-front-end-net
 
-  iat-redis:
+  edirtegna-redis:
     image: redis:7.0.12
-    container_name: iat-redis
+    container_name: edirtegna-redis
     hostname: redis
     restart: unless-stopped
     sysctls:
@@ -138,41 +138,41 @@ services:
     command:
       - /bin/sh
       - -c
-      - redis-server --bind iat-redis --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
+      - redis-server --bind edirtegna-redis --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru --appendonly yes
     environment:
-      REDIS_HOST: iat-redis
+      REDIS_HOST: edirtegna-redis
     env_file:
       - ./backend/env/development.env
     ports:
       - ${REDIS_PORT}:6379
     networks:
-      - iat-redis-net
+      - edirtegna-redis-net
 
-  iat-redis-commander:
+  edirtegna-redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: iat-redis-commander
+    container_name: edirtegna-redis-commander
     env_file:
       - ./backend/env/development.env
     environment:
-      REDIS_HOSTS: iat-redis
-      REDIS_HOST: iat-redis
-      REDIS_PORT: iat-redis:6379
+      REDIS_HOSTS: edirtegna-redis
+      REDIS_HOST: edirtegna-redis
+      REDIS_PORT: edirtegna-redis:6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       HTTP_USER: ${REDIS_COMMANDER_HTTP_USER}
       HTTP_PASSWORD: ${REDIS_COMMANDER_HTTP_PASSWORD}
     ports:
       - 8086:8081
     networks:
-      - iat-front-end-net
-      - iat-redis-net
+      - edirtegna-front-end-net
+      - edirtegna-redis-net
 
 networks:
-  iat-db-net:
-  iat-front-end-net:
-  iat-redis-net:
+  edirtegna-db-net:
+  edirtegna-front-end-net:
+  edirtegna-redis-net:
     driver: bridge
 volumes:
-  iat_api_node_modules:
-  iat_ui_node_modules:
-    # docker-compose --env-file ./backend/env/development.env -p iat -f ./docker-compose.dev.yml up --build -d
+  edirtegna_api_node_modules:
+  edirtegna_ui_node_modules:
+    # docker-compose --env-file ./backend/env/development.env -p edirtegna -f ./docker-compose.dev.yml up --build -d
     # docker-compose --env-file ./backend/env/development.env -f ./docker-compose.dev.yml build
