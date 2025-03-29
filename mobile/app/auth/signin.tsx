@@ -45,7 +45,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-gradient-to-b from-blue-500 to-purple-700">
+    <View className="flex-1 justify-center items-center bg-gradient-to-b from-green-500 to-blue-700">
       <Animated.View entering={FadeIn} exiting={FadeOut} className="w-4/5">
         {/* Logo */}
         <View className="items-center mb-6">
@@ -119,10 +119,7 @@ export default function SignInScreen() {
           disabled={loginMutation.isPending}
         >
           <LinearGradient
-            colors={['#6a11cb', '#2575fc']}
-            // colors={['#6a11cb', '#FFD93D']}
-            // from darker purple to lighter purple
-            // colors={['#6a11cb', '#2573fc']}
+            colors={['#34d399', '#3b82f6']}
             style={{ borderRadius: 8, paddingVertical: 16 }}
             className="shadow-lg"
             start={{ x: 0, y: 0 }}
@@ -139,8 +136,28 @@ export default function SignInScreen() {
           className="mt-4"
           onPress={() => router.push('/auth/forgot-password')}
         >
-          <Text className="text-center text-purple-800 font-medium underline">
+          <Text className="text-center text-blue-800 font-medium underline">
             Forgot Password?
+          </Text>
+        </TouchableOpacity>
+
+        {/* Set Password Link */}
+        {/* <TouchableOpacity
+          className="mt-4"
+          onPress={() => router.push('/auth/forgot-password')}
+        >
+          <Text className="text-center text-blue-800 font-medium underline">
+            Forgot Password?
+          </Text>
+        </TouchableOpacity> */}
+
+        {/* Verify  Otp Link */}
+        <TouchableOpacity
+          className="mt-4"
+          onPress={() => router.push('/auth/verify-otp')}
+        >
+          <Text className="text-center text-blue-800 font-medium underline">
+            Verify Otp
           </Text>
         </TouchableOpacity>
 
@@ -149,7 +166,7 @@ export default function SignInScreen() {
           className="bg-white rounded-lg py-4 mt-4 shadow-sm"
           onPress={() => router.push('/auth/signup')}
         >
-          <Text className="text-center text-purple-800 font-bold">
+          <Text className="text-center text-blue-800 font-bold">
             Don't have an account? Sign Up
           </Text>
         </TouchableOpacity>
