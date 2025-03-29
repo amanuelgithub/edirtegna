@@ -1,3 +1,5 @@
+import { useOnboarding } from '@/context/OnboardingContext';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -9,6 +11,7 @@ import {
   Dimensions,
   Animated,
   ImageRequireSource,
+  TouchableOpacity,
 } from 'react-native';
 import type { PagerViewOnPageScrollEventData } from 'react-native-pager-view';
 import PagerView from 'react-native-pager-view';
@@ -230,6 +233,16 @@ export default function IndexPage() {
   const scrollOffsetAnimatedValue = React.useRef(new Animated.Value(0)).current;
   const positionAnimatedValue = React.useRef(new Animated.Value(0)).current;
 
+  const [pageIndex, setPageIndex] = React.useState(0);
+  const router = useRouter();
+  const { completeOnboarding } = useOnboarding();
+
+  const handleSkipOrGetStarted = () => {
+    // console.log('Skip Pressed');
+    completeOnboarding('true');
+    router.replace('/auth/signin');
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -249,6 +262,7 @@ export default function IndexPage() {
             {
               listener: ({ nativeEvent: { offset, position } }) => {
                 console.log(`Position: ${position} Offset: ${offset}`);
+                setPageIndex(position);
               },
               useNativeDriver: true,
             }
@@ -265,6 +279,50 @@ export default function IndexPage() {
             </View>
           ))}
         </AnimatedPagerView>
+
+        <View className="absolute bottom-0 left-0 right-0 p-4 flex-row justify-between">
+          {/* get started */}
+          {pageIndex === 2 && (
+            <TouchableOpacity
+              onPress={handleSkipOrGetStarted}
+              className="shadow-sm w-1/3"
+            >
+              <View className="flex-1 flex-row gap-2 justify-center items-center border border-green-900 bg-white rounded-lg p-1">
+                <Text className="text-green-900 text-lg font-bold text-center ">
+                  Get Started
+                </Text>
+
+                <MaterialIcons
+                  name="arrow-forward-ios"
+                  size={16}
+                  color="green"
+                  style={{ alignSelf: 'center' }}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+          {/* skip */}
+          {pageIndex !== 2 && (
+            <TouchableOpacity
+              onPress={handleSkipOrGetStarted}
+              className="shadow-sm w-1/3"
+            >
+              <View className="flex-1 flex-row gap-2 justify-center items-center border border-gray-600 bg-white rounded-lg p-1">
+                <Text className="text-gray-900 text-lg font-bold text-center ">
+                  skip
+                </Text>
+
+                <MaterialIcons
+                  name="arrow-forward-ios"
+                  size={16}
+                  color="gray"
+                  style={{ alignSelf: 'center' }}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* <Image
         style={styles.logo}
         source={require('../../assets/ue_black_logo.png')}
