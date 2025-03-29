@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'react-native-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
 const setPasswordSchema = z
   .object({
@@ -65,6 +66,10 @@ export default function SetPasswordScreen() {
     setPasswordMutation.mutate(data);
   };
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   return (
     <View className="flex-1 justify-center items-center bg-gradient-to-b from-green-500 to-blue-700">
       <Animated.View entering={FadeIn} exiting={FadeOut} className="w-4/5">
@@ -77,7 +82,7 @@ export default function SetPasswordScreen() {
           name="currentPassword"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
-            <>
+            <View className="relative">
               <TextInput
                 className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
                   errors.currentPassword
@@ -88,14 +93,24 @@ export default function SetPasswordScreen() {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                secureTextEntry
+                secureTextEntry={!showCurrentPassword}
               />
+              <TouchableOpacity
+                className="absolute right-4 top-4"
+                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                <Ionicons
+                  name={showCurrentPassword ? 'eye-off' : 'eye'}
+                  size={24}
+                  color="gray"
+                />
+              </TouchableOpacity>
               {errors.currentPassword && (
                 <Text className="text-red-500 text-sm">
                   {errors.currentPassword.message}
                 </Text>
               )}
-            </>
+            </View>
           )}
         />
 
@@ -104,7 +119,7 @@ export default function SetPasswordScreen() {
           name="newPassword"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
-            <>
+            <View className="relative">
               <TextInput
                 className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
                   errors.newPassword
@@ -115,14 +130,24 @@ export default function SetPasswordScreen() {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                secureTextEntry
+                secureTextEntry={!showNewPassword}
               />
+              <TouchableOpacity
+                className="absolute right-4 top-4"
+                onPress={() => setShowNewPassword(!showNewPassword)}
+              >
+                <Ionicons
+                  name={showNewPassword ? 'eye-off' : 'eye'}
+                  size={24}
+                  color="gray"
+                />
+              </TouchableOpacity>
               {errors.newPassword && (
                 <Text className="text-red-500 text-sm">
                   {errors.newPassword.message}
                 </Text>
               )}
-            </>
+            </View>
           )}
         />
 
@@ -131,7 +156,7 @@ export default function SetPasswordScreen() {
           name="confirmPassword"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
-            <>
+            <View className="relative">
               <TextInput
                 className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
                   errors.confirmPassword
@@ -142,14 +167,24 @@ export default function SetPasswordScreen() {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                secureTextEntry
+                secureTextEntry={!showConfirmPassword}
               />
+              <TouchableOpacity
+                className="absolute right-4 top-4"
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? 'eye-off' : 'eye'}
+                  size={24}
+                  color="gray"
+                />
+              </TouchableOpacity>
               {errors.confirmPassword && (
                 <Text className="text-red-500 text-sm">
                   {errors.confirmPassword.message}
                 </Text>
               )}
-            </>
+            </View>
           )}
         />
 

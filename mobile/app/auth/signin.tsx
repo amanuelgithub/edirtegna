@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient'; // Ensure compatibility with iOS
+import { Ionicons } from '@expo/vector-icons'; // Import Expo's built-in icons
 
 const loginSchema = z.object({
   identifier: z.string().email('Invalid email address'),
@@ -25,6 +26,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function SignInScreen() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
 
   const {
     control,
@@ -99,18 +101,30 @@ export default function SignInScreen() {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <TextInput
-                className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-purple-800 ${
-                  errors.password
-                    ? 'border border-red-500'
-                    : 'border border-gray-300'
-                }`}
-                placeholder="Password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry
-              />
+              <View className="relative">
+                <TextInput
+                  className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-purple-800 ${
+                    errors.password
+                      ? 'border border-red-500'
+                      : 'border border-gray-300'
+                  }`}
+                  placeholder="Password"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity
+                  className="absolute right-4 top-4"
+                  onPress={() => setShowPassword((prev) => !prev)}
+                >
+                  <Ionicons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={24}
+                    color="gray"
+                  />
+                </TouchableOpacity>
+              </View>
               {errors.password && (
                 <Text className="text-red-500 text-sm">
                   {errors.password.message}
