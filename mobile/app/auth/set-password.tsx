@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,23 +34,6 @@ const setPasswordSchema = z
       });
     }
   });
-
-// const setPasswordSchema = z.object({
-//   currentPassword: z.string().min(6, 'Current password is required'),
-//   newPassword: z.string().min(6, 'New password must be at least 6 characters'),
-//   confirmPassword: z
-//     .string()
-//     .min(6, 'Confirm password must be at least 6 characters')
-//     .superRefine((val, ctx) => {
-//       const newPassword = ctx.parent?.newPassword;
-//       if (val !== newPassword) {
-//         ctx.addIssue({
-//           code: z.ZodIssueCode.custom,
-//           message: 'Passwords must match',
-//         });
-//       }
-//     }),
-// });
 
 type SetPasswordFormInputs = z.infer<typeof setPasswordSchema>;
 
@@ -169,19 +158,36 @@ export default function SetPasswordScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={setPasswordMutation.isPending}
         >
-          <LinearGradient
-            colors={['#34d399', '#3b82f6']}
-            style={{ borderRadius: 8, paddingVertical: 16 }}
-            className="shadow-lg"
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text className="text-white text-center font-bold">
-              {setPasswordMutation.isPending
-                ? 'Updating...'
-                : 'Update Password'}
-            </Text>
-          </LinearGradient>
+          {Platform.OS === 'ios' ? (
+            <View
+              style={{
+                backgroundColor: '#34d399',
+                borderRadius: 8,
+                paddingVertical: 16,
+              }}
+              className="shadow-sm"
+            >
+              <Text className="text-white text-center font-bold">
+                {setPasswordMutation.isPending
+                  ? 'Updating...'
+                  : 'Update Password'}
+              </Text>
+            </View>
+          ) : (
+            <LinearGradient
+              colors={['#34d399', '#3b82f6']}
+              style={{ borderRadius: 8, paddingVertical: 16 }}
+              className="shadow-sm"
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text className="text-white text-center font-bold">
+                {setPasswordMutation.isPending
+                  ? 'Updating...'
+                  : 'Update Password'}
+              </Text>
+            </LinearGradient>
+          )}
         </TouchableOpacity>
       </Animated.View>
     </View>

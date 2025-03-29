@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -93,22 +100,11 @@ export default function SignUpScreen() {
 
         {/* Terms and Conditions */}
         <View className="flex-row items-center mt-4">
-          <TouchableOpacity
-            onPress={() => setTermsAccepted(!termsAccepted)}
-            // className={`w-6 h-6 rounded border ${
-            //   termsAccepted ? 'bg-blue-600' : 'border-gray-300'
-            // } justify-center items-center`}
-          >
+          <TouchableOpacity onPress={() => setTermsAccepted(!termsAccepted)}>
             <LinearGradient
-              // colors={ ['#34d399', '#3b82f6']}
-              // {
-              //   termsAccepted ? 'bg-blue-600' : 'border-gray-300'
-              // }
-              // colors={['#34d399', '#3b82f6']}
               colors={
                 termsAccepted ? ['#34d399', '#3b82f6'] : ['#f3f4f6', '#f3f4f6']
               }
-              // style={{ borderRadius: 8, paddingVertical: 16 }}
               className={`w-6 h-6 rounded-sm border justify-center items-center`}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -136,17 +132,32 @@ export default function SignUpScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={signupMutation.isPending}
         >
-          <LinearGradient
-            colors={['#34d399', '#3b82f6']}
-            style={{ borderRadius: 8, paddingVertical: 16 }}
-            className="shadow-lg"
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text className="text-white text-center font-bold">
-              {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
-            </Text>
-          </LinearGradient>
+          {Platform.OS === 'ios' ? (
+            <View
+              style={{
+                backgroundColor: '#34d399',
+                borderRadius: 8,
+                paddingVertical: 16,
+              }}
+              className="shadow-sm"
+            >
+              <Text className="text-white text-center font-bold">
+                {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
+              </Text>
+            </View>
+          ) : (
+            <LinearGradient
+              colors={['#34d399', '#3b82f6']}
+              style={{ borderRadius: 8, paddingVertical: 16 }}
+              className="shadow-sm"
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text className="text-white text-center font-bold">
+                {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
+              </Text>
+            </LinearGradient>
+          )}
         </TouchableOpacity>
 
         {/* Sign In Link */}

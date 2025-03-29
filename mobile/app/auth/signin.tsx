@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,7 +14,7 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { LinearGradient } from 'react-native-linear-gradient';
+import LinearGradient from 'react-native-linear-gradient'; // Ensure compatibility with iOS
 
 const loginSchema = z.object({
   identifier: z.string().email('Invalid email address'),
@@ -118,17 +125,32 @@ export default function SignInScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={loginMutation.isPending}
         >
-          <LinearGradient
-            colors={['#34d399', '#3b82f6']}
-            style={{ borderRadius: 8, paddingVertical: 16 }}
-            className="shadow-lg"
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text className="text-white text-center font-bold">
-              {loginMutation.isPending ? 'Logging in...' : 'Login'}
-            </Text>
-          </LinearGradient>
+          {Platform.OS === 'ios' ? (
+            <View
+              style={{
+                backgroundColor: '#34d399',
+                borderRadius: 8,
+                paddingVertical: 16,
+              }}
+              className="shadow-sm"
+            >
+              <Text className="text-white text-center font-bold">
+                {loginMutation.isPending ? 'Logging in...' : 'Login'}
+              </Text>
+            </View>
+          ) : (
+            <LinearGradient
+              colors={['#34d399', '#3b82f6']}
+              style={{ borderRadius: 8, paddingVertical: 16 }}
+              className="shadow-sm"
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text className="text-white text-center font-bold">
+                {loginMutation.isPending ? 'Logging in...' : 'Login'}
+              </Text>
+            </LinearGradient>
+          )}
         </TouchableOpacity>
 
         {/* Forgot Password Link */}

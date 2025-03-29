@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -95,19 +102,36 @@ export default function ForgotPasswordScreen() {
           onPress={handleSubmit(onSubmit)}
           disabled={forgotPasswordMutation.isPending}
         >
-          <LinearGradient
-            colors={['#34d399', '#3b82f6']}
-            style={{ borderRadius: 8, paddingVertical: 16 }}
-            className="shadow-lg"
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text className="text-white text-center font-bold">
-              {forgotPasswordMutation.isPending
-                ? 'Sending...'
-                : 'Send Reset Link'}
-            </Text>
-          </LinearGradient>
+          {Platform.OS === 'ios' ? (
+            <View
+              style={{
+                backgroundColor: '#34d399',
+                borderRadius: 8,
+                paddingVertical: 16,
+              }}
+              className="shadow-sm"
+            >
+              <Text className="text-white text-center font-bold">
+                {forgotPasswordMutation.isPending
+                  ? 'Sending...'
+                  : 'Send Reset Link'}
+              </Text>
+            </View>
+          ) : (
+            <LinearGradient
+              colors={['#34d399', '#3b82f6']}
+              style={{ borderRadius: 8, paddingVertical: 16 }}
+              className="shadow-lg"
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text className="text-white text-center font-bold">
+                {forgotPasswordMutation.isPending
+                  ? 'Sending...'
+                  : 'Send Reset Link'}
+              </Text>
+            </LinearGradient>
+          )}
         </TouchableOpacity>
 
         {/* Back to Sign In Link */}
