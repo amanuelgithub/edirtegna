@@ -142,14 +142,14 @@ export default function SignInScreen() {
         </TouchableOpacity>
 
         {/* Set Password Link */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           className="mt-4"
-          onPress={() => router.push('/auth/forgot-password')}
+          onPress={() => router.push('/auth/set-password')}
         >
           <Text className="text-center text-blue-800 font-medium underline">
-            Forgot Password?
+            Set Password?
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         {/* Verify  Otp Link */}
         <TouchableOpacity
