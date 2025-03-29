@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'react-native-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const signupSchema = z.object({
   identifier: z.string().email('Invalid email address'),
@@ -94,10 +95,29 @@ export default function SignUpScreen() {
         <View className="flex-row items-center mt-4">
           <TouchableOpacity
             onPress={() => setTermsAccepted(!termsAccepted)}
-            className={`w-6 h-6 rounded border ${
-              termsAccepted ? 'bg-blue-600' : 'border-gray-300'
-            }`}
-          />
+            // className={`w-6 h-6 rounded border ${
+            //   termsAccepted ? 'bg-blue-600' : 'border-gray-300'
+            // } justify-center items-center`}
+          >
+            <LinearGradient
+              // colors={ ['#34d399', '#3b82f6']}
+              // {
+              //   termsAccepted ? 'bg-blue-600' : 'border-gray-300'
+              // }
+              // colors={['#34d399', '#3b82f6']}
+              colors={
+                termsAccepted ? ['#34d399', '#3b82f6'] : ['#f3f4f6', '#f3f4f6']
+              }
+              // style={{ borderRadius: 8, paddingVertical: 16 }}
+              className={`w-6 h-6 rounded-sm border justify-center items-center`}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              {termsAccepted && (
+                <MaterialIcons name="check" size={18} color="white" />
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
           <Text className="ml-2 text-gray-700">
             I agree to the{' '}
             <Text className="text-blue-800 underline">
