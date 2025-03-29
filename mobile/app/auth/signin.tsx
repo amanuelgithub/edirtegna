@@ -18,7 +18,11 @@ import LinearGradient from 'react-native-linear-gradient'; // Ensure compatibili
 import { Ionicons } from '@expo/vector-icons'; // Import Expo's built-in icons
 
 const loginSchema = z.object({
-  identifier: z.string().email('Invalid email address'),
+  // identifier: z.string().email('Invalid email address'),
+  identifier: z
+    .string()
+    .min(10, 'Phone number must be at least 10 digits')
+    .regex(/^\d+$/, 'Phone number must contain only digits'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -74,19 +78,31 @@ export default function SignInScreen() {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <TextInput
-                className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-purple-800 ${
-                  errors.identifier
-                    ? 'border border-red-500'
-                    : 'border border-gray-300'
-                }`}
-                placeholder="Email or Phone Number"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+              <View className="relative">
+                <TextInput
+                  className={`rounded-lg px-4 pl-16 py-4 mb-2 text-nowrap bg-white focus:border-2 focus:border-purple-800 ${
+                    errors.identifier
+                      ? 'border border-red-500'
+                      : 'border border-gray-300'
+                  }`}
+                  placeholder="Phone Number"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  keyboardType="phone-pad"
+                  // autoCapitalize="none"
+                  textContentType="telephoneNumber"
+                  autoComplete="tel"
+                  maxLength={9} // Adjust the max length as neededa
+                  numberOfLines={1} // Prevents multiline input
+                />
+                <View
+                  className="absolute left-4 top-[27%]"
+                  // onPress={() => setShowPassword((prev) => !prev)}
+                >
+                  <Text className="text-gray-950">+251</Text>
+                </View>
+              </View>
               {errors.identifier && (
                 <Text className="text-red-500 text-sm">
                   {errors.identifier.message}
