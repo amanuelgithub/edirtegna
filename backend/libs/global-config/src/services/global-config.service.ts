@@ -20,10 +20,7 @@ import {
 
 @Injectable()
 export class GlobalConfigService {
-  constructor(
-    private readonly ds: DataSource,
-    private readonly redisService: RedisService,
-  ) {}
+  constructor(private readonly ds: DataSource, private readonly redisService: RedisService) {}
 
   public async initConfig(): Promise<any | undefined> {
     const queryRunner = this.ds.createQueryRunner();

@@ -14,6 +14,20 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RegisterDTO, registerSchema, useRegisterMutation } from '@/hooks/api';
+import { z } from 'zod';
+
+export const registerFormSchema = z.object({
+  identifier: z
+    .string()
+    .min(9, 'Phone number must be at least 9 digits')
+    .max(9, 'Phone number must be at most 9 digits')
+    .regex(/^\d+$/, 'Phone number must contain only digits'),
+  // termsAccepted: z
+  //   .boolean()
+  //   .refine((val) => val, 'You must accept the terms and conditions'),
+});
+
+type RegisterFormInputs = z.infer<typeof registerFormSchema>;
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -23,16 +37,23 @@ export default function SignUpScreen() {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
-  } = useForm<RegisterDTO>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<RegisterFormInputs>({
+    resolver: zodResolver(registerFormSchema),
   });
 
   const { mutate: register, isError, isPending, error } = useRegisterMutation();
 
-  const onSubmit = async (data: RegisterDTO) => {
+  const onSubmit = async (data: RegisterFormInputs) => {
+    // if (!termsAccepted) {
+    //   return;
+    // }
+    console.log('Submitting data:', data);
+
     try {
-      register(data);
+      register({
+        phone: data?.identifier,
+        // phone: `+251${data.identifier}`,
+      });
     } catch (err) {
       console.error('Signup failed:', err);
     }
@@ -95,17 +116,7 @@ export default function SignUpScreen() {
 
         {/* Terms and Conditions */}
         <View className="flex-row items-center mt-4">
-          <TouchableOpacity
-            onPress={() => {
-              setTermsAccepted(!termsAccepted);
-              // update the state of the react hook form
-              if (termsAccepted) {
-                setValue('termsAccepted', false);
-              } else {
-                setValue('termsAccepted', true);
-              }
-            }}
-          >
+          <TouchableOpacity onPress={() => setTermsAccepted(!termsAccepted)}>
             <LinearGradient
               colors={
                 termsAccepted ? ['#34d399', '#3b82f6'] : ['#f3f4f6', '#f3f4f6']

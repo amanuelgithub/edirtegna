@@ -1,7 +1,7 @@
-import { CUSTOMER_ROLE, UserEntity } from '@app/db';
-import { API_TAGS, IRequestDetail, Public, RequestInfo, Roles } from '@app/shared';
-import { GetUserService } from '@app/user';
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { CUSTOMER, CUSTOMER_ROLE, ROLES_SEED, UserEntity } from '@app/db';
+import { ActivityTitle, API_TAGS, DetailResponse, IRequestDetail, IRequestInfo, Public, RequestInfo, Roles } from '@app/shared';
+import { CreateUserService, CustomerFactory, GetUserService, RegisterCustomerDto } from '@app/user';
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Ip, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
@@ -12,6 +12,8 @@ import { AppThrottlerGuard } from '../guards';
 import { LoginProcessor, PasswordLoginDto, PinLoginDto } from '../login';
 import { AuthCommonService, AuthHelperService, ForgotCredentialService, LoginService, ResendOtpService, SetCredentialService, TokenService, VerifyOTPService } from '../services';
 import { SetCredentialProcessor, SetPinCodeDto } from '../set-credential';
+import { GlobalConfigService } from '@app/global-config';
+import { UserNotificationService } from '@app/notification';
 
 @Controller({ version: '1', path: 'app/auth' })
 @ApiTags(API_TAGS.AUTHENTICATION)
@@ -20,12 +22,15 @@ export class AppAuthController {
     private readonly resendOtpService: ResendOtpService,
     private readonly helper: AuthHelperService,
     private readonly authCommonService: AuthCommonService,
+    private readonly globalConfigService: GlobalConfigService,
     private readonly verifyOTPService: VerifyOTPService,
     private readonly getUserService: GetUserService,
     private readonly tokenService: TokenService,
     private readonly forgotCredentialService: ForgotCredentialService,
+    private readonly notify: UserNotificationService,
 
     private readonly loginService: LoginService,
+    private readonly createUserService: CreateUserService,
     private readonly setCredentialService: SetCredentialService,
   ) {}
 
@@ -60,6 +65,56 @@ export class AppAuthController {
     }
     return result;
   }
+
+  @Public()
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @UsePipes(ValidationPipe)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @UseGuards(AppThrottlerGuard)
+  @ActivityTitle('End user self register')
+  async selfRegister(@Body() dto: RegisterCustomerDto, @RequestInfo() info: IRequestDetail) {
+    // async selfRegister(@Body() dto: RegisterEUserDto, @RequestInfo() info: IRequestDetail) {
+    console.log('selfRegister dto', dto);
+    const builder = CustomerFactory.get({ ...dto, role: CUSTOMER }, info);
+    const user = await this.createUserService.createUser(builder);
+    // send notifications
+    const smsWebAccess = builder.getNotificationDetail(user.id, 'WEB');
+    const smsAppAccess = builder.getNotificationDetail(user.id, 'APP');
+    await Promise.all([
+      this.notify.sendAuthSMS(smsWebAccess),
+      this.notify.sendAuthSMS(smsAppAccess),
+      this.notify.sendWelcomeEmail(user, smsWebAccess.otpCode, smsWebAccess.password),
+    ]);
+
+    console.log('CUSTOMER CREATED: ', 'app access details: ', smsAppAccess, 'web access details: ', smsWebAccess);
+    return new DetailResponse(null);
+  }
+
+  // @Post('register')
+  // @HttpCode(HttpStatus.CREATED)
+  // @UsePipes(ValidationPipe)
+  // @Public()
+  // @Throttle({ default: { limit: 10, ttl: 60000 } })
+  // @UseGuards(AppThrottlerGuard)
+  // @ActivityTitle('End user self register')
+  // async register(@Body() dto: RegisterCustomerDto, @Ip() ip) {
+  //   console.log('register dto', dto);
+  //   // const device = this.globalConfigService.getUa(req);
+  //   const requestInfo: IRequestInfo = { channel: 'APP', ip, realm: 'CUSTOMER' };
+  //   // const requestInfo: IRequestInfo = { channel: 'APP', ip, realm: 'CUSTOMER' };
+
+  //   const builder = CustomerFactory.get({ ...dto, role: CUSTOMER }, requestInfo);
+
+  //   const user = await this.createUserService.createUser(builder);
+
+  //   console.log('user: ', user);
+
+  //   const smsPayload = builder.getNotificationDetail(user.id);
+  //   await this.notify.sendAuthSMS(smsPayload);
+  //   await this.notify.sendWelcomeEmail(user, smsPayload.otpCode, smsPayload.password);
+  //   return new DetailResponse(smsPayload.otpCode);
+  // }
 
   // WEB - Verify OTP Code
   @Post('verify-otp')

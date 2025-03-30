@@ -1,14 +1,14 @@
-import { PARTNER_ADMIN, UserEntity } from '@app/db';
-import { Channel, IRequestInfo } from '@app/shared';
+import { CUSTOMER, UserEntity } from '@app/db';
+import { Channel, IRequestInfo, REGISTRATION_PROVIDER } from '@app/shared';
 import { BadRequestException } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { UserBuilder } from './base';
 import { IUserBuilder } from './interfaces';
-import { RegisterPartnerUserDto } from './request-dtos';
+import { RegisterCustomerDto } from './request-dtos';
 
-export class PartnerBuilder implements IUserBuilder {
+export class CustomerBuilder implements IUserBuilder {
   private builder: UserBuilder;
-  constructor(private dto: RegisterPartnerUserDto, requestInfo: IRequestInfo) {
+  constructor(private dto: RegisterCustomerDto, requestInfo: IRequestInfo) {
     this.builder = new UserBuilder(requestInfo);
   }
 
@@ -28,14 +28,15 @@ export class PartnerBuilder implements IUserBuilder {
       .setLastName(lastName)
       .setPhone(phone)
       .setEmail(email)
-      .setRole(PARTNER_ADMIN)
+      .setRole(CUSTOMER)
       .setRealm('CUSTOMER')
-      .setProfilePic(profilePic);
-    // .setAccessChannels(['WEB'])
+      .setProfilePic(profilePic)
+      .setRegistrationProvider(REGISTRATION_PROVIDER.LOCAL);
+    // .setAccessChannels(['APP']);
     // .setupWallet(currencyId)
     // .setCustomerProfile({ canCreateSubAccounts, maximumDailyWalletThreshold, shareParentWallet, walletAlertThreshold })
     // .setProductPriceList(priceList);
-    this.builder = await this.builder.addUserAccesses(['WEB']);
+    this.builder = await this.builder.addUserAccesses(['WEB', 'APP']);
     const user = this.builder.build();
     return user;
   }

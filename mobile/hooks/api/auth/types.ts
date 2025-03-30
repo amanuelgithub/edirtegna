@@ -11,14 +11,29 @@ export const loginSchema = z.object({
 export type LoginDTO = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
-  identifier: z
+  firstName: z
+    .string()
+    .min(3, 'First name must be at least 3 characters')
+    .max(50, 'First name must be at most 50 characters')
+    .regex(/^[a-zA-Z]+$/, 'First name must contain only letters')
+    .optional(),
+  middleName: z
+    .string()
+    .min(3, 'Middle name must be at least 3 characters')
+    .max(50, 'Middle name must be at most 50 characters')
+    .regex(/^[a-zA-Z]+$/, 'Middle name must contain only letters')
+    .optional(),
+  lastName: z
+    .string()
+    .min(3, 'Last name must be at least 3 characters')
+    .max(50, 'Last name must be at most 50 characters')
+    .regex(/^[a-zA-Z]+$/, 'Last name must contain only letters')
+    .optional(),
+  phone: z
     .string()
     .min(9, 'Phone number must be at least 9 digits')
     .max(9, 'Phone number must be at most 9 digits')
     .regex(/^\d+$/, 'Phone number must contain only digits'),
-  termsAccepted: z
-    .boolean()
-    .refine((val) => val, 'You must accept the terms and conditions'),
 });
 export type RegisterDTO = z.infer<typeof registerSchema>;
 

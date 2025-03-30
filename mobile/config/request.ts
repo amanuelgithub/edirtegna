@@ -7,8 +7,9 @@ const axiosInstance: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    origin: 'tms-txn-customer-app',
     channel: 'APP',
-    // realm: '',
+    realm: 'CUSTOMER',
   },
   withCredentials: true,
 });

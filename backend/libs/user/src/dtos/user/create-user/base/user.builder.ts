@@ -1,7 +1,7 @@
-import { UserEntity, UserProfileEntity } from '@app/db';
+import { RoleEntity, UserEntity, UserProfileEntity } from '@app/db';
 import { IAccountSMS } from '@app/notification';
 // import { IProductList } from '@app/product/dtos';
-import { Channel, IRequestDetail, IsValidMsisdn, Realm, StringUtil, UserStatus, getPhoneFormatNational } from '@app/shared';
+import { Channel, IRequestDetail, IsValidMsisdn, Realm, RegistrationProvider, StringUtil, UserStatus, getPhoneFormatNational } from '@app/shared';
 import { BadRequestException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { ICredentials } from '../interfaces';
@@ -24,6 +24,7 @@ export class UserBuilder {
       status: 'PENDING',
       // registrationProvider: 'LOCAL',
       userAccesses: [],
+      role: new RoleEntity({}),
       userProfile: new UserProfileEntity({}),
     });
   }
@@ -102,6 +103,7 @@ export class UserBuilder {
   }
   setRole(value: number): this {
     this.user.roleId = value;
+    this.user.role.id = value;
     return this;
   }
   setRealm(value: Realm): this {
@@ -136,10 +138,10 @@ export class UserBuilder {
   //   this.user.socialProfileId = value;
   //   return this;
   // }
-  // setRegistrationProvider(value: RegistrationProvider): this {
-  //   this.user.registrationProvider = value;
-  //   return this;
-  // }
+  setRegistrationProvider(value: RegistrationProvider): this {
+    this.user.registrationProvider = value;
+    return this;
+  }
 
   // setProductPriceList(opts: IProductList[]): this {
   //   this.user.productPrices = [];

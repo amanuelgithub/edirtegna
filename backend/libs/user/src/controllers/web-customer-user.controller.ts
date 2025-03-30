@@ -1,4 +1,4 @@
-import { CUSTOMER_ROLE, PARTNER_ADMIN, PARTNER_CUSTOMER_SERVICE, UserEntity } from '@app/db';
+import { CUSTOMER_ROLE, CUSTOMER, UserEntity } from '@app/db';
 import { UserNotificationService } from '@app/notification';
 import {
   ActivityTitle,
@@ -30,7 +30,7 @@ import {
 } from '../dtos';
 import { CreateUserService, GetUserService, ListUsersService, PhoneAndEmailValidationService, UpdateUserService } from '../services';
 
-@Roles(PARTNER_ADMIN, PARTNER_CUSTOMER_SERVICE)
+@Roles(CUSTOMER)
 @Controller('web/customer-users')
 @ApiTags(API_TAGS.USER_MANAGEMENT)
 export class WebCustomerUserController {
@@ -50,7 +50,7 @@ export class WebCustomerUserController {
     //const partnerId = info?.user?.coid;
     //return this.listUsersService.getAll(query, {
     //userProfile: { partnerId },
-    //roleId: In([PARTNER_ADMIN, PARTNER_CUSTOMER_SERVICE]),
+    //roleId: In(CUSTOMER),
     //});
   }
 
@@ -71,7 +71,7 @@ export class WebCustomerUserController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
-  @Roles(PARTNER_ADMIN)
+  @Roles(CUSTOMER)
   @ActivityTitle('Register Partner User')
   @UploadProfilePic('profile-image', 'profilePic')
   async registerCompanyUser(@Body() dto: RegisterCustomerStaffDto, @UploadedFile() file: Express.Multer.File, @RequestInfo() info: IRequestDetail) {
@@ -102,7 +102,7 @@ export class WebCustomerUserController {
   @Put(':id')
   @HttpCode(HttpStatus.ACCEPTED)
   @UsePipes(ValidationPipe)
-  @Roles(PARTNER_ADMIN)
+  @Roles(CUSTOMER)
   @ActivityTitle('Update Partner User')
   @UploadProfilePic('profile-image', 'profilePic')
   updateCompanyUser(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File, @Body() dto: UpdateUserDto, @RequestInfo() info: IRequestDetail) {
@@ -116,7 +116,7 @@ export class WebCustomerUserController {
   @Put(':id/status')
   @HttpCode(HttpStatus.ACCEPTED)
   @UsePipes(ValidationPipe)
-  @Roles(PARTNER_ADMIN)
+  @Roles(CUSTOMER)
   @ActivityTitle('Update Partner User Status')
   updateCompanyUserStatus(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserStatusDto, @RequestInfo() info: IRequestDetail) {
     const userId = Number(info.user.uid);
@@ -127,7 +127,7 @@ export class WebCustomerUserController {
   @Delete(':id')
   @HttpCode(HttpStatus.ACCEPTED)
   @UsePipes(ValidationPipe)
-  @Roles(PARTNER_ADMIN)
+  @Roles(CUSTOMER)
   @ActivityTitle('Delete Company User Status')
   deleteCompanyUser(@Param('id', ParseIntPipe) id: number) {
     return this.updateUserService.delete(id);
