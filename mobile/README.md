@@ -38,3 +38,25 @@ No, expo-secure-store and react-native-async-storage serve different purposes an
    ✅ Speed: Faster than SecureStore because it doesn’t encrypt data.
    ✅ Persistence: Data persists across app restarts and updates.
    ❌ Security: Not encrypted, making it unsuitable for storing sensitive data like access tokens.
+
+Note: how I solved http Axios Error on android device
+
+```
+ "fix: Axios Error in android app.                                                                                                                                       ─╯
+dquote> makeing http request was not working for android, but for the others it was working.
+dquote> Fixed the issue by taking the following steps.
+dquote> 1. installed expo-build-properties package
+dquote> 2. modified the app.json to include:
+dquote>       [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+dquote> inside the plugins.
+dquote> 3. expose android vertual device port 3000 to use the localmachine 3000. here is how I did this
+dquote> first cd to the expo app and run the command: adb reverse tcp:3000 tcp:3000
+dquote> that is it."
+```

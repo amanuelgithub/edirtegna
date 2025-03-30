@@ -53,7 +53,8 @@
     "tailwindcss": "^3.4.17",
     "zod": "^3.24.2",
     "react-native-pager-view": "6.5.1",
-    "expo-secure-store": "~14.0.1"
+    "expo-secure-store": "~14.0.1",
+    "expo-build-properties": "~0.13.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

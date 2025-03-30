@@ -4,9 +4,9 @@ name: 'System Root',
 destination: '+251911756708',
 msg: 'your account registration is successful!\nYour Web access detail is:',
 subject: 'OTP_VERIFICATION',
-otpCode: 4113,
+otpCode: 5467,
 pinCode: null,
-password: 'Ogpy0M',
+password: 'k36O72',
 userId: 2
 }
 

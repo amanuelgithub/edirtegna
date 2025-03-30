@@ -9,7 +9,7 @@ import { REF_TOKEN_COOKIE_NAME } from '../constants';
 import { AzpType, RefreshTokenDto, ResendOtpDto, ResendOtpPayload, VerifyOtpDto, VerifyOtpPayload } from '../dtos';
 import { ForgotCredentialDto, ForgotCredentialProcessor } from '../forgot-credential';
 import { AppThrottlerGuard } from '../guards';
-import { LoginProcessor, PinLoginDto } from '../login';
+import { LoginProcessor, PasswordLoginDto, PinLoginDto } from '../login';
 import { AuthCommonService, AuthHelperService, ForgotCredentialService, LoginService, ResendOtpService, SetCredentialService, TokenService, VerifyOTPService } from '../services';
 import { SetCredentialProcessor, SetPinCodeDto } from '../set-credential';
 
@@ -43,8 +43,11 @@ export class AppAuthController {
   @Public()
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseGuards(AppThrottlerGuard)
-  async login(@Body() dto: PinLoginDto, @RequestInfo() info: IRequestDetail, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() dto: PasswordLoginDto, @RequestInfo() info: IRequestDetail, @Res({ passthrough: true }) res: Response) {
+    console.log('login dto', dto);
+    // console.log('login info', info);
     const payload = new LoginProcessor(dto, info);
+    console.log('login payload', payload);
     const result = await this.loginService.login(payload);
     if (result && result.success) {
       const azp: AzpType = 'tms-txn-customer-app';

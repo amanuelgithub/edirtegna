@@ -16,6 +16,8 @@ export class LoginService {
       await qryR.startTransaction();
       const { phone, email, realm, userId } = await processor.getRequestDto();
 
+      console.log('login processor', phone, email, realm, userId);
+
       const user = userId ? await this.getUserService.getByUserId(qryR.manager, userId) : await this.getUserService.getByPhoneEmailAndRealm(qryR.manager, realm, phone, email);
       const result = await processor.processUserLogin(user);
       await qryR.commitTransaction();
