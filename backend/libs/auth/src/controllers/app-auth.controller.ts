@@ -49,9 +49,8 @@ export class AppAuthController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseGuards(AppThrottlerGuard)
   async login(@Body() dto: PasswordLoginDto, @RequestInfo() info: IRequestDetail, @Res({ passthrough: true }) res: Response) {
-    console.log('login dto', dto);
     // console.log('login info', info);
-    const payload = new LoginProcessor(dto, info);
+    const payload = new LoginProcessor(dto, { ...info, channel: 'WEB' });
     console.log('login payload', payload);
     const result = await this.loginService.login(payload);
     if (result && result.success) {
