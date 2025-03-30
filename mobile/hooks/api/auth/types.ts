@@ -13,8 +13,12 @@ export type LoginDTO = z.infer<typeof loginSchema>;
 export const registerSchema = z.object({
   identifier: z
     .string()
-    .min(10, 'Phone number must be at least 10 digits')
+    .min(9, 'Phone number must be at least 9 digits')
+    .max(9, 'Phone number must be at most 9 digits')
     .regex(/^\d+$/, 'Phone number must contain only digits'),
+  termsAccepted: z
+    .boolean()
+    .refine((val) => val, 'You must accept the terms and conditions'),
 });
 export type RegisterDTO = z.infer<typeof registerSchema>;
 

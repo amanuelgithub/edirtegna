@@ -125,11 +125,6 @@ export const changePassword = async (payload: ChangePasswordDTO) => {
 
 export const useLoginMutation = () => {
   return useMutation({
-    // mutationFn: async (payload: LoginDTO) => {
-    //   return axiosInstance.post<LoginDTO>(`/app/auth/login`, payload);
-    //   // return axiosInstance.post<LoginDTO>(`/test`, payload);
-    // },
-
     mutationFn: login,
     // mutationFn: async (data: LoginDTO) => {
     //   return login(data);
@@ -144,9 +139,7 @@ export const useLoginMutation = () => {
 };
 
 export const useRegisterMutation = () => {
-  return useMutation({
-    mutationFn: register,
-  });
+  return useMutation({ mutationFn: register });
 };
 
 export const useSetPasswordMutation = () => {
