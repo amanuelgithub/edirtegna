@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,44 +12,47 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'react-native-linear-gradient';
+import {
+  useVerifyOtpMutation,
+  verifyOtpSchema,
+  VerifyOtpDTO,
+} from '@/hooks/api';
 
-const verifyOtpSchema = z.object({
+const verifyOtpFormSchema = z.object({
   otp: z
     .string()
     .length(4, 'OTP must be a 4-digit number')
     .regex(/^\d{4}$/, 'OTP must contain only numbers'),
 });
 
-type VerifyOtpFormInputs = z.infer<typeof verifyOtpSchema>;
+type VerifyOtpFormInputs = z.infer<typeof verifyOtpFormSchema>;
 
 export default function VerifyOtpScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [resendTimer, setResendTimer] = useState(30);
+
+  const { phone } = params as { phone: string };
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<VerifyOtpFormInputs>({
-    resolver: zodResolver(verifyOtpSchema),
+    resolver: zodResolver(verifyOtpFormSchema),
   });
 
-  const verifyOtpMutation = useMutation({
-    mutationFn: async (data: VerifyOtpFormInputs) => {
-      const response = await axios.post('/api/verify-otp', data);
-      return response.data;
-    },
-    onSuccess: () => {
-      alert('OTP verified successfully.');
-      router.push('/auth/set-password'); // Redirect to the home page or dashboard
-    },
-    onError: (error) => {
-      console.error('OTP verification failed:', error);
-    },
-  });
+  const {
+    mutate: verifyOtpMutation,
+    data: verifyOtpData,
+    isError,
+    isSuccess,
+    isPending,
+    error,
+  } = useVerifyOtpMutation();
 
   const resendOtpMutation = useMutation({
     mutationFn: async () => {
@@ -65,8 +68,17 @@ export default function VerifyOtpScreen() {
     },
   });
 
+  useEffect(() => {
+    if (isSuccess) {
+      router.push('/auth/set-password');
+    }
+    if (isError) {
+      alert('Error verifying OTP: ' + error.message);
+    }
+  }, [isSuccess]);
+
   const onSubmit = (data: VerifyOtpFormInputs) => {
-    verifyOtpMutation.mutate(data);
+    verifyOtpMutation({ ...data, identifier: phone });
   };
 
   React.useEffect(() => {
@@ -87,6 +99,8 @@ export default function VerifyOtpScreen() {
             resizeMode="contain"
           />
         </View>
+
+        <Text>{'phone number is: ' + phone}</Text>
 
         <Text className="text-3xl font-bold text-center mb-2 text-gray-700">
           Verify OTP
@@ -125,7 +139,7 @@ export default function VerifyOtpScreen() {
         <TouchableOpacity
           className="mt-4"
           onPress={handleSubmit(onSubmit)}
-          disabled={verifyOtpMutation.isPending}
+          disabled={isPending}
         >
           {Platform.OS === 'ios' ? (
             <View
@@ -137,7 +151,7 @@ export default function VerifyOtpScreen() {
               className="shadow-sm"
             >
               <Text className="text-white text-center font-bold">
-                {verifyOtpMutation.isPending ? 'Verifying...' : 'Verify OTP'}
+                {isPending ? 'Verifying...' : 'Verify OTP'}
               </Text>
             </View>
           ) : (
@@ -149,7 +163,7 @@ export default function VerifyOtpScreen() {
               end={{ x: 1, y: 1 }}
             >
               <Text className="text-white text-center font-bold">
-                {verifyOtpMutation.isPending ? 'Verifying...' : 'Verify OTP'}
+                {isPending ? 'Verifying...' : 'Verify OTP'}
               </Text>
             </LinearGradient>
           )}

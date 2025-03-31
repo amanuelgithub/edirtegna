@@ -15,6 +15,7 @@ import {
   ResendOtpDTO,
   LogoutDTO,
 } from './types';
+import { useRouter } from 'expo-router';
 
 export const seedRoles = async () => {
   // const { data } = await axios.get(
@@ -39,7 +40,7 @@ export const seedRoles = async () => {
 
 export const login = async (payload: LoginDTO) => {
   console.log('test 1');
-  const { data } = await axiosInstance.post<LoginDTO>(
+  const { data } = await axiosInstance.post<LoginDTO, any>(
     `/app/auth/login`,
     payload
   );
@@ -124,13 +125,41 @@ export const changePassword = async (payload: ChangePasswordDTO) => {
 };
 
 export const useLoginMutation = () => {
+  const router = useRouter();
+
   return useMutation({
     mutationFn: login,
     // mutationFn: async (data: LoginDTO) => {
     //   return login(data);
     // },
-    onSuccess: (payload) => {
-      console.log('Login successful:', payload);
+    onSuccess: (data) => {
+      console.log('Login successful:', data);
+
+      // if (!data?.success && data?.statusCode === 412) {
+      //   router.push({
+      //     pathname: '/auth/verify-otp',
+      //     params: { phone: data?.i},
+      //     // params: { phone: getValues('identifier') },
+      //   });
+      // } else if (!data?.success && data?.statusCode === 419) {
+      //   router.push({
+      //     pathname: '/auth/set-password',
+      //     params: { phone: getValues('identifier') },
+      //   });
+      // } else if (!data?.success && data?.statusCode === 416) {
+      //   router.push({
+      //     pathname: '/auth/set-password',
+      //     params: { phone: getValues('identifier') },
+      //   });
+      // } else if (!data?.success) {
+      //   // this.toastService.show(data?.message, {
+      //   //   classname: 'bg-danger text-white',
+      //   //   delay: 15000,
+      //   // });
+      //   // this.isLoading = false;
+      // } else {
+      //   router.replace('/(app)/profile');
+      // }
     },
     onError: (error) => {
       console.error('Login failed:', error);

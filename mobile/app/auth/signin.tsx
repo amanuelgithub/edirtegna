@@ -29,34 +29,56 @@ export default function SignInScreen() {
   const {
     // mutateAsync: asyncLogin,
     mutate: login,
+    data,
     isError,
     isPending,
+    isSuccess,
     error,
   } = useLoginMutation();
 
   const {
     control,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginDTO>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit: SubmitHandler<LoginDTO> = async (data: LoginDTO) => {
-    // axios.defaults.baseURL = 'http://localhost:3000/api/v1';
-    // try {
     login(data);
-    //   const res = await axios.get(`http://localhost:4000/api/test`);
-    //   //  .then((res) => {
-    //   //       console.log('test res', res.data);
-    //   //     });
-    //   console.log('test res', res.data);
-    // } catch (err) {
-    //   console.log('error', err);
-    // }
   };
 
   useEffect(() => {
-    console.log('login error', error?.message);
-  }, [isError, error]);
+    // console.log('login error', error?.message);
+
+    console.log('login data: ', data);
+
+    if (!!data) {
+      if (!data?.success && data?.statusCode === 412) {
+        router.push({
+          pathname: '/auth/verify-otp',
+          params: { phone: getValues('identifier') },
+        });
+      } else if (!data?.success && data?.statusCode === 419) {
+        router.push({
+          pathname: '/auth/set-password',
+          params: { phone: getValues('identifier') },
+        });
+      } else if (!data?.success && data?.statusCode === 416) {
+        router.push({
+          pathname: '/auth/set-password',
+          params: { phone: getValues('identifier') },
+        });
+      } else if (!data?.success) {
+        // this.toastService.show(data?.message, {
+        //   classname: 'bg-danger text-white',
+        //   delay: 15000,
+        // });
+        // this.isLoading = false;
+      } else {
+        router.replace('/(app)/profile');
+      }
+    }
+  }, [isError, isSuccess, error, data]);
 
   return (
     <KeyboardAvoidingView
