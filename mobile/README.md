@@ -17,7 +17,8 @@
   - react-native-bottom-sheets
   - react-native-gifted-chat - chatting
   - victory-native - for charting
-  - react-native-toast-message
+  <!-- - react-native-toast-message -->
+  - burn- a toast message library
   - react-content-loader - for showing a skeleton
   - react-native-pager-view - pager view
 

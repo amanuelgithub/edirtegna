@@ -10,16 +10,12 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'react-native-linear-gradient';
-import {
-  useVerifyOtpMutation,
-  verifyOtpSchema,
-  VerifyOtpDTO,
-} from '@/hooks/api';
+// import Toast from 'react-native-toast-message';
+import * as Burnt from 'burnt';
+import { useVerifyOtpMutation, useResendOtpMutation } from '@/hooks/api';
 
 const verifyOtpFormSchema = z.object({
   otp: z
@@ -33,7 +29,7 @@ type VerifyOtpFormInputs = z.infer<typeof verifyOtpFormSchema>;
 export default function VerifyOtpScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [resendTimer, setResendTimer] = useState(30);
+  const [resendTimer, setResendTimer] = useState(3);
 
   const { phone } = params as { phone: string };
 
@@ -47,35 +43,78 @@ export default function VerifyOtpScreen() {
 
   const {
     mutate: verifyOtpMutation,
-    data: verifyOtpData,
-    isError,
-    isSuccess,
-    isPending,
-    error,
+    data: verifiedOtpData,
+    isError: isOtpVerificationFailed,
+    isSuccess: isOtpValidationSuccessful,
+    isPending: isOtpVerificationInProgress,
+    error: verificationError,
   } = useVerifyOtpMutation();
-
-  const resendOtpMutation = useMutation({
-    mutationFn: async () => {
-      const response = await axios.post('/api/resend-otp');
-      return response.data;
-    },
-    onSuccess: () => {
-      alert('OTP resent successfully.');
-      setResendTimer(30); // Reset the timer
-    },
-    onError: (error) => {
-      console.error('Resend OTP failed:', error);
-    },
-  });
+  const {
+    mutate: resendOtpMutation,
+    data: resendOtpData,
+    isError: resendOtpError,
+    isSuccess: resendOtpSuccess,
+    isPending: resendOtpPending,
+    error: resendOtpErrorData,
+  } = useResendOtpMutation();
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isOtpValidationSuccessful) {
       router.push('/auth/set-password');
     }
-    if (isError) {
-      alert('Error verifying OTP: ' + error.message);
+    if (isOtpVerificationFailed && verificationError) {
+      console.log('Error verifying OTP:', verificationError);
+      // Handle error state
+      Burnt.toast({
+        title: 'Burnt installed.',
+        preset: 'done',
+        message: 'See your downloads.',
+      });
+      // Toast.show({
+      //   type: 'error',
+      //   text1: 'Error verifying OTP. Please try again.',
+      //   // text2: verificationError.message,
+      // });
     }
-  }, [isSuccess]);
+  }, [
+    isOtpValidationSuccessful,
+    isOtpVerificationFailed,
+    verifiedOtpData,
+    verificationError,
+  ]);
+
+  useEffect(() => {
+    if (resendOtpSuccess) {
+      //
+      Burnt.toast({
+        title: 'Burnt installed.',
+        preset: 'done',
+        message: 'See your downloads.',
+      });
+      // Toast.show({ type: 'success', text1: 'OTP resent successfully.' });
+      setResendTimer(3); // Reset the timer
+    }
+
+    if (resendOtpError && resendOtpErrorData) {
+      // Handle error state
+      Burnt.toast({
+        title: 'Burnt installed.',
+        preset: 'done',
+        message: 'See your downloads.',
+      });
+      // Toast.show({ type: 'error', text1: 'Error resending OTP' });
+    }
+  }, [
+    resendOtpSuccess,
+    resendOtpError,
+    resendOtpData,
+    resendOtpErrorData,
+    resendOtpPending,
+    resendOtpMutation,
+    resendTimer,
+    setResendTimer,
+    // resendTimer > 0,
+  ]);
 
   const onSubmit = (data: VerifyOtpFormInputs) => {
     verifyOtpMutation({ ...data, identifier: phone });
@@ -139,7 +178,7 @@ export default function VerifyOtpScreen() {
         <TouchableOpacity
           className="mt-4"
           onPress={handleSubmit(onSubmit)}
-          disabled={isPending}
+          disabled={isOtpVerificationInProgress}
         >
           {Platform.OS === 'ios' ? (
             <View
@@ -151,7 +190,7 @@ export default function VerifyOtpScreen() {
               className="shadow-sm"
             >
               <Text className="text-white text-center font-bold">
-                {isPending ? 'Verifying...' : 'Verify OTP'}
+                {isOtpVerificationInProgress ? 'Verifying...' : 'Verify OTP'}
               </Text>
             </View>
           ) : (
@@ -163,7 +202,7 @@ export default function VerifyOtpScreen() {
               end={{ x: 1, y: 1 }}
             >
               <Text className="text-white text-center font-bold">
-                {isPending ? 'Verifying...' : 'Verify OTP'}
+                {isOtpVerificationInProgress ? 'Verifying...' : 'Verify OTP'}
               </Text>
             </LinearGradient>
           )}
@@ -172,8 +211,8 @@ export default function VerifyOtpScreen() {
         {/* Resend OTP */}
         <TouchableOpacity
           className="mt-4"
-          onPress={() => resendOtpMutation.mutate()}
-          disabled={resendTimer > 0 || resendOtpMutation.isPending}
+          onPress={() => resendOtpMutation({ identifier: phone })}
+          disabled={resendTimer > 0 || resendOtpPending}
         >
           <Text
             className={`text-center font-bold ${

@@ -42,7 +42,7 @@ export const login = async (payload: LoginDTO) => {
   console.log('test 1');
   const { data } = await axiosInstance.post<LoginDTO, any>(
     `/app/auth/login`,
-    payload
+    payload,
   );
 
   // const { data } = await axios.post<LoginDTO>(
@@ -56,47 +56,47 @@ export const login = async (payload: LoginDTO) => {
 };
 
 export const register = async (payload: RegisterDTO) => {
-  const { data } = await axiosInstance.post<RegisterDTO>(
+  const { data } = await axiosInstance.post<RegisterDTO, any>(
     `/app/auth/register`,
-    payload
+    payload,
   );
   return data;
 };
 
 export const verifyOtp = async (payload: VerifyOtpDTO) => {
-  const { data } = await axiosInstance.post<VerifyOtpDTO>(
+  const res = await axiosInstance.post<VerifyOtpDTO, any>(
     `/app/auth/verify-otp`,
-    payload
+    payload,
   );
-  return data;
+  return res;
 };
 
 export const setPassword = async (payload: SetPasswordDTO) => {
-  const { data } = await axiosInstance.post<SetPasswordDTO>(
+  const { data } = await axiosInstance.post<SetPasswordDTO, any>(
     `/app/auth/set-password`,
-    payload
+    payload,
   );
   return data;
 };
 
 export const forgotPassword = async (payload: ForgotPasswordDTO) => {
-  const { data } = await axiosInstance.post<ForgotPasswordDTO>(
+  const { data } = await axiosInstance.post<ForgotPasswordDTO, any>(
     `/app/auth/forgot-password`,
-    payload
+    payload,
   );
   return data;
 };
 
 export const resendOtp = async (payload: ResendOtpDTO) => {
-  const { data } = await axiosInstance.post<ResendOtpDTO>(
+  const { data } = await axiosInstance.post<ResendOtpDTO, any>(
     `/app/auth/resend-otp`,
-    payload
+    payload,
   );
   return data;
 };
 
 export const logout = async (payload: LogoutDTO) => {
-  const { data } = await axiosInstance.post<LogoutDTO>(`/app/auth/logout`);
+  const { data } = await axiosInstance.post<LogoutDTO, any>(`/app/auth/logout`);
   return data;
 };
 
@@ -111,15 +111,15 @@ export const updateProfile = async (payload: {
 }) => {
   const { data } = await axiosInstance.post(
     `/app/auth/update-profile`,
-    payload
+    payload,
   );
   return data;
 };
 
 export const changePassword = async (payload: ChangePasswordDTO) => {
-  const { data } = await axiosInstance.post<ChangePasswordDTO>(
+  const { data } = await axiosInstance.post<ChangePasswordDTO, any>(
     `/app/auth/change-password`,
-    payload
+    payload,
   );
   return data;
 };
@@ -184,9 +184,7 @@ export const useForgotPasswordMutation = () => {
 };
 
 export const useVerifyOtpMutation = () => {
-  return useMutation({
-    mutationFn: verifyOtp,
-  });
+  return useMutation({ mutationFn: verifyOtp });
 };
 
 export const useResendOtpMutation = () => {
