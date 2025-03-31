@@ -66,15 +66,18 @@ export default function VerifyOtpScreen() {
       console.log('Error verifying OTP:', verificationError);
       // Handle error state
       Burnt.toast({
-        title: 'Burnt installed.',
-        preset: 'done',
-        message: 'See your downloads.',
+        title: 'Error verifying OTP',
+        preset: 'error',
+        message: 'Please try again.',
+        from: 'top',
+        // optionally customize layout
+        // layout: {
+        //   iconSize: {
+        //     height: 24,
+        //     width: 24,
+        //   },
+        // },
       });
-      // Toast.show({
-      //   type: 'error',
-      //   text1: 'Error verifying OTP. Please try again.',
-      //   // text2: verificationError.message,
-      // });
     }
   }, [
     isOtpValidationSuccessful,
@@ -85,36 +88,25 @@ export default function VerifyOtpScreen() {
 
   useEffect(() => {
     if (resendOtpSuccess) {
-      //
       Burnt.toast({
-        title: 'Burnt installed.',
+        title: 'OTP resent successfully.',
         preset: 'done',
-        message: 'See your downloads.',
+        message: 'Please check your email or phone.',
+        from: 'top',
       });
-      // Toast.show({ type: 'success', text1: 'OTP resent successfully.' });
       setResendTimer(3); // Reset the timer
     }
 
     if (resendOtpError && resendOtpErrorData) {
       // Handle error state
       Burnt.toast({
-        title: 'Burnt installed.',
-        preset: 'done',
-        message: 'See your downloads.',
+        title: 'Error resending OTP',
+        preset: 'error',
+        message: 'Please try again.',
+        from: 'top',
       });
-      // Toast.show({ type: 'error', text1: 'Error resending OTP' });
     }
-  }, [
-    resendOtpSuccess,
-    resendOtpError,
-    resendOtpData,
-    resendOtpErrorData,
-    resendOtpPending,
-    resendOtpMutation,
-    resendTimer,
-    setResendTimer,
-    // resendTimer > 0,
-  ]);
+  }, [resendOtpSuccess, resendOtpError, resendOtpErrorData]);
 
   const onSubmit = (data: VerifyOtpFormInputs) => {
     verifyOtpMutation({ ...data, identifier: phone });
