@@ -27,6 +27,7 @@ export class ResendOtpService {
       const smsDetail = payload.getSMSDetail();
       await this.notify.sendAuthSMS(smsDetail);
       await this.notify.sendResendOTPEmail(updatedUser, smsDetail.otpCode, ua);
+      console.log('resend sms detail: ', smsDetail);
       return new DetailResponse();
     } catch (error) {
       if (error instanceof HttpException) {
