@@ -11,59 +11,49 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-
-const setPasswordSchema = z
-  .object({
-    currentPassword: z.string().min(6, 'Current password is required'),
-    newPassword: z
-      .string()
-      .min(6, 'New password must be at least 6 characters'),
-    confirmPassword: z
-      .string()
-      .min(6, 'Confirm password must be at least 6 characters'),
-  })
-  .superRefine((data, ctx) => {
-    if (data.confirmPassword !== data.newPassword) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Passwords must match',
-        path: ['confirmPassword'], // points the error to confirmPassword
-      });
-    }
-  });
-
-type SetPasswordFormInputs = z.infer<typeof setPasswordSchema>;
+import * as Burnt from 'burnt';
+import {
+  setPasswordSchema,
+  SetPasswordDTO,
+  useSetPasswordMutation,
+} from '@/hooks/api';
 
 export default function SetPasswordScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+
+  const { identifier } = params as { identifier: string };
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SetPasswordFormInputs>({
+    setValue,
+  } = useForm<SetPasswordDTO>({
     resolver: zodResolver(setPasswordSchema),
-  });
-
-  const setPasswordMutation = useMutation({
-    mutationFn: async (data: SetPasswordFormInputs) => {
-      const response = await axios.post('/api/set-password', data);
-      return response.data;
-    },
-    onSuccess: () => {
-      router.push('/auth/signin');
-    },
-    onError: (error) => {
-      console.error('Set password failed:', error);
+    defaultValues: {
+      identifier: identifier,
+      previousPassword: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
-  const onSubmit = (data: SetPasswordFormInputs) => {
-    setPasswordMutation.mutate(data);
+  const {
+    mutate: setPasswordMutation,
+    data: setPasswordData,
+    isError: isSetPasswordFailed,
+    isSuccess: isSetPasswordSuccessful,
+    isPending: isSetPasswordInProgress,
+    error: setPasswordError,
+  } = useSetPasswordMutation();
+
+  const onSubmit = (data: SetPasswordDTO) => {
+    setPasswordMutation(data);
   };
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -77,15 +67,17 @@ export default function SetPasswordScreen() {
           Set Your Password
         </Text>
 
+        <Text>{'phone: ' + identifier}</Text>
+
         {/* Current Password */}
         <Controller
-          name="currentPassword"
+          name="previousPassword"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <View className="relative">
               <TextInput
                 className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
-                  errors.currentPassword
+                  errors.previousPassword
                     ? 'border border-red-500'
                     : 'border border-gray-300'
                 }`}
@@ -105,9 +97,9 @@ export default function SetPasswordScreen() {
                   color="gray"
                 />
               </TouchableOpacity>
-              {errors.currentPassword && (
+              {errors.previousPassword && (
                 <Text className="text-red-500 text-sm">
-                  {errors.currentPassword.message}
+                  {errors.previousPassword.message}
                 </Text>
               )}
             </View>
@@ -116,13 +108,13 @@ export default function SetPasswordScreen() {
 
         {/* New Password */}
         <Controller
-          name="newPassword"
+          name="password"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <View className="relative">
               <TextInput
                 className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
-                  errors.newPassword
+                  errors.password
                     ? 'border border-red-500'
                     : 'border border-gray-300'
                 }`}
@@ -142,9 +134,9 @@ export default function SetPasswordScreen() {
                   color="gray"
                 />
               </TouchableOpacity>
-              {errors.newPassword && (
+              {errors.password && (
                 <Text className="text-red-500 text-sm">
-                  {errors.newPassword.message}
+                  {errors.password.message}
                 </Text>
               )}
             </View>
@@ -191,7 +183,7 @@ export default function SetPasswordScreen() {
         <TouchableOpacity
           className="mt-4"
           onPress={handleSubmit(onSubmit)}
-          disabled={setPasswordMutation.isPending}
+          disabled={isSetPasswordInProgress}
         >
           {Platform.OS === 'ios' ? (
             <View
@@ -203,9 +195,7 @@ export default function SetPasswordScreen() {
               className="shadow-sm"
             >
               <Text className="text-white text-center font-bold">
-                {setPasswordMutation.isPending
-                  ? 'Updating...'
-                  : 'Update Password'}
+                {isSetPasswordInProgress ? 'Updating...' : 'Update Password'}
               </Text>
             </View>
           ) : (
@@ -217,9 +207,7 @@ export default function SetPasswordScreen() {
               end={{ x: 1, y: 1 }}
             >
               <Text className="text-white text-center font-bold">
-                {setPasswordMutation.isPending
-                  ? 'Updating...'
-                  : 'Update Password'}
+                {isSetPasswordInProgress ? 'Updating...' : 'Update Password'}
               </Text>
             </LinearGradient>
           )}

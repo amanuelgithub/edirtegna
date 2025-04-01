@@ -1,5 +1,5 @@
 // create a login mutation using tanstack query
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 // import { axiosInstance } from '@/config/request';
 import axiosInstance from '@/config/request';
 import axios from 'axios';
@@ -122,6 +122,19 @@ export const changePassword = async (payload: ChangePasswordDTO) => {
     payload,
   );
   return data;
+};
+
+export const loginMutationOptions = () => {
+  return {
+    mutationFn: login,
+    mutationKey: ['login'],
+    // onSuccess: (data) => {
+    //   console.log('Login successful:', data);
+    // },
+    // onError: (error) => {
+    //   console.error('Login failed:', error);
+    // },
+  } as UseMutationOptions<LoginDTO, unknown, LoginDTO>;
 };
 
 export const useLoginMutation = () => {

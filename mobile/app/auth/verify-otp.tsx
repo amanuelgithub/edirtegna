@@ -60,7 +60,10 @@ export default function VerifyOtpScreen() {
 
   useEffect(() => {
     if (isOtpValidationSuccessful) {
-      router.push('/auth/set-password');
+      router.push({
+        pathname: '/auth/set-password',
+        params: { identifier: phone },
+      });
     }
     if (isOtpVerificationFailed && verificationError) {
       console.log('Error verifying OTP:', verificationError);

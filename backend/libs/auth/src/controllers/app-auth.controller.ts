@@ -11,7 +11,7 @@ import { ForgotCredentialDto, ForgotCredentialProcessor } from '../forgot-creden
 import { AppThrottlerGuard } from '../guards';
 import { LoginProcessor, PasswordLoginDto, PinLoginDto } from '../login';
 import { AuthCommonService, AuthHelperService, ForgotCredentialService, LoginService, ResendOtpService, SetCredentialService, TokenService, VerifyOTPService } from '../services';
-import { SetCredentialProcessor, SetPinCodeDto } from '../set-credential';
+import { SetCredentialProcessor, SetPasswordDto, SetPinCodeDto } from '../set-credential';
 import { GlobalConfigService } from '@app/global-config';
 import { UserNotificationService } from '@app/notification';
 
@@ -123,8 +123,33 @@ export class AppAuthController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   verifyUserOtp(@Body() dto: VerifyOtpDto, @RequestInfo() info: IRequestDetail) {
-    const payload = new VerifyOtpPayload(dto, { channel: 'APP', ip: info.ip, realm: info.realm, device: info.device });
+    const payload = new VerifyOtpPayload(dto, { channel: 'WEB', ip: info.ip, realm: info.realm, device: info.device });
     return this.verifyOTPService.verify(payload);
+  }
+
+  // Set Password Code
+  @Post('set-password')
+  @Public()
+  @HttpCode(HttpStatus.CREATED)
+  @UsePipes(ValidationPipe)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @UseGuards(AppThrottlerGuard)
+  async setPassword(@Body() dto: SetPasswordDto, @RequestInfo() info: IRequestDetail, @Ip() ip, @Req() req, @Res({ passthrough: true }) res: Response) {
+    // this.helper.validateChannel(req, 'APP');
+    // const device = this.globalConfigService.getUa(req);
+
+    // const payload = new SetCredentialPayload(dto, { channel: 'WEB', ip, realm: 'CUSTOMER', device }, CredentialChangeType.SET_PASSWORD);
+    const payload = new SetCredentialProcessor(dto, { channel: 'WEB', ip: info.ip, realm: 'CUSTOMER', device: info.device });
+    const { data, ...msgResponse } = await this.setCredentialService.setCredential(payload);
+
+    if (data && msgResponse.success) {
+      // const azp: AzpType = realm && realm === 'CUSTOMER' ? 'wc-customer-app' : 'wc-euser-app';
+      const azp: AzpType = 'tms-txn-customer-app';
+      const { ...resp } = await this.tokenService.createTokenPair(data, azp);
+
+      return { ...resp, success: true, statusCode: 200, message: 'OK' };
+    }
+    return msgResponse;
   }
 
   // Set PIN Code

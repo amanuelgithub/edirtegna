@@ -18,23 +18,63 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import LinearGradient from 'react-native-linear-gradient'; // Ensure compatibility with iOS
 import { Ionicons } from '@expo/vector-icons'; // Import Expo's built-in icons
 import { useOnboarding } from '@/context/OnboardingContext';
-import { LoginDTO, loginSchema, useLoginMutation } from '@/hooks/api';
+import {
+  LoginDTO,
+  loginSchema,
+  useLoginMutation,
+  loginMutationOptions,
+  login as loginApi,
+} from '@/hooks/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SignInScreen() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
 
   const { onboardingCompleted, completeOnboarding } = useOnboarding();
+  const { isAuthenticated, login: loginUser, logout } = useAuth();
 
-  const {
-    // mutateAsync: asyncLogin,
-    mutate: login,
-    data,
-    isError,
-    isPending,
-    isSuccess,
-    error,
-  } = useLoginMutation();
+  const { mutate: login, isPending } = useMutation({
+    // ...loginMutationOptions,
+    mutationFn: loginApi,
+    onSuccess: (data: any) => {
+      console.log('login data: ', data);
+      if (!!data) {
+        if (!data?.success && data?.statusCode === 412) {
+          router.push({
+            pathname: '/auth/verify-otp',
+            params: { phone: getValues('identifier') },
+          });
+        } else if (!data?.success && data?.statusCode === 419) {
+          router.push({
+            pathname: '/auth/set-password',
+            params: { phone: getValues('identifier') },
+          });
+        } else if (!data?.success && data?.statusCode === 416) {
+          router.push({
+            pathname: '/auth/set-password',
+            params: { phone: getValues('identifier') },
+          });
+        } else if (!data?.success) {
+          // this.toastService.show(data?.message, {
+          //   classname: 'bg-danger text-white',
+          //   delay: 15000,
+          // });
+          // this.isLoading = false;
+        } else {
+          console.log('have i reached here?');
+          // router.push('/(app)'); // Navigate to the main app screen
+          // complete onboarding
+          if (!onboardingCompleted) {
+            completeOnboarding('true');
+          }
+          // set the user as authenticated
+          loginUser();
+          router.replace('/(app)/profile');
+        }
+      }
+    },
+  });
 
   const {
     control,
@@ -47,38 +87,39 @@ export default function SignInScreen() {
     login(data);
   };
 
-  useEffect(() => {
-    // console.log('login error', error?.message);
+  // useEffect(() => {
+  //   // console.log('login error', error?.message);
 
-    console.log('login data: ', data);
+  //   console.log('login data: ', data);
 
-    if (!!data) {
-      if (!data?.success && data?.statusCode === 412) {
-        router.push({
-          pathname: '/auth/verify-otp',
-          params: { phone: getValues('identifier') },
-        });
-      } else if (!data?.success && data?.statusCode === 419) {
-        router.push({
-          pathname: '/auth/set-password',
-          params: { phone: getValues('identifier') },
-        });
-      } else if (!data?.success && data?.statusCode === 416) {
-        router.push({
-          pathname: '/auth/set-password',
-          params: { phone: getValues('identifier') },
-        });
-      } else if (!data?.success) {
-        // this.toastService.show(data?.message, {
-        //   classname: 'bg-danger text-white',
-        //   delay: 15000,
-        // });
-        // this.isLoading = false;
-      } else {
-        router.replace('/(app)/profile');
-      }
-    }
-  }, [isError, isSuccess, error, data]);
+  //   if (!!data) {
+  //     if (!data?.success && data?.statusCode === 412) {
+  //       router.push({
+  //         pathname: '/auth/verify-otp',
+  //         params: { phone: getValues('identifier') },
+  //       });
+  //     } else if (!data?.success && data?.statusCode === 419) {
+  //       router.push({
+  //         pathname: '/auth/set-password',
+  //         params: { phone: getValues('identifier') },
+  //       });
+  //     } else if (!data?.success && data?.statusCode === 416) {
+  //       router.push({
+  //         pathname: '/auth/set-password',
+  //         params: { phone: getValues('identifier') },
+  //       });
+  //     } else if (!data?.success) {
+  //       // this.toastService.show(data?.message, {
+  //       //   classname: 'bg-danger text-white',
+  //       //   delay: 15000,
+  //       // });
+  //       // this.isLoading = false;
+  //     } else {
+  //       // router.replace('/(app)/profile');
+  //       router.push('/(app)');
+  //     }
+  //   }
+  // }, [isError, isSuccess, error, data]);
 
   return (
     <KeyboardAvoidingView

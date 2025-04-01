@@ -39,16 +39,18 @@ export type RegisterDTO = z.infer<typeof registerSchema>;
 
 export const setPasswordSchema = z
   .object({
-    oldPassword: z.string().min(6, 'Current password is required'),
-    newPassword: z
+    identifier: z
       .string()
-      .min(6, 'New password must be at least 6 characters'),
+      .min(9, 'Phone number must be at least 9 digits')
+      .max(9, 'Phone number must be at most 9 digits'),
+    previousPassword: z.string().min(4, 'Current password is required'),
+    password: z.string().min(4, 'New password must be at least 4 characters'),
     confirmPassword: z
       .string()
-      .min(6, 'Confirm password must be at least 6 characters'),
+      .min(4, 'Confirm password must be at least 4 characters'),
   })
   .superRefine((data, ctx) => {
-    if (data.confirmPassword !== data.newPassword) {
+    if (data.confirmPassword !== data.password) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Passwords must match',

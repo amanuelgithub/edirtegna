@@ -1,6 +1,8 @@
 // custom hooks for authentication
 export {
   seedRoles,
+  loginMutationOptions,
+  login,
   useLoginMutation,
   useRegisterMutation,
   useSetPasswordMutation,

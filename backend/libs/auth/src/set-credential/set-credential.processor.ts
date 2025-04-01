@@ -69,7 +69,9 @@ export class SetCredentialProcessor {
   private async doesTempCredentialMatch() {
     const { tempSecretHash, secretHash } = this._userAccess;
     const { previousCredential } = this._previousAndNewCredential;
+    console.log('tempSecretHash: ', tempSecretHash, 'secretHash: ', secretHash, 'previousCredential: ', previousCredential);
     const prevPasswordMatch = (tempSecretHash || secretHash) && (await bcrypt.compare(previousCredential, tempSecretHash || secretHash));
+    console.log('prePasswordMatch: ', prevPasswordMatch);
     if (!prevPasswordMatch) {
       this._detailResponse = new DetailResponse(null, `Invalid Account Access Detail(s) provided`, false, 401);
       throw new UnauthorizedException(`Invalid Account Access Detail(s) provided`);
