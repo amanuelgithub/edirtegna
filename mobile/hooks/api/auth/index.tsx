@@ -1,4 +1,10 @@
-// custom hooks for authentication
+export {
+  // query keys
+  authQueryKeys,
+  // query options
+  createGetProfileQueryOptions,
+} from './query-options';
+export {} from './mutation-options';
 export {
   seedRoles,
   loginMutationOptions,
@@ -12,6 +18,10 @@ export {
   useLogoutMutation,
   useChangePasswordMutation,
 } from './mutations';
+export {} from './queries';
+
+// all the api
+export * from './api';
 
 // export zod schemas & types
 export {

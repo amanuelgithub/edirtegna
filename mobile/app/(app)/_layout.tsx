@@ -1,12 +1,18 @@
-import { Redirect, Tabs } from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useOnboarding } from "@/context/OnboardingContext";
-import { useAuth } from "@/context/AuthContext";
+import { Redirect, Tabs } from 'expo-router';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useOnboarding } from '@/context/OnboardingContext';
+import { useAuth } from '@/context/AuthContext';
 // import { account } from "@expo/vector-icons/AntDesign";
 
 export default function TabLayout() {
   const { onboardingCompleted } = useOnboarding();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout, getAccessToken, getRefreshToken } =
+    useAuth();
+
+  if (!getAccessToken() || !getRefreshToken()) {
+    logout();
+    return <Redirect href="/auth/signin" />;
+  }
 
   if (!onboardingCompleted) {
     return <Redirect href="/onboarding" />;
@@ -20,16 +26,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="home" color={color} />,
+          title: 'Home',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons size={28} name="home" color={color} />
+          ),
         }}
       />
 
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
-          tabBarIcon: ({ color }) => <MaterialIcons size={28} name="account-circle" color={color} />,
+          title: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons size={28} name="account-circle" color={color} />
+          ),
         }}
       />
     </Tabs>

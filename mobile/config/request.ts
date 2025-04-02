@@ -37,6 +37,7 @@ const processQueue = (error: any, token = null) => {
 axiosInstance.interceptors.request.use(
   async (config) => {
     const token = await SecureStore.getItemAsync('accessToken');
+    console.log('found token: ', token);
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -75,8 +76,8 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Get the refresh token from secure storage.
-        const refreshToken = await SecureStore.getItemAsync('refreshToken');
+        // Get the refresh token from async storage.
+        const refreshToken = await AsyncStorage.getItem('refreshToken');
 
         // Call the refresh endpoint.
         const { data } = await axios.post(
@@ -90,8 +91,6 @@ axiosInstance.interceptors.response.use(
 
         // Update tokens in secure storage (and AsyncStorage if needed).
         await SecureStore.setItemAsync('accessToken', accessToken);
-        await SecureStore.setItemAsync('refreshToken', newRefreshToken);
-        await AsyncStorage.setItem('accessToken', accessToken);
         await AsyncStorage.setItem('refreshToken', newRefreshToken);
 
         // Update default headers for future requests.
@@ -107,8 +106,6 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshError, null);
         // Redirect the user to the sign-in page when the request fails.
         await SecureStore.deleteItemAsync('accessToken');
-        await SecureStore.deleteItemAsync('refreshToken');
-        await AsyncStorage.removeItem('accessToken');
         await AsyncStorage.removeItem('refreshToken');
         // Assuming you are using React Navigation
         router.replace('/auth/signin');

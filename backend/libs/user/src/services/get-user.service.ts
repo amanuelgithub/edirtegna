@@ -13,7 +13,7 @@ export class GetUserService {
     const qb = this.ds.getRepository(UserEntity).createQueryBuilder('user');
     // qb.leftJoinAndSelect('user.parentUser', 'parentUser');
     qb.leftJoinAndSelect('user.userProfile', 'userProfile');
-    qb.leftJoinAndSelect('userProfile.partner', 'partner');
+    // qb.leftJoinAndSelect('userProfile.partner', 'partner');
     qb.leftJoinAndSelect('user.role', 'role');
 
     if (id) {

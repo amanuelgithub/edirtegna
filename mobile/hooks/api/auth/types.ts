@@ -112,3 +112,8 @@ export const changePasswordSchema = z
     }
   });
 export type ChangePasswordDTO = z.infer<typeof changePasswordSchema>;
+
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string(),
+});
+export type RefreshTokenDTO = z.infer<typeof refreshTokenSchema>;

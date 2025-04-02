@@ -219,7 +219,11 @@ export class AppAuthController {
     try {
       const isWebAccess = false;
       const azp: AzpType = 'tms-txn-customer-app';
-      refreshDto.refreshToken = info?.reqInfo?.cookies[REF_TOKEN_COOKIE_NAME];
+      // here the refresh token is passed in the body for mobile app
+
+      // refreshDto.refreshToken = info?.reqInfo?.cookies[REF_TOKEN_COOKIE_NAME];
+      console.log('refresh token vale: ', refreshDto.refreshToken);
+
       const result = await this.authCommonService.refreshAccessToken(refreshDto, azp);
 
       const { refreshToken, ...resp } = result;
