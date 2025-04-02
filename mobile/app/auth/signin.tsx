@@ -27,6 +27,15 @@ import {
 } from '@/hooks/api';
 import { useAuth } from '@/context/AuthContext';
 
+// Define the shape of the login API response
+interface LoginResponse {
+  success: boolean;
+  statusCode: number;
+  accessToken?: string;
+  refreshToken?: string;
+  message?: string;
+}
+
 export default function SignInScreen() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
@@ -34,43 +43,42 @@ export default function SignInScreen() {
   const { onboardingCompleted, completeOnboarding } = useOnboarding();
   const { isAuthenticated, login: loginUser, logout } = useAuth();
 
-  const { mutate: login, isPending } = useMutation({
-    // ...loginMutationOptions,
+  const { mutate: login, isPending } = useMutation<
+    LoginResponse,
+    Error,
+    LoginDTO
+  >({
     mutationFn: loginApi,
-    onSuccess: (data: any) => {
+    onSuccess: (data: LoginResponse) => {
       console.log('login data: ', data);
       if (!!data) {
-        if (!data?.success && data?.statusCode === 412) {
+        if (!data.success && data.statusCode === 412) {
           router.push({
             pathname: '/auth/verify-otp',
             params: { phone: getValues('identifier') },
           });
-        } else if (!data?.success && data?.statusCode === 419) {
+        } else if (!data.success && data.statusCode === 419) {
           router.push({
             pathname: '/auth/set-password',
             params: { phone: getValues('identifier') },
           });
-        } else if (!data?.success && data?.statusCode === 416) {
+        } else if (!data.success && data.statusCode === 416) {
           router.push({
             pathname: '/auth/set-password',
             params: { phone: getValues('identifier') },
           });
-        } else if (!data?.success) {
-          // this.toastService.show(data?.message, {
-          //   classname: 'bg-danger text-white',
-          //   delay: 15000,
-          // });
-          // this.isLoading = false;
+        } else if (!data.success) {
+          // Handle error case
         } else {
           console.log('have i reached here?');
-          // router.push('/(app)'); // Navigate to the main app screen
-          // complete onboarding
           if (!onboardingCompleted) {
             completeOnboarding('true');
           }
-          // set the user as authenticated
-          loginUser();
-          router.replace('/(app)/profile');
+          // Store tokens and set the user as authenticated
+          if (data.accessToken && data.refreshToken) {
+            loginUser(data.accessToken, data.refreshToken);
+            router.replace('/(app)/profile');
+          }
         }
       }
     },
@@ -86,40 +94,6 @@ export default function SignInScreen() {
   const onSubmit: SubmitHandler<LoginDTO> = async (data: LoginDTO) => {
     login(data);
   };
-
-  // useEffect(() => {
-  //   // console.log('login error', error?.message);
-
-  //   console.log('login data: ', data);
-
-  //   if (!!data) {
-  //     if (!data?.success && data?.statusCode === 412) {
-  //       router.push({
-  //         pathname: '/auth/verify-otp',
-  //         params: { phone: getValues('identifier') },
-  //       });
-  //     } else if (!data?.success && data?.statusCode === 419) {
-  //       router.push({
-  //         pathname: '/auth/set-password',
-  //         params: { phone: getValues('identifier') },
-  //       });
-  //     } else if (!data?.success && data?.statusCode === 416) {
-  //       router.push({
-  //         pathname: '/auth/set-password',
-  //         params: { phone: getValues('identifier') },
-  //       });
-  //     } else if (!data?.success) {
-  //       // this.toastService.show(data?.message, {
-  //       //   classname: 'bg-danger text-white',
-  //       //   delay: 15000,
-  //       // });
-  //       // this.isLoading = false;
-  //     } else {
-  //       // router.replace('/(app)/profile');
-  //       router.push('/(app)');
-  //     }
-  //   }
-  // }, [isError, isSuccess, error, data]);
 
   return (
     <KeyboardAvoidingView
