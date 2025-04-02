@@ -25,7 +25,8 @@ import {
   loginMutationOptions,
   login as loginApi,
 } from '@/hooks/api';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthNewContext';
 
 // Define the shape of the login API response
 interface LoginResponse {

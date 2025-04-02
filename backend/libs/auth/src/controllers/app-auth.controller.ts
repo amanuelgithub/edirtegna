@@ -256,15 +256,16 @@ export class AppAuthController {
     let refresh_cookie;
     try {
       const azp: AzpType = 'tms-txn-customer-app';
-      refreshDto.refreshToken = req.cookies[REF_TOKEN_COOKIE_NAME] ?? refreshDto.refreshToken;
+      // here the refresh token is passed in the body for mobile app
+      // refreshDto.refreshToken = req.cookies[REF_TOKEN_COOKIE_NAME] ?? refreshDto.refreshToken;
       const result = await this.authCommonService.logoutRefreshToken(refreshDto, azp);
-      refresh_cookie = this.helper.getLogoutRefreshTokenCookie(req);
+      // refresh_cookie = this.helper.getLogoutRefreshTokenCookie(req);
 
-      res.setHeader('set-cookie', refresh_cookie);
+      // res.setHeader('set-cookie', refresh_cookie);
 
       return result;
     } catch (error) {
-      res.setHeader('set-cookie', refresh_cookie);
+      // res.setHeader('set-cookie', refresh_cookie);
 
       if (error instanceof HttpException) {
         throw error;

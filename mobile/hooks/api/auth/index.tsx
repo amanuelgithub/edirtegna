@@ -4,7 +4,7 @@ export {
   // query options
   createGetProfileQueryOptions,
 } from './query-options';
-export {} from './mutation-options';
+export { createLogoutMutationOptions } from './mutation-options';
 export {
   seedRoles,
   loginMutationOptions,
@@ -15,7 +15,7 @@ export {
   useVerifyOtpMutation,
   useResendOtpMutation,
   useForgotPasswordMutation,
-  useLogoutMutation,
+  // useLogoutMutation,
   useChangePasswordMutation,
 } from './mutations';
 export {} from './queries';

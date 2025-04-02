@@ -1,8 +1,9 @@
-import { useAuth } from "@/context/AuthContext";
-import { useOnboarding } from "@/context/OnboardingContext";
-import { Redirect, useRouter } from "expo-router";
-import { useEffect } from "react";
-import { View, Text, Button } from "react-native";
+// import { useAuth } from "@/context/AuthContext";
+import { useAuth } from '@/context/AuthNewContext';
+import { useOnboarding } from '@/context/OnboardingContext';
+import { Redirect, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { View, Text, Button } from 'react-native';
 
 export default function Home() {
   const router = useRouter();
@@ -13,11 +14,11 @@ export default function Home() {
     // Check if onboarding is completed
     if (onboardingCompleted) {
       // Navigate to the home screen
-      router.push("/(app)");
+      router.push('/(app)');
     }
     // If onboarding is not completed, redirect to the onboarding screen
     else {
-      router.push("/onboarding");
+      router.push('/onboarding');
     }
   }, [completeOnboarding, onboardingCompleted]);
 
@@ -34,7 +35,7 @@ export default function Home() {
         title="Reset Onboarding"
         onPress={() => {
           // Reset the onboarding process
-          completeOnboarding("false");
+          completeOnboarding('false');
           // Logout the user
           logout();
 

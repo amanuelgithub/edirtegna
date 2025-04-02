@@ -1,7 +1,8 @@
 import { Redirect, Tabs } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useOnboarding } from '@/context/OnboardingContext';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthNewContext';
 // import { account } from "@expo/vector-icons/AntDesign";
 
 export default function TabLayout() {

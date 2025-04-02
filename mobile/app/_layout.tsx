@@ -2,7 +2,8 @@ import { Stack } from 'expo-router';
 
 import '../global.css';
 import { OnboardingProvider } from '@/context/OnboardingContext';
-import { AuthProvider } from '@/context/AuthContext';
+// import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider } from '@/context/AuthNewContext';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { QueryClient } from '@tanstack/react-query';

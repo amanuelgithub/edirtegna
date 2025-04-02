@@ -84,14 +84,6 @@ export const forgotPasswordSchema = z.object({
 });
 export type ForgotPasswordDTO = z.infer<typeof forgotPasswordSchema>;
 
-export const logoutSchema = z.object({
-  identifier: z
-    .string()
-    .min(10, 'Phone number must be at least 10 digits')
-    .regex(/^\d+$/, 'Phone number must contain only digits'),
-});
-export type LogoutDTO = z.infer<typeof logoutSchema>;
-
 export const changePasswordSchema = z
   .object({
     identifier: z
@@ -117,3 +109,8 @@ export const refreshTokenSchema = z.object({
   refreshToken: z.string(),
 });
 export type RefreshTokenDTO = z.infer<typeof refreshTokenSchema>;
+
+// Reuse refreshTokenSchema directly for logoutSchema
+export const logoutSchema = refreshTokenSchema;
+
+export type LogoutDTO = RefreshTokenDTO;

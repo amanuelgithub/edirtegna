@@ -95,10 +95,10 @@ export const resendOtp = async (payload: ResendOtpDTO) => {
   return data;
 };
 
-export const logout = async (payload: LogoutDTO) => {
-  const { data } = await axiosInstance.post<LogoutDTO, any>(`/app/auth/logout`);
-  return data;
-};
+// export const logout = async (payload: LogoutDTO) => {
+//   const { data } = await axiosInstance.post<LogoutDTO, any>(`/app/auth/logout`);
+//   return data;
+// };
 
 // export const deleteAccount = async () => {
 //   const response = await axios.post(`${API_URL}/app/auth/delete-account`);
@@ -206,11 +206,11 @@ export const useResendOtpMutation = () => {
   });
 };
 
-export const useLogoutMutation = () => {
-  return useMutation({
-    mutationFn: logout,
-  });
-};
+// export const useLogoutMutation = () => {
+//   return useMutation({
+//     mutationFn: logout,
+//   });
+// };
 
 // export const useUpdateProfileMutation = () => {
 //   return useMutation({

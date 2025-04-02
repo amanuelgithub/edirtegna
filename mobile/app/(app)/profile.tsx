@@ -2,13 +2,24 @@ import { View, Text, Button } from 'react-native';
 import {
   authQueryKeys,
   createGetProfileQueryOptions,
+  createLogoutMutationOptions,
   useSetPasswordMutation,
 } from '@/hooks/api';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { useAuth } from '@/context/AuthNewContext';
+import { refreshTokenSchema } from '@/hooks/api/auth/types';
 
 export default function ProfileScreen() {
   const queryClient = useQueryClient();
+  const { logout, getRefreshToken } = useAuth();
+  const { mutate: logoutMutate } = useMutation({
+    ...createLogoutMutationOptions(),
+    onSuccess: () => {
+      // call the logout method from the auth context
+      logout();
+    },
+  });
   const {
     data: profileData,
     isLoading: isProfileLoading,
@@ -21,12 +32,6 @@ export default function ProfileScreen() {
     refetchOnWindowFocus: true, // Refetches data when window gains focus
     refetchOnReconnect: true, // Refetches data upon reconnecting to the internet
   });
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: authQueryKeys.getProfile });
-    }, 3000);
-  }, []);
 
   return (
     <View>
@@ -41,6 +46,17 @@ export default function ProfileScreen() {
         title="Refetch Profile"
         onPress={() => {
           queryClient.invalidateQueries({ queryKey: authQueryKeys.getProfile });
+        }}
+      />
+
+      {/* button to logout */}
+      <Button
+        title="Logout"
+        onPress={async () => {
+          logoutMutate({
+            // get the refresh token from the storage
+            refreshToken: await getRefreshToken(),
+          });
         }}
       />
     </View>
