@@ -3,6 +3,8 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { API_URL } from '@/config/env';
+const navigation = require('@react-navigation/native').NavigationContainerRef;
+import { router } from 'expo-router';
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -103,7 +105,13 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        // Optionally handle a logout or redirect to login here.
+        // Redirect the user to the sign-in page when the request fails.
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        await AsyncStorage.removeItem('accessToken');
+        await AsyncStorage.removeItem('refreshToken');
+        // Assuming you are using React Navigation
+        router.replace('/auth/signin');
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
