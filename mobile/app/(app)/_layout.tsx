@@ -39,18 +39,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          // title: 'Home',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
           // add options to change the header color according to the theme
-          headerStyle: {
-            backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-          },
-          headerTintColor: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+          // headerStyle: {
+          //   backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
+          // },
+          // headerTintColor: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+          // headerTitleStyle: {
+          //   fontWeight: 'bold',
+          // },
+          // remove the header
+          headerShown: false,
         }}
       />
       <Tabs.Screen
