@@ -5,214 +5,190 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { LinearGradient } from 'react-native-linear-gradient';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as Burnt from 'burnt';
-import {
-  setPasswordSchema,
-  SetPasswordDTO,
-  useSetPasswordMutation,
-} from '@/hooks/api';
+import { useOnboarding } from '@/context/OnboardingContext';
+import { SetPasswordDTO, setPasswordSchema } from '@/hooks/api/auth/types';
+import { useAuth } from '@/context/AuthNewContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import axiosInstance from '@/config/request';
+
+interface SetPasswordResponse {
+  success: boolean;
+  statusCode: number;
+  accessToken?: string;
+  refreshToken?: string;
+  message?: string;
+}
 
 export default function SetPasswordScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
+  const { phone } = useLocalSearchParams<{ phone: string }>();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { onboardingCompleted, completeOnboarding } = useOnboarding();
+  const { login: loginUser } = useAuth();
 
-  const { identifier } = params as { identifier: string };
+  const { mutate: setPassword, isPending } = useMutation<
+    SetPasswordResponse,
+    Error,
+    SetPasswordDTO
+  >({
+    mutationFn: async (data: SetPasswordDTO) => {
+      const response = await axiosInstance.post('/app/auth/set-password', data);
+      return response.data;
+    },
+    onSuccess: (data: SetPasswordResponse) => {
+      if (data.success && data.accessToken && data.refreshToken) {
+        if (!onboardingCompleted) {
+          completeOnboarding('true');
+        }
+        loginUser(data.accessToken, data.refreshToken);
+        router.replace('/(app)/profile');
+      }
+    },
+  });
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<SetPasswordDTO>({
     resolver: zodResolver(setPasswordSchema),
     defaultValues: {
-      identifier: identifier,
-      previousPassword: '',
-      password: '',
-      confirmPassword: '',
+      identifier: phone,
     },
   });
 
-  const {
-    mutate: setPasswordMutation,
-    data: setPasswordData,
-    isError: isSetPasswordFailed,
-    isSuccess: isSetPasswordSuccessful,
-    isPending: isSetPasswordInProgress,
-    error: setPasswordError,
-  } = useSetPasswordMutation();
-
-  const onSubmit = (data: SetPasswordDTO) => {
-    setPasswordMutation(data);
+  const onSubmit: SubmitHandler<SetPasswordDTO> = async (
+    data: SetPasswordDTO,
+  ) => {
+    setPassword(data);
   };
 
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   return (
-    <View className="flex-1 justify-center items-center bg-gradient-to-b from-green-500 to-blue-700">
-      <Animated.View entering={FadeIn} exiting={FadeOut} className="w-4/5">
-        <Text className="text-3xl font-bold text-center mb-6 text-gray-700">
-          Set Your Password
-        </Text>
-
-        <Text>{'phone: ' + identifier}</Text>
-
-        {/* Current Password */}
-        <Controller
-          name="previousPassword"
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="relative">
-              <TextInput
-                className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
-                  errors.previousPassword
-                    ? 'border border-red-500'
-                    : 'border border-gray-300'
-                }`}
-                placeholder="Current Password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry={!showCurrentPassword}
-              />
-              <TouchableOpacity
-                className="absolute right-4 top-4"
-                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-              >
-                <Ionicons
-                  name={showCurrentPassword ? 'eye-off' : 'eye'}
-                  size={24}
-                  color="gray"
-                />
-              </TouchableOpacity>
-              {errors.previousPassword && (
-                <Text className="text-red-500 text-sm">
-                  {errors.previousPassword.message}
-                </Text>
-              )}
-            </View>
-          )}
-        />
-
-        {/* New Password */}
-        <Controller
-          name="password"
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="relative">
-              <TextInput
-                className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
-                  errors.password
-                    ? 'border border-red-500'
-                    : 'border border-gray-300'
-                }`}
-                placeholder="New Password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry={!showNewPassword}
-              />
-              <TouchableOpacity
-                className="absolute right-4 top-4"
-                onPress={() => setShowNewPassword(!showNewPassword)}
-              >
-                <Ionicons
-                  name={showNewPassword ? 'eye-off' : 'eye'}
-                  size={24}
-                  color="gray"
-                />
-              </TouchableOpacity>
-              {errors.password && (
-                <Text className="text-red-500 text-sm">
-                  {errors.password.message}
-                </Text>
-              )}
-            </View>
-          )}
-        />
-
-        {/* Confirm Password */}
-        <Controller
-          name="confirmPassword"
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="relative">
-              <TextInput
-                className={`rounded-lg px-4 py-4 mb-2 bg-white focus:border-2 focus:border-blue-800 ${
-                  errors.confirmPassword
-                    ? 'border border-red-500'
-                    : 'border border-gray-300'
-                }`}
-                placeholder="Confirm Password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                secureTextEntry={!showConfirmPassword}
-              />
-              <TouchableOpacity
-                className="absolute right-4 top-4"
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <Ionicons
-                  name={showConfirmPassword ? 'eye-off' : 'eye'}
-                  size={24}
-                  color="gray"
-                />
-              </TouchableOpacity>
-              {errors.confirmPassword && (
-                <Text className="text-red-500 text-sm">
-                  {errors.confirmPassword.message}
-                </Text>
-              )}
-            </View>
-          )}
-        />
-
-        <TouchableOpacity
-          className="mt-4"
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSetPasswordInProgress}
-        >
-          {Platform.OS === 'ios' ? (
-            <View
-              style={{
-                backgroundColor: '#34d399',
-                borderRadius: 8,
-                paddingVertical: 16,
-              }}
-              className="shadow-sm"
-            >
-              <Text className="text-white text-center font-bold">
-                {isSetPasswordInProgress ? 'Updating...' : 'Update Password'}
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView className="flex-1">
+          <View className="px-4 py-6">
+            {/* Header */}
+            <View className="items-center mb-8">
+              <View className="w-20 h-20 bg-indigo-100 dark:bg-indigo-900 rounded-full items-center justify-center mb-4">
+                <Ionicons name="lock-closed" size={40} color="#4F46E5" />
+              </View>
+              <Text className="text-2xl font-bold text-gray-900 dark:text-white">
+                Set Your Password
+              </Text>
+              <Text className="text-gray-500 dark:text-gray-400 text-center mt-2">
+                Create a secure password for your account
               </Text>
             </View>
-          ) : (
-            <LinearGradient
-              colors={['#34d399', '#3b82f6']}
-              style={{ borderRadius: 8, paddingVertical: 16 }}
-              className="shadow-sm"
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Text className="text-white text-center font-bold">
-                {isSetPasswordInProgress ? 'Updating...' : 'Update Password'}
-              </Text>
-            </LinearGradient>
-          )}
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+
+            {/* Form */}
+            <View className="space-y-4">
+              <Controller
+                name="password"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View>
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
+                      Password
+                    </Text>
+                    <View className="relative">
+                      <TextInput
+                        className={`rounded-xl px-4 py-4 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white ${
+                          errors.password ? 'border border-red-500' : ''
+                        }`}
+                        placeholder="Enter your password"
+                        placeholderTextColor="#6B7280"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        secureTextEntry={!showPassword}
+                      />
+                      <TouchableOpacity
+                        className="absolute right-4 top-4"
+                        onPress={() => setShowPassword((prev) => !prev)}
+                      >
+                        <Ionicons
+                          name={showPassword ? 'eye-off' : 'eye'}
+                          size={24}
+                          color="#6B7280"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {errors.password && (
+                      <Text className="text-red-500 text-sm mt-1">
+                        {errors.password.message}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              />
+
+              <Controller
+                name="confirmPassword"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View>
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
+                      Confirm Password
+                    </Text>
+                    <View className="relative">
+                      <TextInput
+                        className={`rounded-xl px-4 py-4 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white ${
+                          errors.confirmPassword ? 'border border-red-500' : ''
+                        }`}
+                        placeholder="Confirm your password"
+                        placeholderTextColor="#6B7280"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        secureTextEntry={!showConfirmPassword}
+                      />
+                      <TouchableOpacity
+                        className="absolute right-4 top-4"
+                        onPress={() => setShowConfirmPassword((prev) => !prev)}
+                      >
+                        <Ionicons
+                          name={showConfirmPassword ? 'eye-off' : 'eye'}
+                          size={24}
+                          color="#6B7280"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {errors.confirmPassword && (
+                      <Text className="text-red-500 text-sm mt-1">
+                        {errors.confirmPassword.message}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              />
+
+              {/* Set Password Button */}
+              <TouchableOpacity
+                className="mt-4 bg-indigo-600 p-4 rounded-xl"
+                onPress={handleSubmit(onSubmit)}
+                disabled={isPending}
+              >
+                <Text className="text-white text-center font-semibold">
+                  {isPending ? 'Setting Password...' : 'Set Password'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
