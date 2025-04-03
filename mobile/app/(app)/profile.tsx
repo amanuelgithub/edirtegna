@@ -1,8 +1,19 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useMutation } from '@tanstack/react-query';
+import { createLogoutMutationOptions } from '@/hooks/api';
+import { useAuth } from '@/context/AuthNewContext';
 
 export default function ProfileScreen() {
+  const { logout, getRefreshToken } = useAuth();
+  const { mutate: logoutMutate } = useMutation({
+    ...createLogoutMutationOptions(),
+    onSuccess: () => {
+      // call the logout method from the auth context
+      logout();
+    },
+  });
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <ScrollView className="flex-1">
@@ -130,7 +141,15 @@ export default function ProfileScreen() {
 
         {/* Logout Button */}
         <View className="px-4 pb-6">
-          <TouchableOpacity className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl flex-row items-center justify-center space-x-2">
+          <TouchableOpacity
+            className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl flex-row items-center justify-center space-x-2"
+            onPress={async () => {
+              logoutMutate({
+                // get the refresh token from the storage
+                refreshToken: await getRefreshToken(),
+              });
+            }}
+          >
             <Ionicons name="log-out-outline" size={20} color="#EF4444" />
             <Text className="text-red-500 font-medium">Log Out</Text>
           </TouchableOpacity>
