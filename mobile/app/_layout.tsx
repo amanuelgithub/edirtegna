@@ -1,4 +1,6 @@
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { useColorScheme } from 'react-native';
 
 import '../global.css';
 import { OnboardingProvider } from '@/context/OnboardingContext';
@@ -11,6 +13,8 @@ import { QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
   return (
     <QueryClientProvider client={queryClient}>
       <OnboardingProvider>
@@ -24,6 +28,13 @@ export default function RootLayout() {
               animation: 'fade',
               // headerBackVisible: false,
               // contentStyle: { backgroundColor: "white" },
+              headerStyle: {
+                backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
+              },
+              headerTintColor: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
             }}
           >
             {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}

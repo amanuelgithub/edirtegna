@@ -1,5 +1,8 @@
 <!-- General Description of the project -->
 
+- address to chatgpt conversation
+- https://chatgpt.com/c/67ecaa02-cafc-8002-aabb-816a9425e82b
+
 Key Aspects of Edir:
 Mutual Support – Members assist each other financially and emotionally, ensuring that no one faces hardship alone.
 
