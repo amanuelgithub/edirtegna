@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import '../global.css';
 import { OnboardingProvider } from '@/context/OnboardingContext';
@@ -14,11 +15,13 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <QueryClientProvider client={queryClient}>
       <OnboardingProvider>
         <AuthProvider>
+          <StatusBar style={isDark ? 'light' : 'dark'} />
           <Stack
             screenOptions={{
               headerShown: false,
@@ -29,9 +32,9 @@ export default function RootLayout() {
               // headerBackVisible: false,
               // contentStyle: { backgroundColor: "white" },
               headerStyle: {
-                backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
+                backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
               },
-              headerTintColor: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+              headerTintColor: isDark ? '#FFFFFF' : '#000000',
               headerTitleStyle: {
                 fontWeight: 'bold',
               },

@@ -1,0 +1,1 @@
+- created groups/idir can open or close their group form search (accept new member or now)

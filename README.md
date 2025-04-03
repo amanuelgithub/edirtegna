@@ -31,6 +31,26 @@ password: 'U100eN',
 userId: 15
 }
 
+CUSTOMER CREATED: app access details: {
+name: 'Legend',
+destination: '+251913131313',
+msg: 'your account registration is successful!\nYour App access detail is:',
+subject: 'OTP_VERIFICATION',
+otpCode: 3598,
+pinCode: 5796,
+password: null,
+userId: 17
+} web access details: {
+name: 'Legend',
+destination: '+251913131313',
+msg: 'your account registration is successful!\nYour Web access detail is:',
+subject: 'OTP_VERIFICATION',
+otpCode: 8773,
+pinCode: null,
+password: '&22m1B',
+userId: 17
+}
+
 ## iat - edirtegan conversion
 
 - excluded files
