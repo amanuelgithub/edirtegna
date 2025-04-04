@@ -132,7 +132,8 @@
       "^@app/global-config(|/.*)$": "<rootDir>/libs/global-config/src/$1",
       "^@app/notification(|/.*)$": "<rootDir>/libs/notification/src/$1",
       "^@app/user(|/.*)$": "<rootDir>/libs/user/src/$1",
-      "^@app/redis(|/.*)$": "<rootDir>/libs/redis/src/$1"
+      "^@app/redis(|/.*)$": "<rootDir>/libs/redis/src/$1",
+      "^@app/group(|/.*)$": "<rootDir>/libs/group/src/$1"
     }
   }
 }

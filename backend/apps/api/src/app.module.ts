@@ -6,6 +6,7 @@ import { ConfigModule } from '@app/config';
 import { TypeOrmModule } from '@app/typeorm';
 import { ParameterModule } from '@app/parameter';
 import { UserModule } from '@app/user';
+import { GroupModule } from '@app/group';
 import { AuthModule } from '@app/auth';
 import { NotificationModule } from '@app/notification';
 import { GlobalConfigModule } from '@app/global-config';
@@ -42,6 +43,7 @@ import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 
     ParameterModule,
     UserModule,
+    GroupModule,
     AuthModule,
     NotificationModule,
     GlobalConfigModule,
