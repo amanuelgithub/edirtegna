@@ -1,54 +1,65 @@
-export enum GroupRole {
-  MEMBER = 'member',
-  ADMIN = 'admin',
-  LEADER = 'leader',
-}
+import { EnumValues } from './enum-type';
 
-export enum MembershipStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-}
+export const GROUP_ROLE = {
+  MEMBER: 'member',
+  ADMIN: 'admin',
+  LEADER: 'leader',
+} as const;
+export type GroupRole = EnumValues<typeof GROUP_ROLE>;
 
-export enum ContributionFrequency {
-  ONE_TIME = 'one_time',
-  WEEKLY = 'weekly',
-  MONTHLY = 'monthly',
-  ANNUALLY = 'annually',
-}
+export const MEMBERSHIP_STATUS = {
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+} as const;
+export type MembershipStatus = EnumValues<typeof MEMBERSHIP_STATUS>;
 
-export enum ContributionStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-}
+export const CONTRIBUTION_FREQUENCY = {
+  ONE_TIME: 'one_time',
+  WEEKLY: 'weekly',
+  MONTHLY: 'monthly',
+  ANNUALLY: 'annually',
+} as const;
+export type ContributionFrequency = EnumValues<typeof CONTRIBUTION_FREQUENCY>;
 
-export enum TransactionType {
-  CONTRIBUTION = 'contribution',
-  EXPENSE = 'expense',
-  DONATION = 'donation',
-}
+export const CONTRIBUTION_STATUS = {
+  PENDING: 'pending',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+export type ContributionStatus = EnumValues<typeof CONTRIBUTION_STATUS>;
 
-export enum EventType {
-  MEETING = 'meeting',
-  MEMORIAL = 'memorial',
-  SOCIAL = 'social',
-  EMERGENCY = 'emergency',
-}
+export const TRANSACTION_TYPE = {
+  CONTRIBUTION: 'contribution',
+  EXPENSE: 'expense',
+  DONATION: 'donation',
+} as const;
+export type TransactionType = EnumValues<typeof TRANSACTION_TYPE>;
 
-export enum RequestStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  RESOLVED = 'resolved',
-  DENIED = 'denied',
-}
+export const EVENT_TYPE = {
+  MEETING: 'meeting',
+  MEMORIAL: 'memorial',
+  SOCIAL: 'social',
+  EMERGENCY: 'emergency',
+} as const;
+export type EventType = EnumValues<typeof EVENT_TYPE>;
 
-export enum PaymentType {
-  CONTRIBUTION = 'contribution',
-  DONATION = 'donation',
-}
+export const REQUEST_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  RESOLVED: 'resolved',
+  DENIED: 'denied',
+} as const;
+export type RequestStatus = EnumValues<typeof REQUEST_STATUS>;
 
-export enum PaymentStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-}
+export const PAYMENT_TYPE = {
+  CONTRIBUTION: 'contribution',
+  DONATION: 'donation',
+} as const;
+export type PaymentType = EnumValues<typeof PAYMENT_TYPE>;
+
+export const PAYMENT_STATUS = {
+  PENDING: 'pending',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+} as const;
+export type PaymentStatus = EnumValues<typeof PAYMENT_STATUS>;

@@ -1,4 +1,4 @@
-import { BaseEntity, EventType } from '@app/shared';
+import { BaseEntity, EVENT_TYPE, EventType } from '@app/shared';
 import { Entity, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { GroupEntity } from './group.entity';
 import { UserEntity } from '../user/user.entity';
@@ -21,7 +21,7 @@ export class EventEntity extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: EventType,
+    enum: EVENT_TYPE,
   })
   eventType: EventType;
 

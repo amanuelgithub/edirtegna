@@ -1,0 +1,23 @@
+<!-- brainstorm the database schema for this application -->
+
+- Users
+  - already exists
+- Groups (Edir Groups)
+  - purpose: represents each group edir
+- Group Memberships
+  - purpose: manage the many to many relationship between edirs and users
+- Contributions
+  - purpose: tracks periodic contributions made by group members
+- Financial Transactions/Ledger
+  - purpose: provides a transparent ledger for all group financial activities
+- Events
+  - purpose: schedule and mange events, such as meetings, memorials or group gatherings
+- Messages / Forum
+  - purpose: facilitate in-app communication and group discussions
+- Emergency Request
+  - purpose: allows members to request urgent support during emergencies
+- Digital Archives
+  - purpose: manages storage and retrieval of important group document and records
+- Payment Transactions (optional)
+  - purpose: track integration details from external payment system
+-

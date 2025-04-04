@@ -1,4 +1,4 @@
-import { BaseEntity, TransactionType } from '@app/shared';
+import { BaseEntity, TRANSACTION_TYPE, TransactionType } from '@app/shared';
 import { Entity, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { GroupEntity } from './group.entity';
 import { UserEntity } from '../user/user.entity';
@@ -15,7 +15,7 @@ export class FinancialTransactionEntity extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: TransactionType,
+    enum: TRANSACTION_TYPE,
   })
   transactionType: TransactionType;
 

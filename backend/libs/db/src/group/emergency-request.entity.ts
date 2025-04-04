@@ -1,4 +1,4 @@
-import { BaseEntity, RequestStatus } from '@app/shared';
+import { BaseEntity, REQUEST_STATUS, RequestStatus } from '@app/shared';
 import { Entity, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { GroupEntity } from './group.entity';
 import { UserEntity } from '../user/user.entity';
@@ -31,8 +31,8 @@ export class EmergencyRequestEntity extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: RequestStatus,
-    default: RequestStatus.PENDING,
+    enum: REQUEST_STATUS,
+    default: REQUEST_STATUS.PENDING,
   })
   status: RequestStatus;
 

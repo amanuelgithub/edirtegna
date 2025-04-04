@@ -1,4 +1,4 @@
-import { BaseEntity, GroupRole, MembershipStatus } from '@app/shared';
+import { BaseEntity, GROUP_ROLE, MEMBERSHIP_STATUS, GroupRole, MembershipStatus } from '@app/shared';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, JoinColumn } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 import { GroupEntity } from './group.entity';
@@ -26,15 +26,15 @@ export class GroupMembershipEntity extends BaseEntity {
 
   @Column({
     type: 'enum',
-    enum: GroupRole,
-    default: GroupRole.MEMBER,
+    enum: GROUP_ROLE,
+    default: GROUP_ROLE.MEMBER,
   })
   role: GroupRole;
 
   @Column({
     type: 'enum',
-    enum: MembershipStatus,
-    default: MembershipStatus.ACTIVE,
+    enum: MEMBERSHIP_STATUS,
+    default: MEMBERSHIP_STATUS.ACTIVE,
   })
   status: MembershipStatus;
 
