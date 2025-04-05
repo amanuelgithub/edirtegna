@@ -1,2 +1,3 @@
 export * from './parameter.module';
-export * from './parameter.service';
+export * from './dtos';
+export * from './services';
