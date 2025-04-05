@@ -15,6 +15,10 @@ import { MessageEntity } from '../group/message.entity';
 import { EmergencyRequestEntity } from '../group/emergency-request.entity';
 import { DigitalArchiveEntity } from '../group/digital-archive.entity';
 import { PaymentTransactionEntity } from '../group/payment-transaction.entity';
+import { MembershipRequestEntity } from '../group/membership-request.entity';
+import { MembershipRequestVoteEntity } from '../group/membership-request-vote.entity';
+import { MemberRelativeEntity } from '../group/member-relatives.entity';
+import { MemberRelativeAdditionRequestEntity } from '../group/member-relative-addition-request.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -100,6 +104,18 @@ export class UserEntity extends BaseEntity {
 
   @OneToMany(() => PaymentTransactionEntity, (payment) => payment.user, { nullable: true })
   paymentTransactions: PaymentTransactionEntity[];
+
+  @OneToMany(() => MembershipRequestEntity, (request) => request.user, { nullable: true })
+  membershipRequests: MembershipRequestEntity[];
+
+  @OneToMany(() => MembershipRequestVoteEntity, (vote) => vote.request, { nullable: true })
+  membershipRequestVotes: MembershipRequestVoteEntity[];
+
+  @OneToMany(() => MemberRelativeEntity, (relative) => relative.createdBy, { nullable: true })
+  createdRelatives: MemberRelativeEntity[];
+
+  @OneToMany(() => MemberRelativeAdditionRequestEntity, (request) => request.processedBy, { nullable: true })
+  processedRelativeAdditionRequests: MemberRelativeAdditionRequestEntity[];
 
   // agents
   toDto() {

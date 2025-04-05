@@ -7,6 +7,8 @@ import { EventEntity } from './event.entity';
 import { MessageEntity } from './message.entity';
 import { EmergencyRequestEntity } from './emergency-request.entity';
 import { DigitalArchiveEntity } from './digital-archive.entity';
+import { MembershipRequestEntity } from './membership-request.entity';
+import { MemberRelativeAdditionRequestEntity } from './member-relative-addition-request.entity';
 import { instanceToPlain, plainToClass } from 'class-transformer';
 
 @Entity('groups')
@@ -52,6 +54,12 @@ export class GroupEntity extends BaseEntity {
 
   @OneToMany(() => DigitalArchiveEntity, (archive) => archive.group)
   archives: DigitalArchiveEntity[];
+
+  @OneToMany(() => MembershipRequestEntity, (request) => request.group, { nullable: true })
+  membershipRequests: MembershipRequestEntity[];
+
+  @OneToMany(() => MemberRelativeAdditionRequestEntity, (request) => request.membership.group, { nullable: true })
+  relativeAdditionRequests: MemberRelativeAdditionRequestEntity[];
 
   toDto() {
     return plainToClass(GroupEntity, this);

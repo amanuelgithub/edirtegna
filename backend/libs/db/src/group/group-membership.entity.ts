@@ -3,6 +3,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDat
 import { UserEntity } from '../user/user.entity';
 import { GroupEntity } from './group.entity';
 import { ContributionEntity } from './contribution.entity';
+import { MemberRelativeEntity } from './member-relatives.entity';
+import { MemberRelativeAdditionRequestEntity } from './member-relative-addition-request.entity';
 import { instanceToPlain, plainToClass } from 'class-transformer';
 
 @Entity('group_memberships')
@@ -40,6 +42,12 @@ export class GroupMembershipEntity extends BaseEntity {
 
   @OneToMany(() => ContributionEntity, (contribution) => contribution.membership, { nullable: true })
   contributions: ContributionEntity[];
+
+  @OneToMany(() => MemberRelativeEntity, (relative) => relative.membership, { nullable: true })
+  relatives: MemberRelativeEntity[];
+
+  @OneToMany(() => MemberRelativeAdditionRequestEntity, (request) => request.membership, { nullable: true })
+  relativeAdditionRequests: MemberRelativeAdditionRequestEntity[];
 
   toDto() {
     return plainToClass(GroupMembershipEntity, this);
