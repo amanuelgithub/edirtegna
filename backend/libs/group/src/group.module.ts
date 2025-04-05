@@ -1,21 +1,107 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GROUP_ENTITIES } from '@app/db';
-import { CustomerGroupController, ManageGroupController } from './controllers';
-import { GroupService } from './services';
+import {
+  CustomerGroupController,
+  ManageGroupController,
+  AppGroupMembershipController,
+  ManageGroupMembershipController,
+  AppFinancialTransactionController,
+  ManageFinancialTransactionController,
+  AppEventController,
+  ManageEventController,
+  AppMessageController,
+  ManageMessageController,
+  AppEmergencyRequestController,
+  ManageEmergencyRequestController,
+  AppDigitalArchiveController,
+  ManageDigitalArchiveController,
+  AppMemberRelativeAdditionRequestController,
+  ManageMemberRelativeAdditionRequestController,
+  AppContributionController,
+  ManageContributionController,
+  AppMemberRelativeController,
+  ManageMemberRelativeController,
+  AppMembershipRequestVoteController,
+  ManageMembershipRequestVoteController,
+  AppPaymentTransactionController,
+  ManagePaymentTransactionController,
+} from './controllers';
+import {
+  GroupService,
+  GroupMembershipService,
+  FinancialTransactionService,
+  EventService,
+  MessageService,
+  EmergencyRequestService,
+  DigitalArchiveService,
+  MemberRelativeAdditionRequestService,
+  ContributionService,
+  MemberRelativeService,
+  MembershipRequestVoteService,
+  PaymentTransactionService,
+} from './services';
 
 const controllers = [
   // app
   CustomerGroupController,
+  AppGroupMembershipController,
+  AppFinancialTransactionController,
+  AppEventController,
+  AppMessageController,
+  AppEmergencyRequestController,
+  AppDigitalArchiveController,
+  AppMemberRelativeAdditionRequestController,
+  AppContributionController,
+  AppMemberRelativeController,
+  AppMembershipRequestVoteController,
+  AppPaymentTransactionController,
   // manage
   ManageGroupController,
+  ManageGroupMembershipController,
+  ManageFinancialTransactionController,
+  ManageEventController,
+  ManageMessageController,
+  ManageEmergencyRequestController,
+  ManageDigitalArchiveController,
+  ManageMemberRelativeAdditionRequestController,
+  ManageContributionController,
+  ManageMemberRelativeController,
+  ManageMembershipRequestVoteController,
+  ManagePaymentTransactionController,
 ];
-const providers = [GroupService];
+const providers = [
+  GroupService,
+  GroupMembershipService,
+  FinancialTransactionService,
+  EventService,
+  MessageService,
+  EmergencyRequestService,
+  DigitalArchiveService,
+  MemberRelativeAdditionRequestService,
+  ContributionService,
+  MemberRelativeService,
+  MembershipRequestVoteService,
+  PaymentTransactionService,
+];
 
 @Module({
   imports: [TypeOrmModule.forFeature(GROUP_ENTITIES)],
   providers: providers,
   controllers: controllers,
-  exports: [],
+  exports: [
+    GroupService,
+    GroupMembershipService,
+    FinancialTransactionService,
+    EventService,
+    MessageService,
+    EmergencyRequestService,
+    DigitalArchiveService,
+    MemberRelativeAdditionRequestService,
+    ContributionService,
+    MemberRelativeService,
+    MembershipRequestVoteService,
+    PaymentTransactionService,
+  ],
 })
 export class GroupModule {}
