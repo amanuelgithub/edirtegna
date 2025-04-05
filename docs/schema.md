@@ -2,10 +2,18 @@
 
 - Users
   - already exists
+- Relatives
+  - purpose: used to manage list of the relatives the person have
+- Relative Addition Request
+  - purpose: used to add a request to add a new relative to be in the Edir
 - Groups (Edir Groups)
   - purpose: represents each group edir
 - Group Memberships
   - purpose: manage the many to many relationship between edirs and users
+- Membership Request
+  - purpose: use to manage membership request coming from a user
+- Membership Request Vote
+  - purpose: used to manage the decision of adding members from the membership request table
 - Contributions
   - purpose: tracks periodic contributions made by group members
 - Financial Transactions/Ledger
@@ -20,4 +28,3 @@
   - purpose: manages storage and retrieval of important group document and records
 - Payment Transactions (optional)
   - purpose: track integration details from external payment system
--
