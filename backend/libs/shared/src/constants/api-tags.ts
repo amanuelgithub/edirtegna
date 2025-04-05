@@ -11,4 +11,5 @@ export const API_TAGS = {
   PARAMETERS: '10.Parameters',
   TRANSACTIONS: '11.Transactions',
   UPLOAD_RESOURCE: '12. File Uploads',
+  GROUP: '13.Group',
 } as const;
