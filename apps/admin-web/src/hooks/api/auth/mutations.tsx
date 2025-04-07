@@ -1,9 +1,6 @@
 // place to store all mutations for the auth api
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
-// import { axiosInstance } from '@/config/request';
-// import { axiosInstance } from '@/config/request';
 import { axiosInstance } from '@/config';
-import axios from 'axios';
 
 // import { API_URL } from '@/config/env';
 import {

@@ -2,11 +2,7 @@
 
 // create a mutaiton option of logout
 
-import {
-  UseMutationOptions,
-  queryOptions,
-  MutationOptions,
-} from '@tanstack/react-query';
+import { UseMutationOptions, MutationOptions } from '@tanstack/react-query';
 import { logout } from './api';
 
 // export function createGetProfileQueryOptions() {

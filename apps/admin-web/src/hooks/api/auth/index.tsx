@@ -32,12 +32,14 @@ export {
   forgotPasswordSchema,
   logoutSchema,
   changePasswordSchema,
-  // LoginDTO,
-  // RegisterDTO,
-  // SetPasswordDTO,
-  // VerifyOtpDTO,
-  // ResendOtpDTO,
-  // ForgotPasswordDTO,
-  // LogoutDTO,
-  // ChangePasswordDTO,
+} from './types';
+export type {
+  LoginDTO,
+  RegisterDTO,
+  SetPasswordDTO,
+  VerifyOtpDTO,
+  ResendOtpDTO,
+  ForgotPasswordDTO,
+  LogoutDTO,
+  ChangePasswordDTO,
 } from './types';
