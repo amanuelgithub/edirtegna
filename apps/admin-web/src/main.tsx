@@ -1,10 +1,31 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import App from "./app/App";
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AppInitializerProvider } from './context/app-initializer.context';
+import { AppContent } from './context/app.context';
+import { AuthProvider } from './context/auth.context';
+import './index.css';
+import { mainRouter } from './app/app.router';
 
-createRoot(document.getElementById("root")!).render(
+const queryClient = new QueryClient();
+
+createRoot(document.getElementById('root')!).render(
+  // <StrictMode>
+  //   <App />
+  // </StrictMode>
+
   <StrictMode>
-    <App />
-  </StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AppInitializerProvider>
+          <AppContent router={mainRouter} />
+        </AppInitializerProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </StrictMode>,
 );
+// createRoot(document.getElementById('root')!).render(
+//   <StrictMode>
+//     <App />
+//   </StrictMode>
+// );
