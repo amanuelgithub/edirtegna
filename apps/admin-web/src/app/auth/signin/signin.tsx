@@ -117,7 +117,8 @@ export default function SigninPage() {
   };
 
   return (
-    <div className=" flex items-center justify-start gap-40 p-16 flex-col h-screen">
+    <div className=" flex items-center justify-start gap-40 p-16 flex-col min-h-screen bg-gray-100 p-4">
+      {/* <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4"> */}
       <div>{'</Logo>'}</div>
 
       {/* <div className={styles.form_container}> */}
