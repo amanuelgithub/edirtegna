@@ -10,6 +10,14 @@ pinCode: null,
 password: 'k36O72',
 userId: 2
 }
+resend sms detail: {
+name: 'System Root',
+destination: '+251911756708',
+subject: 'RESEND_OTP',
+realm: 'ADMIN',
+otpCode: 7556,
+userId: 2
+}
 
 CUSTOMER CREATED: app access details: {
 name: null,

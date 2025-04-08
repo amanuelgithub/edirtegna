@@ -3,11 +3,14 @@ import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from '@/config';
 import { AxiosError } from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function VerifyOtpPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const identifier = searchParams.get('identifier');
+  const [isResending, setIsResending] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   const mutation = useMutation<
     any,
@@ -32,16 +35,54 @@ export default function VerifyOtpPage() {
         } else if (!data.success && data.statusCode === 416) {
           navigate('/auth/set-password', { state: { phone: identifier } });
         } else if (data.success) {
-          // Assuming onboardingCompleted is handled elsewhere
           navigate('/dashboard');
         }
       }
     },
   });
 
+  const resendOtpMutation = useMutation<
+    any,
+    AxiosError,
+    { identifier: string | null }
+  >({
+    mutationFn: async (values) => {
+      const response = await axiosInstance.post('/web/auth/resend-otp', values);
+      return response.data;
+    },
+    onError: (error: AxiosError) => {
+      console.error(
+        'Error during OTP resend:',
+        error.response?.data || error.message,
+      );
+      message.error('Failed to resend OTP!');
+    },
+    onSuccess: () => {
+      message.success('OTP resent successfully!');
+      setCountdown(30); // Start the 30-second countdown
+    },
+  });
+
   const onFinish = (values: { otp: string }) => {
     mutation.mutate({ ...values, identifier });
   };
+
+  const handleResendOtp = () => {
+    setIsResending(true);
+    resendOtpMutation.mutate(
+      { identifier },
+      {
+        onSettled: () => setIsResending(false),
+      },
+    );
+  };
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
@@ -51,8 +92,6 @@ export default function VerifyOtpPage() {
         style={{
           width: '100%',
           maxWidth: '400px',
-          // borderRadius: '12px',
-          // boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
         }}
         styles={{
           header: {
@@ -99,6 +138,16 @@ export default function VerifyOtpPage() {
             </Button>
           </Form.Item>
         </Form>
+        <div className="flex justify-center mt-4">
+          <Button
+            type="link"
+            onClick={handleResendOtp}
+            disabled={isResending || countdown > 0}
+            style={{ fontWeight: 'bold' }}
+          >
+            {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
+          </Button>
+        </div>
       </Card>
     </div>
   );
