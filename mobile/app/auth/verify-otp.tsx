@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -77,6 +77,39 @@ export default function VerifyOtpScreen() {
     verifyOtp(data);
   };
 
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [resendTimer]);
+
+  const { mutate: resendOtp, isPending: isResending } = useMutation<
+    void,
+    Error,
+    { phone: string }
+  >({
+    mutationFn: async ({ phone }) => {
+      await axiosInstance.post('/app/auth/resend-otp', { phone });
+    },
+    onSuccess: () => {
+      setResendTimer(30);
+      setCanResend(false);
+    },
+  });
+
+  const handleResendCode = () => {
+    if (canResend) {
+      resendOtp({ phone });
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <KeyboardAvoidingView
@@ -143,12 +176,19 @@ export default function VerifyOtpScreen() {
               {/* Resend Code Link */}
               <TouchableOpacity
                 className="items-center mt-4"
-                onPress={() => {
-                  // Implement resend code functionality
-                }}
+                onPress={handleResendCode}
+                disabled={!canResend || isResending}
               >
-                <Text className="text-indigo-600 dark:text-indigo-400 font-medium">
-                  Didn't receive the code? Resend
+                <Text
+                  className={`${
+                    canResend
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-gray-400 dark:text-gray-600'
+                  } font-medium`}
+                >
+                  {canResend
+                    ? "Didn't receive the code? Resend"
+                    : `Resend available in ${resendTimer}s`}
                 </Text>
               </TouchableOpacity>
             </View>
