@@ -55,7 +55,7 @@ export const AppInitializerProvider = ({
       // setIsInitialized(true); // Mark as initialized even on error to avoid hanging
       setTimeout(() => {
         setIsInitialized(true); // Initialization is complete
-      }, 500);
+      }, 300);
     },
   });
 
@@ -78,7 +78,7 @@ export const AppInitializerProvider = ({
       setProfile(userProfileData?.data);
       setTimeout(() => {
         setIsInitialized(true); // Initialization is complete
-      }, 3000);
+      }, 300);
     }
   }, [isProfileSuccess, setProfile, userProfileData]);
 
