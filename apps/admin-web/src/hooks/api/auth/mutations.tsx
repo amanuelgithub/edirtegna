@@ -18,12 +18,12 @@ import { useRouter } from 'expo-router';
 export const login = async (payload: LoginDTO) => {
   console.log('test 1');
   const { data } = await axiosInstance.post<LoginDTO, any>(
-    `/app/auth/login`,
+    `/web/auth/login`,
     payload,
   );
 
   // const { data } = await axios.post<LoginDTO>(
-  //   `http://localhost:3000/api/v1/app/auth/login`,
+  //   `http://localhost:3000/api/v1/web/auth/login`,
   //   payload
   // );
 
@@ -34,7 +34,7 @@ export const login = async (payload: LoginDTO) => {
 
 export const register = async (payload: RegisterDTO) => {
   const { data } = await axiosInstance.post<RegisterDTO, any>(
-    `/app/auth/register`,
+    `/web/auth/register`,
     payload,
   );
   return data;
@@ -42,7 +42,7 @@ export const register = async (payload: RegisterDTO) => {
 
 export const verifyOtp = async (payload: VerifyOtpDTO) => {
   const res = await axiosInstance.post<VerifyOtpDTO, any>(
-    `/app/auth/verify-otp`,
+    `/web/auth/verify-otp`,
     payload,
   );
   return res;
@@ -50,7 +50,7 @@ export const verifyOtp = async (payload: VerifyOtpDTO) => {
 
 export const setPassword = async (payload: SetPasswordDTO) => {
   const { data } = await axiosInstance.post<SetPasswordDTO, any>(
-    `/app/auth/set-password`,
+    `/web/auth/set-password`,
     payload,
   );
   return data;
@@ -58,7 +58,7 @@ export const setPassword = async (payload: SetPasswordDTO) => {
 
 export const forgotPassword = async (payload: ForgotPasswordDTO) => {
   const { data } = await axiosInstance.post<ForgotPasswordDTO, any>(
-    `/app/auth/forgot-password`,
+    `/web/auth/forgot-password`,
     payload,
   );
   return data;
@@ -66,19 +66,19 @@ export const forgotPassword = async (payload: ForgotPasswordDTO) => {
 
 export const resendOtp = async (payload: ResendOtpDTO) => {
   const { data } = await axiosInstance.post<ResendOtpDTO, any>(
-    `/app/auth/resend-otp`,
+    `/web/auth/resend-otp`,
     payload,
   );
   return data;
 };
 
 // export const logout = async (payload: LogoutDTO) => {
-//   const { data } = await axiosInstance.post<LogoutDTO, any>(`/app/auth/logout`);
+//   const { data } = await axiosInstance.post<LogoutDTO, any>(`/web/auth/logout`);
 //   return data;
 // };
 
 // export const deleteAccount = async () => {
-//   const response = await axios.post(`${API_URL}/app/auth/delete-account`);
+//   const response = await axios.post(`${API_URL}/web/auth/delete-account`);
 //   return response.payload;
 // };
 
@@ -87,7 +87,7 @@ export const updateProfile = async (payload: {
   email: string;
 }) => {
   const { data } = await axiosInstance.post(
-    `/app/auth/update-profile`,
+    `/web/auth/update-profile`,
     payload,
   );
   return data;
@@ -95,7 +95,7 @@ export const updateProfile = async (payload: {
 
 export const changePassword = async (payload: ChangePasswordDTO) => {
   const { data } = await axiosInstance.post<ChangePasswordDTO, any>(
-    `/app/auth/change-password`,
+    `/web/auth/change-password`,
     payload,
   );
   return data;
@@ -148,7 +148,7 @@ export const useLoginMutation = () => {
       //   // });
       //   // this.isLoading = false;
       // } else {
-      //   router.replace('/(app)/profile');
+      //   router.replace('/(web)/profile');
       // }
     },
     onError: (error) => {

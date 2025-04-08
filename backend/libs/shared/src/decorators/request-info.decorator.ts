@@ -45,7 +45,7 @@ const getRealmFromAzp = (azp: AzpType): Realm | '' => {
 };
 const getRealmFromOrigin = (origin: string, adminUrlConfig: string): Realm => {
   if (!origin) return 'CUSTOMER';
-  const ADMIN_ORIGINS = ['http://localhost:4200', 'http://localhost', 'https://manage.365.et'];
+  const ADMIN_ORIGINS = ['http://localhost:5173', 'http://localhost'];
   if (adminUrlConfig) ADMIN_ORIGINS.push(adminUrlConfig);
   if (ADMIN_ORIGINS.includes(origin)) return 'ADMIN';
   return 'CUSTOMER';
@@ -104,7 +104,8 @@ export const RequestInfo = createParamDecorator<any, any, IRequestDetail>((param
   const channel = request.channel || getChannel(reqInfo.url, user?.azp);
 
   // realm
-  const realm = request.realm || getRealmFromAzp(user?.azp) || getRealmFromOrigin(headerOrigin, request.app.webAdminUrl);
+  const realm = request.headers.realm || getRealmFromAzp(user?.azp) || getRealmFromOrigin(headerOrigin, request.app.webAdminUrl);
+  console.log('realm ---- >', request.realm, getRealmFromAzp(user?.azp), getRealmFromOrigin(headerOrigin, request.app.webAdminUrl));
   const result = { device, user, ip, channel, realm, createdBy: user?.uid, reqInfo };
   return param ? result[param] : result;
 });
