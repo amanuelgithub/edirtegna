@@ -73,7 +73,7 @@ export default function SigninPage() {
         // this.toastService.success(data?.message || `Login successful!`);
         // this.router.navigate([this.returnUrl]);
         console.log('login data: ', data);
-        // login(mutation.data?.user);
+        login(mutation.data?.user);
         setAccessToken(data?.accessToken);
         setAccessToken(data?.accessToken);
         queryClient.invalidateQueries({ queryKey: ['profile'] });
