@@ -9,6 +9,15 @@ export class CountryEntity extends BaseEntity {
   @Column()
   countryName: string;
 
+  @Column({ nullable: true })
+  prefix?: string;
+
+  @Column({ nullable: true })
+  icon?: string;
+
+  @Column({ default: false, nullable: true })
+  isActive?: boolean;
+
   // States
   @OneToMany(() => StateEntity, (o: StateEntity) => o.country, { nullable: true })
   states?: StateEntity[];
