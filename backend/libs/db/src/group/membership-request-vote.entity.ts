@@ -1,14 +1,8 @@
-import { BaseEntity } from '@app/shared';
+import { BaseEntity, VOTE_TYPE, VoteType } from '@app/shared';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { MembershipRequestEntity } from './membership-request.entity';
 import { instanceToPlain, plainToClass } from 'class-transformer';
 import { UserEntity } from '../user/user.entity';
-
-export const VOTE_TYPE = {
-  APPROVE: 'approve',
-  REJECT: 'reject',
-} as const;
-export type VoteType = keyof typeof VOTE_TYPE;
 
 @Entity('join_votes')
 export class MembershipRequestVoteEntity extends BaseEntity {

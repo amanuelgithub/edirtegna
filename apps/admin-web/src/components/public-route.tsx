@@ -8,13 +8,13 @@ import { useLayoutEffect } from 'react';
 // }
 
 const PublicRoute: React.FC = () => {
-  const { user } = useAuth();
+  const { user, accessToken: token } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   // console.log('user:', user);
 
   useLayoutEffect(() => {
-    if (user) {
+    if (user || token) {
       console.log('public route -> ', user);
       // return <Navigate to="/auth/signin" replace state={{ from: location }} />;
       // redirect back to the previous page

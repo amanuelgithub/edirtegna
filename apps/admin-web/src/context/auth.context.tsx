@@ -7,8 +7,7 @@ import React, {
 } from 'react';
 
 import { axiosInstance } from '@/config';
-
-type User = any;
+import { User } from '@/core/models';
 
 interface AuthContextProps {
   accessToken: string;
