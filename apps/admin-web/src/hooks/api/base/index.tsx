@@ -10,7 +10,7 @@ export const paginationSchema = z.object({
   // filter: z.object({}).optional(),
 });
 
-export type PaginationDTO = z.infer<typeof paginationSchema>;
+export type PaginationType = z.infer<typeof paginationSchema>;
 
 // data source / list with pagination
 export interface DataSource<T> {

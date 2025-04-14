@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { countryKeys } from './query-keys';
 import { axiosInstance } from '@/config';
 import { Country } from '@/core/models';
-import { PaginationDTO } from '../../base';
+import { PaginationType } from '../../base';
 import { DataSource } from '../../base';
 
 // ********** QUERY OPTION DEFINITIONS ********** //
@@ -16,7 +16,7 @@ import { DataSource } from '../../base';
 
 // ********** QUERY HOOKS ********** //
 // export function useListCountries(filters: Partial<CountryDTO> & PaginationDTO) {
-export function useListCountries(options: PaginationDTO) {
+export function useListCountries(options: PaginationType) {
   return useQuery({
     queryKey: countryKeys.specificCountries(options),
     queryFn: async () => {
@@ -38,12 +38,22 @@ export function useListCountries(options: PaginationDTO) {
       const { data } = await axiosInstance.get<DataSource<Country>>(
         `/manage/countries?`,
         {
-          //   const { data } = await axiosInstance.get(`/manage/countries?`, {
           params,
         },
       );
       return data;
     },
+  });
+}
+
+export function useGetCountryById(id?: number) {
+  return useQuery({
+    queryKey: countryKeys.getCountryById(id),
+    queryFn: async () => {
+      const { data } = await axiosInstance.get(`/manage/countries/${id}`);
+      return data;
+    },
+    enabled: !!id, // Only fetch if `id` is provided
   });
 }
 // ********** QUERY HOOKS ********** //

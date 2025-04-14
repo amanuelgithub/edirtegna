@@ -4,7 +4,7 @@ import { State } from './state.model';
 
 export interface Country extends BaseModel {
   countryName: string;
-  prefix?: string;
+  phonePrefix?: string;
   icon?: string;
   isActive?: boolean;
   states?: State[];
