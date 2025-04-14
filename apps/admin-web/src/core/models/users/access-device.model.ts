@@ -1,3 +1,5 @@
+import { UserAccess } from "./user-access.model";
+
 export interface AccessDevice {
   id: number;
   ua?: string;

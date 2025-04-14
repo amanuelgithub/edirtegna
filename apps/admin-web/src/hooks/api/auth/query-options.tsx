@@ -1,4 +1,3 @@
-import axiosInstance from '@/config/request';
 import { queryOptions } from '@tanstack/react-query';
 import { getProfile } from './api';
 

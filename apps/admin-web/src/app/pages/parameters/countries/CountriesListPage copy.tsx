@@ -1,42 +1,64 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Avatar, Button, Card, Input, Table, Flex, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { useSearchParams } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { axiosInstance } from '@/config';
 import AddCountry from './AddCountry';
-import { useListCountries } from '@/hooks/api/parameters/country';
-import { Country } from '@/core/models';
-import { Order } from '@/core/enums';
+
+// Define interfaces
+interface IBaseModel {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface ICountry extends IBaseModel {
+  countryName: string;
+  shortName: string;
+  icon?: string;
+  phonePrefix: string;
+  isActive: boolean;
+}
 
 export default function CountriesListPage() {
   // Read URL search parameters
+  // const searchUrlParams = useSearchParams();
   const [searchUrlParams] = useSearchParams();
+  const navigate = useNavigate();
+  // const initialPage = parseInt(searchUrlParams.get('page') || '1');
   const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '1');
-  const initialSortBy = searchUrlParams.get('sortBy') || 'id';
-  const initialSort = initialSortBy.split(':')[0] || 'id';
-  const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
+  const initialTake = parseInt(searchUrlParams.get('take') || '5');
+  const initialSort = searchUrlParams.get('sort') || 'id';
+  const initialOrder = searchUrlParams.get('order') || 'DESC';
   const initialQ = searchUrlParams.get('search') || '';
-
-  const [sort, setSort] = useState(initialSort);
-  const [order, setOrder] = useState<Order>(initialOrder);
-  const [search, setSearch] = useState(initialQ);
 
   // Initialize pagination state from URL
   const [pagination, setPagination] = useState({
     current: initialPage,
-    pageSize: initialLimit,
+    pageSize: initialTake,
   });
+  const [search, setSearch] = useState(initialQ);
   const [id, setId] = useState<number | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data, isLoading, error } = useListCountries({
-    page: pagination.current,
-    limit: pagination.pageSize,
-    sort,
-    order,
-    search,
+  // Fetch countries using tanstack query
+  const queryClient = useQueryClient();
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['countries', pagination, search],
+
+    queryFn: async () => {
+      const response = await axiosInstance.get(
+        `/manage/countries?page=${pagination.current}&take=${pagination.pageSize}&sort=${initialSort}&order=${initialOrder}&search=${search}`,
+      );
+      // return response.json();
+      return response.data;
+    },
+    // {
+    //   keepPreviousData: true,
+    // },
   });
 
   const handleTableChange = (
@@ -44,14 +66,21 @@ export default function CountriesListPage() {
     filters: any,
     sorter: any,
   ) => {
-    console.log('table sorter: ', sorter);
     setPagination(paginationData);
-    setSort(sorter.field ?? 'id');
-    setOrder(sorter?.order === 'ascend' ? 'ASC' : 'DESC');
+    navigate(
+      `?page=${paginationData.current}&take=${paginationData.pageSize}&sort=${
+        sorter.field ?? 'id'
+      }&order=${sorter?.order === 'ascend' ? 'ASC' : 'DESC'}&search=${search}`,
+    );
+    queryClient.invalidateQueries({ queryKey: ['countries'] });
   };
 
   const handleTableFullTextSearch = (value: string) => {
     setSearch(value);
+    navigate(
+      `?page=${pagination.current}&take=${pagination.pageSize}&sort=${initialSort}&order=${initialOrder}&search=${value}`,
+    );
+    queryClient.invalidateQueries({ queryKey: ['countries'] });
   };
 
   if (error) {
@@ -73,7 +102,7 @@ export default function CountriesListPage() {
     setId(undefined);
   };
 
-  const columns: TableProps<Country>['columns'] = [
+  const columns: TableProps<ICountry>['columns'] = [
     {
       title: 'Country Name',
       dataIndex: 'countryName',
@@ -196,7 +225,7 @@ export default function CountriesListPage() {
         />
       </Card>
 
-      <Table<Country>
+      <Table<ICountry>
         columns={columns}
         rowKey={(record) => record.id}
         loading={isLoading}
@@ -205,7 +234,7 @@ export default function CountriesListPage() {
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: data?.meta?.totalItems,
+          total: data?.meta.count,
           showSizeChanger: true,
           showQuickJumper: true,
           pageSizeOptions: ['5', '10', '20', '50', '100'],

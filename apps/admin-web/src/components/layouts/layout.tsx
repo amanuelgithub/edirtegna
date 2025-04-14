@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Avatar, Breadcrumb, Drawer, Button, Grid } from 'antd';
+import {
+  Layout,
+  Menu,
+  Avatar,
+  Breadcrumb,
+  Drawer,
+  Button,
+  Grid,
+  Dropdown,
+} from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -11,6 +20,15 @@ import { useLocation } from 'react-router-dom'; // Updated import
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
+
+// Define the dropdown menu items.
+const menu = (
+  <Menu onClick={({ key }) => console.log(`Clicked on ${key}`)}>
+    <Menu.Item key="profile">Profile</Menu.Item>
+    <Menu.Item key="settings">Settings</Menu.Item>
+    <Menu.Item key="logout">Logout</Menu.Item>
+  </Menu>
+);
 
 export function AdminDashboardLayout({
   children,
@@ -140,7 +158,15 @@ export function AdminDashboardLayout({
             />
           )}
           <div style={{ flex: 1 }}>Admin Dashboard</div>
-          <Avatar icon={<UserOutlined />} />
+          {/* <Avatar icon={<UserOutlined />} /> */}
+          {/* Right side: Avatar with dropdown */}
+          <Dropdown overlay={menu} trigger={['click']}>
+            <Avatar
+              icon={<UserOutlined />}
+              style={styles.avatar}
+              alt="User Avatar"
+            />
+          </Dropdown>
         </Header>
 
         {/* Breadcrumb and Content */}
@@ -176,3 +202,22 @@ export function AdminDashboardLayout({
     </Layout>
   );
 }
+
+const styles = {
+  nav: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 20px',
+    height: '60px',
+    background: '#001529',
+    color: '#fff',
+  },
+  logo: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+  },
+  avatar: {
+    cursor: 'pointer',
+  },
+};

@@ -64,7 +64,7 @@ export default function SigninPage() {
         //       });
         //     }
         //   });
-        navigate('/auth/verify-otp');
+        navigate(`/auth/verify-otp?identifier=${values.identifier}`);
       } else if (!data.success) {
         // show error message using antd message
         message.error(data?.message || 'Login failed!');

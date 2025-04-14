@@ -1,9 +1,23 @@
 import { CountryEntity } from '@app/db/parameters';
 import { FilterOperator, PaginateConfig, SelectOneConfig, copyConfig } from '@app/shared';
+import { PartialType } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
-export class CreateCountryDto {}
+export class CreateCountryDto {
+  @IsString()
+  countryName: string;
 
-export class UpdateCountryDto extends CreateCountryDto {}
+  @IsString()
+  shortName?: string;
+
+  @IsString()
+  phonePrefix?: string;
+
+  @IsString()
+  icon?: string;
+}
+
+export class UpdateCountryDto extends PartialType(CreateCountryDto) {}
 
 export const CountryPageConfigDto: PaginateConfig<CountryEntity> = {
   sortableColumns: ['countryName'],

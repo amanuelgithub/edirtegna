@@ -10,7 +10,10 @@ export class CountryEntity extends BaseEntity {
   countryName: string;
 
   @Column({ nullable: true })
-  prefix?: string;
+  shortName?: string;
+
+  @Column({ nullable: true })
+  phonePrefix?: string;
 
   @Column({ nullable: true })
   icon?: string;

@@ -1,0 +1,45 @@
+/* Navbar container */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  padding: 0 24px;
+  height: 64px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #ffffff;
+}
+
+/* Logo styling */
+.navbar-logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* Avatar container for alignment and cursor style */
+.navbar-avatar {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Avatar trigger for dropdown (combines Avatar and dropdown icon) */
+.avatar-trigger {
+  display: flex;
+  align-items: center;
+}
+
+/* Avatar style overrides */
+.avatar {
+  background-color: #ffffff;
+  color: #764ba2;
+  border: 2px solid #ffffff;
+}
+
+/* Dropdown icon styling */
+.dropdown-icon {
+  font-size: 12px;
+  color: #ffffff;
+  margin-left: 8px;
+}
