@@ -9,12 +9,13 @@ import { useListCountries } from '@/hooks/api/parameters/country';
 import { Country } from '@/core/models';
 import { Order } from '@/core/enums';
 import AddCountry2 from './AddCountry2';
+import Add from './add';
 
 export default function CountriesListPage() {
   // Read URL search parameters
   const [searchUrlParams] = useSearchParams();
   const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '1');
+  const initialLimit = parseInt(searchUrlParams.get('limit') || '10');
   const initialSortBy = searchUrlParams.get('sortBy') || 'id';
   const initialSort = initialSortBy.split(':')[0] || 'id';
   const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
@@ -216,6 +217,16 @@ export default function CountriesListPage() {
       />
 
       {isModalOpen && (
+        <Add
+          id={id}
+          isModalOpen={isModalOpen}
+          handleCancel={handleCancel}
+          handleOk={handleOk}
+          onSubmit={handleOk}
+        />
+      )}
+
+      {/* {isModalOpen && (
         <AddCountry2
           id={id}
           isModalOpen={isModalOpen}
@@ -223,7 +234,7 @@ export default function CountriesListPage() {
           handleOk={handleOk}
           // onSubmit={handleOk}
         />
-      )}
+      )} */}
     </>
   );
 }

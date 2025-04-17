@@ -1,150 +1,244 @@
-import React from 'react';
-import { Form, Input, Button, Flex, Modal, Select, Space } from 'antd';
-import useForm from '@app/admin-ui/hooks';
-import { trpc } from '@app/admin-ui/trpc/trpc-client';
-
+import { useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Form, Input, Button, Upload, message, Modal, Checkbox } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import {
-  createCountrySchema,
-  CreateCountrySchemaType,
-} from '@ethio-tutora/shared';
-import { countryEmojis, getFlagEmoji } from '@app/admin-ui/utils';
+  useCreateCountryMutation,
+  useGetCountryById,
+  useUpdateCountryMutation,
+} from '@/hooks/api/parameters';
 
-type RegisterPageProps = {
-  id: number | undefined; // id -
+type AddCountryProps = {
+  id: number | undefined;
   isModalOpen: boolean;
   handleCancel: () => void;
   handleOk: () => void;
   onSubmit: (isSaved: boolean) => void;
 };
 
-export default function RegisterPage({
+export default function Add({
   id,
   isModalOpen,
   handleCancel,
   handleOk,
   onSubmit,
-}: RegisterPageProps) {
-  const trpcContext = trpc.useUtils();
-  // const [mode, setMode] = React.useState<'create' | 'edit'>('create');
-  const { formField, inputField } = useForm<CreateCountrySchemaType>({
-    schema: createCountrySchema,
-    onSubmit: (data, error) => {
-      console.log(data, error);
-      if (!data) return;
+}: AddCountryProps) {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+  const [previewImage, setPreviewImage] = useState(null);
+  // new
 
-      if (id) {
-        updateCountryMutation.mutate({
-          res: { id: id, ...data, icon: getFlagEmoji(data.shortName) },
-        });
-      } else {
-        createCountryMutation.mutate({
-          ...data,
-          icon: getFlagEmoji(data.shortName),
-        } as CreateCountrySchemaType);
-      }
-    },
-  });
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [fileError, setFileError] = useState(false);
 
-  const createCountryMutation = trpc.countries.create.useMutation({
-    onSuccess() {
-      trpcContext.countries.findAll.invalidate();
-      // close the modal
-      onSubmit(true);
-    },
-    onSettled(data, error, variables, context) {
-      console.log('onSettled', data, error, variables, context);
-      // reset the form
-      formField.form.resetFields();
-    },
-  });
-  const updateCountryMutation = trpc.countries.update.useMutation({
-    onSuccess() {
-      trpcContext.countries.findAll.invalidate();
-      formField.form.resetFields();
-      // close the modal
-      onSubmit(true);
-    },
-    onSettled(data, error, variables, context) {
-      console.log('onSettled', data, error, variables, context);
-    },
-  });
-  const findOneCountryQuery = trpc.countries.findOne.useQuery(
-    { id: id! },
-    {
-      enabled: !!id,
-    },
-  );
+  const { data: countryData, isLoading: isFetching } = useGetCountryById(id);
+  const {
+    mutate: createMutate,
+    isPending: isCreationPending,
+    isSuccess: isCreationSuccess,
+  } = useCreateCountryMutation();
+  const {
+    mutate: updateMutate,
+    isPending: isUpdatePending,
+    isSuccess: isUpdateSuccess,
+  } = useUpdateCountryMutation();
 
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log('ID:', id);
+    console.log('Country Data:', countryData);
+  }, [countryData, id]);
+
+  const onFinish = (data) => {
     if (id) {
-      formField.form.setFieldsValue(
-        findOneCountryQuery.data as CreateCountrySchemaType,
-      );
+      updateMutate({ id, ...data });
     } else {
-      formField.form.resetFields();
+      createMutate(data);
     }
-  }, [findOneCountryQuery.data]);
+  };
+
+  useEffect(() => {
+    if (isCreationSuccess) {
+      message.success('Country created successfully!');
+      handleOk();
+      onSubmit(true);
+    }
+    if (isUpdateSuccess) {
+      message.success('Country updated successfully!');
+      handleOk();
+      onSubmit(true);
+    }
+  }, [isCreationSuccess, isUpdateSuccess]);
+
+  const beforeUpload = (file: File) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG files!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must be smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M ? false : Upload.LIST_IGNORE;
+  };
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    setPreviewImage(file.preview);
+  };
 
   return (
     <Modal
       title={id ? 'Edit Country' : 'Add Country'}
       open={isModalOpen}
-      footer={''}
+      footer={null}
       onOk={handleOk} // hidden, but required
       onCancel={handleCancel} // hidden, but required
       okButtonProps={{ hidden: true }}
       cancelButtonProps={{ hidden: true }}
     >
-      <Form
-        name="addCountry"
-        {...formField}
-        form={formField.form}
-        layout="vertical"
-      >
-        <Form.Item {...inputField} name="countryName" label="Country Name">
-          <Input placeholder="Please input your country name" />
-        </Form.Item>
-
-        <Form.Item {...inputField} name="shortName" label="Short Name">
-          <Select
-            showSearch
-            onClear={() => {}}
-            style={{ width: '100%' }}
-            placeholder="select one country"
-            // onChange={handleChange}
-            options={Object.entries(countryEmojis).map(
-              ([countryCode, countryEmoji]) => {
-                return {
-                  label: `${countryEmoji} ${countryCode}`,
-                  value: countryCode,
-                  emoji: countryEmoji,
-                  desc: countryCode,
-                  data: { emoji: countryEmoji, desc: countryCode },
-                };
-              },
-            )}
-            optionRender={(option) => (
-              <Space>
-                <span role="img" aria-label={option.data.label}>
-                  {option.data.emoji}
-                </span>
-                {option.data.desc}
-              </Space>
+      <Form layout="vertical" onFinish={handleSubmit(onFinish)}>
+        <Form.Item label="Logo /Flag">
+          <Controller
+            name="icon"
+            control={control}
+            rules={{
+              required: 'Logo is required',
+              validate: (value) =>
+                (value && value.length > 0) || 'Please upload an image',
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <Upload
+                  listType="picture-circle"
+                  // beforeUpload={() => false}
+                  beforeUpload={beforeUpload}
+                  accept="image/*"
+                  fileList={fileList}
+                  maxCount={1}
+                  onChange={({ fileList }) => {
+                    setFileList(fileList);
+                    field.onChange(fileList);
+                  }}
+                >
+                  {fileList.length < 1 && '+ Upload'}
+                </Upload>
+                {error && <span style={{ color: 'red' }}>{error.message}</span>}
+              </>
             )}
           />
         </Form.Item>
 
-        <Form.Item {...inputField} name="phonePrefix" label="Phone Prefix">
-          <Input placeholder="Please input phone prefix" />
+        <Form.Item
+          label="Country Name"
+          validateStatus={errors.countryName ? 'error' : ''}
+          help={errors.countryName && 'Country Name is required'}
+        >
+          <Controller
+            name="countryName"
+            control={control}
+            rules={{ required: 'Country name is required' }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <Input {...field} placeholder="Enter country name" />
+                {/* {error && <span style={{ color: 'red' }}>{error.message}</span>} */}
+              </>
+            )}
+          />
         </Form.Item>
 
-        <Flex justify="center">
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {id ? 'Update' : 'Save'}
-            </Button>
-          </Form.Item>
-        </Flex>
+        <Form.Item label="Short Name">
+          <Controller
+            name="shortName"
+            control={control}
+            rules={{ required: 'Short name is required' }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <Input {...field} placeholder="Enter short name" />
+                {error && <span style={{ color: 'red' }}>{error.message}</span>}
+              </>
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item label="Phone Prefix">
+          <Controller
+            name="phonePrefix"
+            control={control}
+            rules={{ required: 'Phone prefix is required' }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <Input {...field} placeholder="Enter phone prefix" />
+                {error && <span style={{ color: 'red' }}>{error.message}</span>}
+              </>
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item name="isActive" valuePropName="checked">
+          <Checkbox>Is Active</Checkbox>
+        </Form.Item>
+
+        {/* <Form.Item label="Logo">
+          <Controller
+            name="icon"
+            control={control}
+            rules={{
+              required: 'Logo is required',
+              validate: (value) =>
+                (value && value.length > 0) || 'Please upload an image',
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <Upload
+                  listType="picture-card"
+                  beforeUpload={beforeUpload}
+                  maxCount={1}
+                  onPreview={handlePreview}
+                  onChange={(info) => {
+                    field.onChange(info.fileList);
+                    if (info.fileList && info.fileList.length > 0) {
+                      handlePreview(info.fileList[0]);
+                    } else {
+                      setPreviewImage(null);
+                    }
+                  }}
+                >
+                  <div>
+                    <UploadOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                </Upload>
+                {error && <span style={{ color: 'red' }}>{error.message}</span>}
+              </>
+            )}
+          />
+          {previewImage && (
+            <img
+              src={previewImage}
+              alt="Preview"
+              style={{ width: '100%', marginTop: 10 }}
+            />
+          )}
+        </Form.Item> */}
+
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={isCreationPending || isUpdatePending}
+          >
+            Submit
+          </Button>
+        </Form.Item>
       </Form>
     </Modal>
   );

@@ -108,9 +108,9 @@ export default function AddCountry({
               fileList={fileList}
               onChange={({ fileList }) => setFileList(fileList)}
               beforeUpload={() => false}
-              accept="file"
-              // maxCount={1}
-              // accept="image/*"
+              // accept="file"
+              maxCount={1}
+              accept="image/*"
             >
               {fileList.length < 1 && '+ Upload'}
             </Upload>

@@ -62,6 +62,7 @@ AddCountryProps) => {
     formData.append('isActive', data.isActive ? 'true' : 'false');
 
     if (data.icon && data.icon.length > 0) {
+      console.log('icon: ', data.icon[0]);
       formData.append('icon', data.icon[0].originFileObj);
     }
 

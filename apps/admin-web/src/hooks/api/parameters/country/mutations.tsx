@@ -17,13 +17,24 @@ export function useCreateCountryMutation(
 
   return useMutation({
     mutationFn: async (payload) => {
-      console.log('payload', payload);
+      const formData = new FormData();
+      formData.append('countryName', payload.countryName);
+      formData.append('shortName', payload.shortName);
+      formData.append('phonePrefix', payload.phonePrefix);
+      formData.append('isActive', payload.isActive ? 'true' : 'false');
+
+      if (payload.icon && payload.icon.length > 0) {
+        formData.append('icon', payload.icon[0].originFileObj);
+      }
+
       const { data } = await axiosInstance.post<Country>(
         '/manage/countries',
-        payload,
-        // {
-        //   withCredentials: true,
-        // },
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       );
       return data;
     },
@@ -39,19 +50,27 @@ export function useCreateCountryMutation(
 }
 
 export function useUpdateCountryMutation(
-  //   countryId: number,
-  //   pageOptions: PaginationType,
   options?: UseMutationOptions<Country, AxiosError, any>,
 ): UseMutationResult<Country, AxiosError, any> {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // mutationFn: async (payload: any) => {
-    // payload could be a form data
     mutationFn: async (payload: any) => {
+      const formData = new FormData();
+      formData.append('countryName', payload.countryName);
+      formData.append('shortName', payload.shortName);
+      formData.append('phonePrefix', payload.phonePrefix);
+      formData.append('isActive', payload.isActive);
+      formData.append('icon', payload.icon[0].originFileObj);
+
       const { data } = await axiosInstance.put<Country>(
         `/manage/countries/${payload.countryId}`,
-        payload,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       );
       return data;
     },
