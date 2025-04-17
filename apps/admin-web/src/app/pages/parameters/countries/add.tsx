@@ -7,6 +7,32 @@ import {
   useGetCountryById,
   useUpdateCountryMutation,
 } from '@/hooks/api/parameters';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const schema = z.object({
+  countryName: z.string().nonempty('Country name is required'),
+  shortName: z.string().nonempty('Short name is required'),
+  phonePrefix: z.string().nonempty('Phone prefix is required'),
+  isActive: z.boolean().default(false).optional(),
+  icon: z
+    .array(
+      z.object({
+        originFileObj: z
+          .instanceof(File)
+          .refine(
+            (file) =>
+              file.size / 1024 / 1024 < 2 &&
+              (file.type === 'image/jpeg' || file.type === 'image/png'),
+            {
+              message: 'File must be a JPG/PNG and smaller than 2MB',
+            },
+          ),
+      }),
+    )
+    .min(1, 'Please upload an image'),
+  // .optional(),
+});
 
 type AddCountryProps = {
   id: number | undefined;
@@ -27,12 +53,12 @@ export default function Add({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
-  const [previewImage, setPreviewImage] = useState(null);
-  // new
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
 
   const [fileList, setFileList] = useState<any[]>([]);
-  const [fileError, setFileError] = useState(false);
+  // const [fileError, setFileError] = useState(false);
 
   const { data: countryData, isLoading: isFetching } = useGetCountryById(id);
   const {
@@ -84,42 +110,29 @@ export default function Add({
     return isJpgOrPng && isLt2M ? false : Upload.LIST_IGNORE;
   };
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    setPreviewImage(file.preview);
-  };
-
   return (
     <Modal
       title={id ? 'Edit Country' : 'Add Country'}
       open={isModalOpen}
       footer={null}
-      onOk={handleOk} // hidden, but required
-      onCancel={handleCancel} // hidden, but required
+      onOk={handleOk}
+      onCancel={handleCancel}
       okButtonProps={{ hidden: true }}
       cancelButtonProps={{ hidden: true }}
     >
       <Form layout="vertical" onFinish={handleSubmit(onFinish)}>
-        <Form.Item label="Logo /Flag">
-          <Controller
-            name="icon"
-            control={control}
-            rules={{
-              required: 'Logo is required',
-              validate: (value) =>
-                (value && value.length > 0) || 'Please upload an image',
-            }}
-            render={({ field, fieldState: { error } }) => (
-              <>
+        <div className="flex justify-center items-center">
+          <Form.Item
+            // label="Logo /Flag"
+            validateStatus={errors.icon ? 'error' : ''}
+            help={errors.icon?.message}
+          >
+            <Controller
+              name="icon"
+              control={control}
+              render={({ field }) => (
                 <Upload
                   listType="picture-circle"
-                  // beforeUpload={() => false}
                   beforeUpload={beforeUpload}
                   accept="image/*"
                   fileList={fileList}
@@ -129,56 +142,51 @@ export default function Add({
                     field.onChange(fileList);
                   }}
                 >
-                  {fileList.length < 1 && '+ Upload'}
+                  {fileList.length < 1 && '+ Upload Logo/Flag'}
                 </Upload>
-                {error && <span style={{ color: 'red' }}>{error.message}</span>}
-              </>
+              )}
+            />
+          </Form.Item>
+        </div>
+
+        <Form.Item
+          label="Country Name"
+          validateStatus={errors.countryName ? 'error' : ''}
+          help={errors.countryName?.message}
+        >
+          <Controller
+            name="countryName"
+            control={control}
+            render={({ field }) => (
+              <Input {...field} placeholder="Enter country name" />
             )}
           />
         </Form.Item>
 
         <Form.Item
-          label="Country Name"
-          validateStatus={errors.countryName ? 'error' : ''}
-          help={errors.countryName && 'Country Name is required'}
+          label="Short Name"
+          validateStatus={errors.shortName ? 'error' : ''}
+          help={errors.shortName?.message}
         >
-          <Controller
-            name="countryName"
-            control={control}
-            rules={{ required: 'Country name is required' }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <Input {...field} placeholder="Enter country name" />
-                {/* {error && <span style={{ color: 'red' }}>{error.message}</span>} */}
-              </>
-            )}
-          />
-        </Form.Item>
-
-        <Form.Item label="Short Name">
           <Controller
             name="shortName"
             control={control}
-            rules={{ required: 'Short name is required' }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <Input {...field} placeholder="Enter short name" />
-                {error && <span style={{ color: 'red' }}>{error.message}</span>}
-              </>
+            render={({ field }) => (
+              <Input {...field} placeholder="Enter short name" />
             )}
           />
         </Form.Item>
 
-        <Form.Item label="Phone Prefix">
+        <Form.Item
+          label="Phone Prefix"
+          validateStatus={errors.phonePrefix ? 'error' : ''}
+          help={errors.phonePrefix?.message}
+        >
           <Controller
             name="phonePrefix"
             control={control}
-            rules={{ required: 'Phone prefix is required' }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <Input {...field} placeholder="Enter phone prefix" />
-                {error && <span style={{ color: 'red' }}>{error.message}</span>}
-              </>
+            render={({ field }) => (
+              <Input {...field} placeholder="Enter phone prefix" />
             )}
           />
         </Form.Item>
@@ -186,49 +194,6 @@ export default function Add({
         <Form.Item name="isActive" valuePropName="checked">
           <Checkbox>Is Active</Checkbox>
         </Form.Item>
-
-        {/* <Form.Item label="Logo">
-          <Controller
-            name="icon"
-            control={control}
-            rules={{
-              required: 'Logo is required',
-              validate: (value) =>
-                (value && value.length > 0) || 'Please upload an image',
-            }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <Upload
-                  listType="picture-card"
-                  beforeUpload={beforeUpload}
-                  maxCount={1}
-                  onPreview={handlePreview}
-                  onChange={(info) => {
-                    field.onChange(info.fileList);
-                    if (info.fileList && info.fileList.length > 0) {
-                      handlePreview(info.fileList[0]);
-                    } else {
-                      setPreviewImage(null);
-                    }
-                  }}
-                >
-                  <div>
-                    <UploadOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </div>
-                </Upload>
-                {error && <span style={{ color: 'red' }}>{error.message}</span>}
-              </>
-            )}
-          />
-          {previewImage && (
-            <img
-              src={previewImage}
-              alt="Preview"
-              style={{ width: '100%', marginTop: 10 }}
-            />
-          )}
-        </Form.Item> */}
 
         <Form.Item>
           <Button
