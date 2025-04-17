@@ -4,10 +4,11 @@ import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import AddCountry from './AddCountry';
+// import AddCountry from './AddCountry';
 import { useListCountries } from '@/hooks/api/parameters/country';
 import { Country } from '@/core/models';
 import { Order } from '@/core/enums';
+import AddCountry2 from './AddCountry2';
 
 export default function CountriesListPage() {
   // Read URL search parameters
@@ -215,12 +216,12 @@ export default function CountriesListPage() {
       />
 
       {isModalOpen && (
-        <AddCountry
+        <AddCountry2
           id={id}
           isModalOpen={isModalOpen}
           handleCancel={handleCancel}
           handleOk={handleOk}
-          onSubmit={handleOk}
+          // onSubmit={handleOk}
         />
       )}
     </>

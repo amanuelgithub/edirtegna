@@ -18,8 +18,8 @@ export class CountryService {
     return new DetailResponse(data.toDto());
   }
 
-  async create(body: CreateCountryDto) {
-    const data = this.ds.getRepository(CountryEntity).create({ ...body });
+  async create(body: CreateCountryDto, icon: string) {
+    const data = this.ds.getRepository(CountryEntity).create({ ...body, icon: icon });
     await this.ds.getRepository(CountryEntity).save(data);
     return new DetailResponse(data);
   }

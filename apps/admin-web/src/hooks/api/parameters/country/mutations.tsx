@@ -5,10 +5,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { CountryDTO } from './types';
 import { Country } from '@/core/models';
 import { countryKeys } from './query-keys';
-import { PaginationType } from '../../base';
 import { message } from 'antd';
 import { axiosInstance } from '@/config';
 
@@ -18,10 +16,14 @@ export function useCreateCountryMutation(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload) => {
+      console.log('payload', payload);
       const { data } = await axiosInstance.post<Country>(
         '/manage/countries',
         payload,
+        // {
+        //   withCredentials: true,
+        // },
       );
       return data;
     },
@@ -44,6 +46,8 @@ export function useUpdateCountryMutation(
   const queryClient = useQueryClient();
 
   return useMutation({
+    // mutationFn: async (payload: any) => {
+    // payload could be a form data
     mutationFn: async (payload: any) => {
       const { data } = await axiosInstance.put<Country>(
         `/manage/countries/${payload.countryId}`,

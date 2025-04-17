@@ -17,6 +17,8 @@ import {
   useGetCountryById,
   useUpdateCountryMutation,
 } from '@/hooks/api/parameters/country';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 type AddCountryProps = {
   id: number | undefined;
@@ -28,30 +30,11 @@ type AddCountryProps = {
 
 interface CountryFormValues {
   countryName: string;
+  shortName?: string;
   phonePrefix?: string;
-  icon?: string;
+  // icon?: string;
   isActive?: boolean;
 }
-
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
-
-const beforeUpload = (file: FileType) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
-};
 
 export default function AddCountry({
   id,
@@ -60,8 +43,14 @@ export default function AddCountry({
   handleOk,
   onSubmit,
 }: AddCountryProps) {
-  // const queryClient = useQueryClient();
-  const [form] = Form.useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CountryFormValues>();
+  // } = useForm<any>();
+  const [fileList, setFileList] = React.useState<any[]>([]);
+  const [fileError, setFileError] = React.useState(false);
 
   // Fetch country data for editing
   const { data: countryData, isLoading: isFetching } = useGetCountryById(id);
@@ -70,53 +59,37 @@ export default function AddCountry({
   const { mutate: updateMutate, isPending: isUpdatePending } =
     useUpdateCountryMutation();
 
-  const onFinish = (values: CountryFormValues) => {
-    // mutation.mutate(values);
-    if (id) {
-      updateMutate(values);
-    } else {
-      createMutate(values);
-    }
-  };
-
-  // Populate form fields when editing
-  useEffect(() => {
-    if (id && countryData) {
-      console.log('found form data value: ', countryData);
-      form.setFieldsValue({
-        countryName: countryData?.data?.countryName, // Ensure the field matches the API response
-        phonePrefix: countryData?.data?.phonePrefix,
-        icon: countryData?.data?.icon,
-        isActive: countryData?.data?.isActive,
-      });
-    } else {
-      form.resetFields();
-    }
-  }, [id, countryData, form]);
-
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
-
-  const handleChange: UploadProps['onChange'] = (info) => {
-    if (info.file.status === 'uploading') {
-      setLoading(true);
+  const onFinish = (data: any) => {
+    if (fileList.length === 0) {
+      setFileError(true);
       return;
     }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading(false);
-        setImageUrl(url);
+    setFileError(false);
+    const formData = new FormData();
+    formData.append('firstName', data.firstName);
+    formData.append('lastName', data.lastName);
+    formData.append('icon', fileList[0]?.originFileObj);
+    // formData.append('icon', fileList[0]?.originFileObj);
+
+    console.log('Form Data:', formData);
+    console.log('Data:', data);
+    console.log('File List:', fileList);
+    if (id) {
+      updateMutate({
+        id: id,
+        // data: {
+        //   ...data,
+        //   // icon: fileList[0]?.originFileObj,
+        // },
+      });
+    } else {
+      createMutate({
+        ...data,
+        // icon: fileList[0]
+        icon: fileList[0]?.originFileObj,
       });
     }
   };
-
-  const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  );
 
   return (
     <Modal
@@ -125,80 +98,88 @@ export default function AddCountry({
       footer={null}
       onCancel={handleCancel}
     >
-      <Form
-        form={form}
-        name="add_country"
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{
-          countryName: '',
-          phonePrefix: '',
-          icon: '',
-          isActive: false,
-        }}
-      >
-        <Form.Item
-          name="countryName"
-          label="Country Name"
-          rules={[
-            { required: true, message: 'Please input the country name!' },
-          ]}
-        >
-          <Input placeholder="Enter country name" />
-        </Form.Item>
-        <Form.Item
-          name="phonePrefix"
-          label="Phone Prefix"
-          rules={[
-            { required: false, message: 'Please input the phone prefix!' },
-          ]}
-        >
-          <Input placeholder="Enter phone prefix" />
-        </Form.Item>
-        <Form.Item
-          name="icon"
-          label="Icon"
-          rules={[{ required: false, message: 'Please input the icon!' }]}
-        >
-          {/* <Input placeholder="Enter icon" /> */}
-
-          <Upload
-            name="avatar"
-            listType="picture-circle"
-            className="avatar-uploader"
-            showUploadList={false}
-            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-          >
-            {imageUrl ? (
-              <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
-            ) : (
-              uploadButton
+      {/* <div className="space-y-4"> */}
+      {/* <h1 className="text-2xl font-bold text-center">County Form</h1> */}
+      <Form onFinish={handleSubmit(onFinish)} layout="vertical">
+        <div className="flex items-center justify-center">
+          <Form.Item label="Country Flag">
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onChange={({ fileList }) => setFileList(fileList)}
+              beforeUpload={() => false}
+              accept="file"
+              // maxCount={1}
+              // accept="image/*"
+            >
+              {fileList.length < 1 && '+ Upload'}
+            </Upload>
+            {fileError && (
+              <div className="text-red-500 mt-1">Country Flag is required</div>
             )}
-          </Upload>
-        </Form.Item>
+          </Form.Item>
+        </div>
+
+        <Controller
+          name="countryName"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Form.Item
+              label="Country Name"
+              validateStatus={errors.countryName ? 'error' : ''}
+              help={errors.countryName && 'Country Name is required'}
+            >
+              <Input {...field} className="w-full" />
+            </Form.Item>
+          )}
+        />
+
+        <Controller
+          name="shortName"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Form.Item
+              label="Short Name"
+              validateStatus={errors.shortName ? 'error' : ''}
+              help={errors.shortName && 'Short name is required'}
+            >
+              <Input {...field} className="w-full" />
+            </Form.Item>
+          )}
+        />
+
+        <Controller
+          name="phonePrefix"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Form.Item
+              label="Phone Prefix"
+              validateStatus={errors.phonePrefix ? 'error' : ''}
+              help={errors.phonePrefix && 'Phone Prefix is required'}
+            >
+              <Input {...field} className="w-full" />
+            </Form.Item>
+          )}
+        />
+
         <Form.Item name="isActive" valuePropName="checked">
-          <Checkbox
-          // indeterminate={indeterminate}
-          // onChange={onCheckAllChange}
-          // checked={checkAll}
-          >
-            Is Active
-          </Checkbox>
+          <Checkbox>Is Active</Checkbox>
         </Form.Item>
+
         <Form.Item>
           <Button
             type="primary"
             htmlType="submit"
-            // loading={mutation.isPending || isFetching}
-            loading={isCreationPending || isUpdatePending || isFetching}
-            style={{ width: '100%' }}
+            className="w-full bg-blue-500 hover:bg-blue-600"
           >
-            {id ? 'Update Country' : 'Add Country'}
+            Submit
           </Button>
         </Form.Item>
       </Form>
+      {/* </div> */}
     </Modal>
   );
 }
