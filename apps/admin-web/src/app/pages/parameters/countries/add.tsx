@@ -14,7 +14,7 @@ const schema = z.object({
   countryName: z.string().nonempty('Country name is required'),
   shortName: z.string().nonempty('Short name is required'),
   phonePrefix: z.string().nonempty('Phone prefix is required'),
-  isActive: z.boolean().default(false).optional(),
+  isActive: z.boolean(),
   icon: z
     .array(
       z.object({
@@ -53,12 +53,12 @@ export default function Add({
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(schema),
   });
 
   const [fileList, setFileList] = useState<any[]>([]);
-  // const [fileError, setFileError] = useState(false);
 
   const { data: countryData, isLoading: isFetching } = useGetCountryById(id);
   const {
@@ -73,9 +73,26 @@ export default function Add({
   } = useUpdateCountryMutation();
 
   useEffect(() => {
-    console.log('ID:', id);
-    console.log('Country Data:', countryData);
-  }, [countryData, id]);
+    if (id && countryData) {
+      console.log('Country Data:', countryData?.data);
+      reset({
+        countryName: countryData.countryName,
+        shortName: countryData.shortName,
+        phonePrefix: countryData.phonePrefix,
+        isActive: countryData.isActive || false, // Ensure isActive is set to a boolean value
+        icon: countryData.icon
+          ? [
+              {
+                uid: '-1',
+                name: 'Uploaded Image',
+                status: 'done',
+                url: countryData.icon,
+              },
+            ]
+          : [],
+      });
+    }
+  }, [id, countryData, reset]);
 
   const onFinish = (data) => {
     if (id) {
@@ -123,7 +140,6 @@ export default function Add({
       <Form layout="vertical" onFinish={handleSubmit(onFinish)}>
         <div className="flex justify-center items-center">
           <Form.Item
-            // label="Logo /Flag"
             validateStatus={errors.icon ? 'error' : ''}
             help={errors.icon?.message}
           >
@@ -192,7 +208,15 @@ export default function Add({
         </Form.Item>
 
         <Form.Item name="isActive" valuePropName="checked">
-          <Checkbox>Is Active</Checkbox>
+          <Controller
+            name="isActive"
+            control={control}
+            render={({ field }) => (
+              <Checkbox {...field} checked={field.value}>
+                Is Active
+              </Checkbox>
+            )}
+          />
         </Form.Item>
 
         <Form.Item>

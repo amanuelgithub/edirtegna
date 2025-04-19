@@ -51,7 +51,7 @@ export function useGetCountryById(id?: number) {
     queryKey: countryKeys.getCountryById(id),
     queryFn: async () => {
       const { data } = await axiosInstance.get(`/manage/countries/${id}`);
-      return data;
+      return data?.data;
     },
     enabled: !!id, // Only fetch if `id` is provided
   });

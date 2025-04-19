@@ -19,6 +19,7 @@ export class CountryService {
   }
 
   async create(body: CreateCountryDto, icon: string) {
+    console.log('create country data: ', body);
     const data = this.ds.getRepository(CountryEntity).create({ ...body, icon: icon });
     await this.ds.getRepository(CountryEntity).save(data);
     return new DetailResponse(data);

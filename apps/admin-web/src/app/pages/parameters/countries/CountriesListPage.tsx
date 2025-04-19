@@ -246,8 +246,10 @@ const components = {
       <td
         {...restProps}
         style={{
-          paddingTop: '12px',
-          paddingBottom: '12px',
+          paddingTop: '8px',
+          paddingBottom: '8px',
+          // paddingTop: '12px',
+          // paddingBottom: '12px',
         }}
       >
         {children}

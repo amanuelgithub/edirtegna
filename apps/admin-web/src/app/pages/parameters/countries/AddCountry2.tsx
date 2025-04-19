@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Form, Input, Button, Upload, message, Modal, Checkbox } from 'antd';
+import { Form, Input, Button, Upload, message, Modal } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@/config';
-import {
-  useCreateCountryMutation,
-  useGetCountryById,
-  useUpdateCountryMutation,
-} from '@/hooks/api/parameters';
 
 type AddCountryProps = {
   id: number | undefined;
@@ -29,15 +23,9 @@ AddCountryProps) => {
   const { handleSubmit, control } = useForm();
   const [previewImage, setPreviewImage] = useState(null);
 
-  const { data: countryData, isLoading: isFetching } = useGetCountryById(id);
-  const { mutate: createMutate, isPending: isCreationPending } =
-    useCreateCountryMutation();
-  const { mutate: updateMutate, isPending: isUpdatePending } =
-    useUpdateCountryMutation();
-
   const mutation = useMutation({
     mutationFn: async (formData: any) => {
-      return axiosInstance.post('/manage/countries', formData, {
+      return axios.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     },
@@ -49,27 +37,19 @@ AddCountryProps) => {
     },
   });
 
-  useEffect(() => {
-    console.log('ID:', id);
-    console.log('Country Data:', countryData);
-  }, [countryData, id]);
-
   const onSubmit = (data) => {
     const formData = new FormData();
-    formData.append('countryName', data.countryName);
-    formData.append('shortName', data.shortName);
-    formData.append('phonePrefix', data.phonePrefix);
-    formData.append('isActive', data.isActive ? 'true' : 'false');
+    formData.append('firstName', data.firstName);
+    formData.append('lastName', data.lastName);
 
-    if (data.icon && data.icon.length > 0) {
-      console.log('icon: ', data.icon[0]);
-      formData.append('icon', data.icon[0].originFileObj);
+    if (data.profilePicture && data.profilePicture.length > 0) {
+      formData.append('profilePicture', data.profilePicture[0].originFileObj);
     }
 
     mutation.mutate(formData);
   };
 
-  const beforeUpload = (file: File) => {
+  const beforeUpload = (file) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG files!');
@@ -100,58 +80,40 @@ AddCountryProps) => {
       onCancel={handleCancel}
     >
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-        <Form.Item label="Country Name">
+        <Form.Item label="First Name">
           <Controller
-            name="countryName"
+            name="firstName"
             control={control}
-            rules={{ required: 'Country name is required' }}
+            rules={{ required: 'First name is required' }}
             render={({ field, fieldState: { error } }) => (
               <>
-                <Input {...field} placeholder="Enter country name" />
+                <Input {...field} placeholder="Enter first name" />
                 {error && <span style={{ color: 'red' }}>{error.message}</span>}
               </>
             )}
           />
         </Form.Item>
 
-        <Form.Item label="Short Name">
+        <Form.Item label="Last Name">
           <Controller
-            name="shortName"
+            name="lastName"
             control={control}
-            rules={{ required: 'Short name is required' }}
+            rules={{ required: 'Last name is required' }}
             render={({ field, fieldState: { error } }) => (
               <>
-                <Input {...field} placeholder="Enter short name" />
+                <Input {...field} placeholder="Enter last name" />
                 {error && <span style={{ color: 'red' }}>{error.message}</span>}
               </>
             )}
           />
         </Form.Item>
 
-        <Form.Item label="Phone Prefix">
+        <Form.Item label="Profile Picture">
           <Controller
-            name="phonePrefix"
-            control={control}
-            rules={{ required: 'Phone prefix is required' }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <Input {...field} placeholder="Enter phone prefix" />
-                {error && <span style={{ color: 'red' }}>{error.message}</span>}
-              </>
-            )}
-          />
-        </Form.Item>
-
-        <Form.Item name="isActive" valuePropName="checked">
-          <Checkbox>Is Active</Checkbox>
-        </Form.Item>
-
-        <Form.Item label="Logo">
-          <Controller
-            name="icon"
+            name="profilePicture"
             control={control}
             rules={{
-              required: 'Logo is required',
+              required: 'Profile picture is required',
               validate: (value) =>
                 (value && value.length > 0) || 'Please upload an image',
             }}

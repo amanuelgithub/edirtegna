@@ -1,7 +1,8 @@
 import { CountryEntity } from '@app/db/parameters';
 import { FilterOperator, PaginateConfig, SelectOneConfig, copyConfig } from '@app/shared';
 import { PartialType } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateCountryDto {
   @IsString()
@@ -12,6 +13,13 @@ export class CreateCountryDto {
 
   @IsString()
   phonePrefix?: string;
+
+  @IsBoolean()
+  @Transform(({ value }) => {
+    return [true, 'true', 'True', 'TRUE', '1', 1].includes(value);
+  })
+  @IsOptional()
+  isActive?: boolean;
 
   @IsString()
   @IsOptional()
@@ -24,7 +32,7 @@ export const CountryPageConfigDto: PaginateConfig<CountryEntity> = {
   sortableColumns: ['countryName'],
   searchableColumns: ['id', 'countryName'],
   defaultSortBy: [['createdAt', 'DESC']],
-  select: ['id', 'countryName', 'icon', 'createdAt', 'updatedAt'],
+  select: ['id', 'countryName', 'icon', 'shortName', 'phonePrefix', 'isActive', 'createdAt', 'updatedAt'],
   filterableColumns: {
     countryName: [FilterOperator.ILIKE],
   },
