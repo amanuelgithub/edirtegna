@@ -12,7 +12,7 @@ import { User } from '@/core/models';
 interface AuthContextProps {
   accessToken: string;
   setAccessToken: (token: string) => void;
-  user: User | null;
+  user?: User;
   setUserProfile: (user: User) => void;
   login: (user: User) => void;
   logout: () => void;
@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [token, setToken] = useState<string>('');
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | undefined>();
 
   useLayoutEffect(() => {
     // console.log('useLayoutEffect');
@@ -75,6 +75,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
             return axiosInstance(originalRequest);
           } catch {
             setToken('');
+            setUserProfile();
           }
         }
 
@@ -91,7 +92,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setToken(token);
   };
 
-  const setUserProfile = (user: User) => {
+  const setUserProfile = (user?: User) => {
     setUser(user);
   };
 
@@ -101,8 +102,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const logout = () => {
     setAccessToken('');
-    setUserProfile(null);
-    setUser(null);
+    setUserProfile();
   };
 
   return (
