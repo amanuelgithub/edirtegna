@@ -94,20 +94,11 @@ export default function CountriesListPage() {
       dataIndex: 'icon',
       key: 'icon',
       render: (src) => {
-        const lowerSrc = src?.toString().toLowerCase();
-        return (
-          <>
-            {src &&
-            (lowerSrc?.endsWith('.png') ||
-              lowerSrc?.endsWith('.jpg') ||
-              lowerSrc?.endsWith('.jpeg')) ? (
-              <Avatar src={src} />
-            ) : src ? (
-              src
-            ) : (
-              '🌍'
-            )}
-          </>
+        const fullSrc = src ? `http://localhost/${src}` : null; // Ensure full URL is constructed
+        return fullSrc ? (
+          <Avatar src={fullSrc} alt="Country Icon" />
+        ) : (
+          <span>🌍</span>
         );
       },
     },

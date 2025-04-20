@@ -8,6 +8,7 @@ services:
       - ./backend:/usr/src/app
       - /etc/localtime:/etc/localtime
       - edirtegna_api_node_modules:/usr/src/app/node_modules
+      - images:/usr/src/app/images:rw
     environment:
       NODE_ENV: development
     ports:
@@ -71,6 +72,7 @@ services:
       - edirtegna_admin_ui_node_modules:/app/node_modules
       - /etc/localtime:/etc/localtime
     command: npm run dev -- --host
+    # command: npm run dev
     restart: on-failure:5
     depends_on:
       - edirtegna-api
@@ -136,6 +138,8 @@ services:
       - ./backend/env/development.env
     ports:
       - 80:80
+    volumes:
+      - ./backend/images:/usr/share/nginx/html/images:rw
     networks:
       - edirtegna-front-end-net
 
@@ -195,6 +199,12 @@ networks:
 volumes:
   edirtegna_api_node_modules:
   edirtegna_admin_ui_node_modules:
+  images:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   device: ${PWD}/DATA/images
+    #   o: bind
   # edirtegna_ui_node_modules:
   # docker-compose --env-file ./backend/env/development.env -p edirtegna -f ./docker-compose.dev.yml up --build -d
   # docker-compose --env-file ./backend/env/development.env -f ./docker-compose.dev.yml build
