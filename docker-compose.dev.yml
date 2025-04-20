@@ -65,21 +65,27 @@ services:
       dockerfile: Dockerfile.dev
       context: ./apps/admin-web/
       args:
-        UID: $USER_ID
-        GID: $GROUP_ID
+        UID: 1000
+        GID: 1000
+        # UID: $USER_ID
+        # GID: $GROUP_ID
     volumes:
       - ./apps/admin-web:/app
       - edirtegna_admin_ui_node_modules:/app/node_modules
       - /etc/localtime:/etc/localtime
-    command: npm run dev -- --host
-    # command: npm run dev
+    # command: npm run dev -- --host
+    # expose:
+    #   - 5173
+    # ports:
+    #   - 5173:5173
     restart: on-failure:5
     depends_on:
       - edirtegna-api
-    ports:
-      - 5173:5173
     networks:
       - edirtegna-front-end-net
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "100"
 
   # edirtegna-admin:
   #   container_name: edirtegna-admin
@@ -129,8 +135,10 @@ services:
       context: .
       dockerfile: ./nginx/Dockerfile.dev
       args:
-        UID: $USER_ID
-        GID: $GROUP_ID
+        UID: 1000
+        GID: 1000
+        # UID: $USER_ID
+        # GID: $GROUP_ID
     restart: on-failure:5
     environment:
       NODE_ENV: development
@@ -138,10 +146,13 @@ services:
       - ./backend/env/development.env
     ports:
       - 80:80
+      # - 5173:5173
     volumes:
       - ./backend/images:/usr/share/nginx/html/images:rw
     networks:
       - edirtegna-front-end-net
+    depends_on:
+      - edirtegna-admin
 
   edirtegna-adminer:
     container_name: edirtegna-adminer

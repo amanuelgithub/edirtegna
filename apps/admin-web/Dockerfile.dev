@@ -4,6 +4,21 @@ WORKDIR /app
 
 COPY package*.json ./
 
+# RUN npm ci --legacy-peer-deps --loglevel verbose --fetch-timeout=600000
 RUN npm ci --legacy-peer-deps --loglevel verbose --fetch-timeout=600000
 
+# Install chokidar for efficient file watching
+# RUN npm install chokidar --save-dev
+
+# # Ensure Vite uses polling and disables caching
+# ENV CHOKIDAR_USEPOLLING=true
+# ENV NODE_ENV=development
+
 COPY . .
+
+# Expose the default Vite port
+EXPOSE 5173
+
+# Start the Vite development server
+CMD ["npm", "run", "dev"]
+# CMD ["npm", "run", "dev", "--", "--host"]

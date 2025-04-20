@@ -74,7 +74,7 @@ export default function Add({
 
   useEffect(() => {
     if (id && countryData) {
-      console.log('Country Data:', countryData?.data);
+      console.log('Country Data:', countryData);
       reset({
         countryName: countryData.countryName,
         shortName: countryData.shortName,
