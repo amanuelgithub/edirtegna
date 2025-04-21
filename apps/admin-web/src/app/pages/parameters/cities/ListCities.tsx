@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Avatar, Button, Card, Input, Table, Flex, Tag, message } from 'antd';
+import { Button, Card, Input, Table, Flex, message } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
@@ -67,6 +67,7 @@ export default function ListCities() {
   };
 
   const handleOk = () => {
+    console.log('handle ok');
     setIsModalOpen(false);
     setId(undefined);
     messageApi.open({
@@ -76,6 +77,7 @@ export default function ListCities() {
   };
 
   const handleCancel = () => {
+    console.log('handle cancel');
     setIsModalOpen(false);
     setId(undefined);
   };

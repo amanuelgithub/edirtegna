@@ -7,14 +7,15 @@ import {
   useCreateCityMutation,
   useGetCityById,
   useUpdateCityMutation,
-  useListCountries,
-  useListStates,
+  createGetCountriesQueryOptions,
   createGetStatesQueryOptions,
 } from '@/hooks/api/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { debounce, filter } from 'lodash';
-import { useQuery } from '@tanstack/react-query';
+import { debounce, filter, set } from 'lodash';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FilterOperator } from '@/core/models';
+import { stateKeys } from '@/hooks/api/parameters/state/query-keys';
+import { countryKeys } from '@/hooks/api/parameters/country/query-keys';
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
@@ -33,6 +34,7 @@ export default function EditCity({
   handleOk,
   onSubmit,
 }: AddCityProps) {
+  const queryClient = useQueryClient();
   const {
     handleSubmit,
     control,
@@ -56,9 +58,11 @@ export default function EditCity({
 
   useEffect(() => {
     if (id && cityData) {
+      setSelectedCountry(cityData.countryId);
       reset({
         cityName: cityData.cityName,
         countryId: cityData.countryId,
+        stateId: cityData.stateId,
       });
     }
   }, [id, cityData, reset]);
@@ -74,36 +78,42 @@ export default function EditCity({
   };
 
   useEffect(() => {
-    if (isCreationSuccess) {
+    if (isCreationSuccess || isUpdateSuccess) {
       handleOk();
       onSubmit(true);
+      reset(); // Reset the form after saving data
+      setSelectedCountry(undefined); // Reset the selected country
+      setSearchCountryTxt(''); // Reset the search country text
+      setSearchStateTxt(''); // Reset the search state text
     }
-    if (isUpdateSuccess) {
-      handleOk();
-      onSubmit(true);
-    }
-  }, [isCreationSuccess, isUpdateSuccess]);
+  }, [isCreationSuccess, isUpdateSuccess, handleOk, onSubmit, reset]);
 
   const [searchCountryTxt, setSearchCountryTxt] = React.useState('');
   const [selectedCountry, setSelectedCountry] = React.useState<
     number | undefined
   >(undefined);
   const [searchStateTxt, setSearchStateTxt] = React.useState('');
+  const [selectedState, setSelectedState] = React.useState<number | undefined>(
+    undefined,
+  );
 
-  const { data: countriesData, isLoading: isCountriesLoading } =
-    useListCountries({
+  const {
+    data: countriesData,
+    isLoading: isCountriesLoading,
+    refetch: refetchCountries,
+  } = useQuery({
+    ...createGetCountriesQueryOptions({
       page: 1,
-      limit: 100,
-      search: searchCountryTxt,
-    });
+      take: 100,
+      fullTextFilter: searchCountryTxt,
+    }),
+  });
 
-  // const { data: statesData, isLoading: isStatesLoading } = useListStates({
-  //   page: 1,
-  //   limit: 100,
-  //   search: searchStateTxt,
-  //   countryId: selectedCountry,
-  // });
-  const { data: statesData, isLoading: isStatesLoading } = useQuery({
+  const {
+    data: statesData,
+    isLoading: isStatesLoading,
+    refetch: refetchStates,
+  } = useQuery({
     ...createGetStatesQueryOptions({
       page: 1,
       take: 100,
@@ -118,6 +128,37 @@ export default function EditCity({
     }),
     enabled: !!selectedCountry,
   });
+
+  useEffect(() => {
+    refetchCountries(); // Refetch countries when search text changes
+  }, [searchCountryTxt, refetchCountries]);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      refetchStates(); // Refetch states when search text or selected country changes
+    }
+  }, [searchStateTxt, selectedCountry, refetchStates]);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      setSelectedState(undefined); // Reset the selected state when the selected country changes
+    }
+  }, [selectedCountry]);
+
+  // Handle on component unmount
+  useEffect(() => {
+    // on component unmount, remove the cache state data
+    return () => {
+      reset(); // Reset all form states when the modal is closed
+      setSelectedCountry(undefined);
+      setSearchCountryTxt('');
+      setSearchStateTxt('');
+
+      queryClient.removeQueries({
+        queryKey: stateKeys.getAllStates(),
+      });
+    };
+  }, []);
 
   const handleCountrySearch = React.useCallback((value: string) => {
     setSearchCountryTxt(value);

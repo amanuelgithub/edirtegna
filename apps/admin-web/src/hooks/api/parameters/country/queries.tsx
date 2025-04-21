@@ -1,16 +1,19 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import { countryKeys } from './query-keys';
 import { axiosInstance } from '@/config';
-import { Country } from '@/core/models';
-import { PaginationType } from '../../base';
+import { Country, IDatasourceParameters } from '@/core/models';
+import { getUrl, PaginationType } from '../../base';
 import { DataSource } from '../../base';
-import { getCountries } from './api';
 
 // ********** QUERY OPTION DEFINITIONS ********** //
-export function createGetCountriesQueryOptions() {
+export function createGetCountriesQueryOptions(options: IDatasourceParameters) {
   return queryOptions({
     queryKey: countryKeys.getAllCountries(),
-    queryFn: getCountries,
+    queryFn: async () => {
+      const url = getUrl('/manage/countries', options);
+      const { data } = await axiosInstance.get<DataSource<Country>>(url);
+      return data;
+    },
   });
 }
 // ******** QUERY OPTION DEFINITIONS ********** //
