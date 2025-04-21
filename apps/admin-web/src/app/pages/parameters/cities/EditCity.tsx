@@ -11,11 +11,10 @@ import {
   createGetStatesQueryOptions,
 } from '@/hooks/api/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { debounce, filter, set } from 'lodash';
+import { debounce } from 'lodash';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FilterOperator } from '@/core/models';
 import { stateKeys } from '@/hooks/api/parameters/state/query-keys';
-import { countryKeys } from '@/hooks/api/parameters/country/query-keys';
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
@@ -40,6 +39,7 @@ export default function EditCity({
     control,
     formState: { errors },
     reset,
+    setValue,
   } = useForm({
     resolver: zodResolver(cityCreateFormSchema),
   });
@@ -93,9 +93,6 @@ export default function EditCity({
     number | undefined
   >(undefined);
   const [searchStateTxt, setSearchStateTxt] = React.useState('');
-  const [selectedState, setSelectedState] = React.useState<number | undefined>(
-    undefined,
-  );
 
   const {
     data: countriesData,
@@ -136,14 +133,9 @@ export default function EditCity({
   useEffect(() => {
     if (selectedCountry) {
       refetchStates(); // Refetch states when search text or selected country changes
+      setValue('stateId', undefined);
     }
   }, [searchStateTxt, selectedCountry, refetchStates]);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      setSelectedState(undefined); // Reset the selected state when the selected country changes
-    }
-  }, [selectedCountry]);
 
   // Handle on component unmount
   useEffect(() => {
