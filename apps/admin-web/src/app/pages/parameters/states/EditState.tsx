@@ -56,6 +56,7 @@ export default function EditState({
     if (id && stateData) {
       reset({
         stateName: stateData.stateName,
+        countryId: stateData.countryId,
       });
     }
   }, [id, stateData, reset]);

@@ -46,8 +46,14 @@ export function useUpdateStateMutation(
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: stateKeys.specificStates(variables.pageOptions),
+        queryKey: stateKeys.getAllStates(),
       });
+
+      // TODO: it is really hard to invalidate the specific state with the pagination config options
+
+      // queryClient.invalidateQueries({
+      //   queryKey: stateKeys.specificStates(variables.pageOptions),
+      // });
     },
     ...options,
   });
