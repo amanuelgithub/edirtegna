@@ -1,26 +1,25 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
-import { countryKeys } from './query-keys';
+import { useQuery } from '@tanstack/react-query';
+import { stateKeys } from './query-keys';
 import { axiosInstance } from '@/config';
-import { Country } from '@/core/models';
+import { State } from '@/core/models';
 import { PaginationType } from '../../base';
 import { DataSource } from '../../base';
-import { getCountries } from './api';
 
 // ********** QUERY OPTION DEFINITIONS ********** //
-export function createGetCountriesQueryOptions() {
-  return queryOptions({
-    queryKey: countryKeys.getAllCountries(),
-    queryFn: getCountries,
-  });
-}
+// export function createGetStatesQueryOptions(filters: StateDTO) {
+//   return queryOptions({
+//     queryKey: stateKeys.getAllStates(filters),
+//     queryFn: getStates,
+//   });
+// }
 // ******** QUERY OPTION DEFINITIONS ********** //
 
 // ********** QUERY HOOKS ********** //
-// export function useListCountries(filters: Partial<CountryDTO> & PaginationDTO) {
-export function useListCountries(options: PaginationType) {
+// export function useListStates(filters: Partial<StateDTO> & PaginationDTO) {
+export function useListStates(options: PaginationType) {
   return useQuery({
-    // queryKey: countryKeys.getAllCountries(),
-    queryKey: countryKeys.specificCountries(options),
+    // queryKey: stateKeys.getAllStates(),
+    queryKey: stateKeys.specificStates(options),
     queryFn: async () => {
       const params = new URLSearchParams({
         page: String(options.page),
@@ -37,24 +36,22 @@ export function useListCountries(options: PaginationType) {
       });
       window.history.replaceState({}, '', url);
 
-      const { data } = await axiosInstance.get<DataSource<Country>>(
-        `/manage/countries?`,
+      const { data } = await axiosInstance.get<DataSource<State>>(
+        `/manage/states?`,
         {
           params,
         },
       );
       return data;
     },
-    // staleTime: 1000, // 5 minutes
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 
-export function useGetCountryById(id?: number) {
+export function useGetStateById(id?: number) {
   return useQuery({
-    queryKey: countryKeys.getCountryById(id),
+    queryKey: stateKeys.getStateById(id),
     queryFn: async () => {
-      const { data } = await axiosInstance.get(`/manage/countries/${id}`);
+      const { data } = await axiosInstance.get(`/manage/states/${id}`);
       return data?.data;
     },
     enabled: !!id, // Only fetch if `id` is provided

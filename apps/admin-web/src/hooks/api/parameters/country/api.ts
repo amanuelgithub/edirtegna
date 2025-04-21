@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/config';
-import { CountryDTO } from './types';
+import { CountryType } from './types';
 import { Country } from '@/core/models';
 
 export const getCountries = async () => {
@@ -7,8 +7,8 @@ export const getCountries = async () => {
   return data;
 };
 
-export const createCountry = async (payload: CountryDTO) => {
-  const { data } = await axiosInstance.post<CountryDTO, any>(
+export const createCountry = async (payload: CountryType) => {
+  const { data } = await axiosInstance.post<CountryType, any>(
     `/manage/country`,
     payload,
   );
@@ -20,8 +20,8 @@ export const getCountry = async (id: number) => {
   return data;
 };
 
-export const updateCountry = async (id: number, payload: CountryDTO) => {
-  const { data } = await axiosInstance.put<CountryDTO, any>(
+export const updateCountry = async (id: number, payload: CountryType) => {
+  const { data } = await axiosInstance.put<CountryType, any>(
     `/manage/country/${id}`,
     payload,
   );

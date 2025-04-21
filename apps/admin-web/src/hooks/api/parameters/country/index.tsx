@@ -3,7 +3,11 @@ export {
   useUpdateCountryMutation,
 } from './mutations';
 
-export { useListCountries, useGetCountryById } from './queries';
+export {
+  useListCountries,
+  useGetCountryById,
+  createGetCountriesQueryOptions,
+} from './queries';
 
 // types
 export {
