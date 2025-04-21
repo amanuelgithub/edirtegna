@@ -4,19 +4,16 @@ import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-// import AddCountry from './AddCountry';
 import { useListCountries } from '@/hooks/api/parameters/country';
 import { Country } from '@/core/models';
 import { Order } from '@/core/enums';
-import Add from './Add';
-import { useQueryClient } from '@tanstack/react-query';
-// import AddCountry2 from './AddCountry2';
+import EditCountry from './EditCountry';
 
 const info = () => {
   message.info('This is a normal message');
 };
 
-export default function CountriesListPage() {
+export default function ListCountries() {
   // Read URL search parameters
   const [searchUrlParams] = useSearchParams();
   const initialPage = parseInt(searchUrlParams.get('page') || '1');
@@ -178,12 +175,6 @@ export default function CountriesListPage() {
     <>
       {contextHolder}
 
-      <div>
-        <Button type="primary" onClick={info}>
-          click me
-        </Button>
-      </div>
-
       <Card
         title="Countries"
         extra={
@@ -228,7 +219,7 @@ export default function CountriesListPage() {
       />
 
       {isModalOpen && (
-        <Add
+        <EditCountry
           id={id}
           isModalOpen={isModalOpen}
           handleCancel={handleCancel}
@@ -236,16 +227,6 @@ export default function CountriesListPage() {
           onSubmit={handleOk}
         />
       )}
-
-      {/* {isModalOpen && (
-        <AddCountry2
-          id={id}
-          isModalOpen={isModalOpen}
-          handleCancel={handleCancel}
-          handleOk={handleOk}
-          // onSubmit={handleOk}
-        />
-      )} */}
     </>
   );
 }
@@ -259,8 +240,6 @@ const components = {
         style={{
           paddingTop: '8px',
           paddingBottom: '8px',
-          // paddingTop: '12px',
-          // paddingBottom: '12px',
         }}
       >
         {children}

@@ -1,10 +1,10 @@
 import { RouteObject } from 'react-router-dom';
-import CountriesListPage from './countries/CountriesListPage';
+import ListCountries from './countries/ListCountries';
 
 export const parametersRouter: RouteObject[] = [
   {
     path: '/countries',
-    element: <CountriesListPage />,
+    element: <ListCountries />,
     // element: <div>Countries</div>,
   },
   {

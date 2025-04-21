@@ -17,7 +17,7 @@ type AddCountryProps = {
   onSubmit: (isSaved: boolean) => void;
 };
 
-export default function Add({
+export default function EditCountry({
   id,
   isModalOpen,
   handleCancel,
