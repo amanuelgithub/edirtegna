@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Avatar, Button, Card, Input, Table, Flex, Tag } from 'antd';
+import { Avatar, Button, Card, Input, Table, Flex, Tag, message } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
@@ -8,8 +8,13 @@ import dayjs from 'dayjs';
 import { useListCountries } from '@/hooks/api/parameters/country';
 import { Country } from '@/core/models';
 import { Order } from '@/core/enums';
-import AddCountry2 from './AddCountry2';
-import Add from './add';
+import Add from './Add';
+import { useQueryClient } from '@tanstack/react-query';
+// import AddCountry2 from './AddCountry2';
+
+const info = () => {
+  message.info('This is a normal message');
+};
 
 export default function CountriesListPage() {
   // Read URL search parameters
@@ -41,6 +46,8 @@ export default function CountriesListPage() {
     search,
   });
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const handleTableChange = (
     paginationData: any,
     filters: any,
@@ -49,6 +56,7 @@ export default function CountriesListPage() {
     console.log('table sorter: ', sorter);
     setPagination(paginationData);
     setSort(sorter.field ?? 'id');
+
     setOrder(sorter?.order === 'ascend' ? 'ASC' : 'DESC');
   };
 
@@ -68,6 +76,10 @@ export default function CountriesListPage() {
   const handleOk = () => {
     setIsModalOpen(false);
     setId(undefined);
+    messageApi.open({
+      type: 'success',
+      content: 'Country saved successfully',
+    });
   };
 
   const handleCancel = () => {
@@ -164,6 +176,14 @@ export default function CountriesListPage() {
 
   return (
     <>
+      {contextHolder}
+
+      <div>
+        <Button type="primary" onClick={info}>
+          click me
+        </Button>
+      </div>
+
       <Card
         title="Countries"
         extra={

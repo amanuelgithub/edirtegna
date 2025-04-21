@@ -25,7 +25,7 @@ export class CountryService {
     return new DetailResponse(data);
   }
 
-  async update(id: number, body: UpdateCountryDto) {
+  async update(id: number, body: UpdateCountryDto, icon?: string) {
     const data = await this.ds.getRepository(CountryEntity).preload({ id, ...body });
     if (!data) {
       throw new NotFoundException(`Country with id ${id} not found`);

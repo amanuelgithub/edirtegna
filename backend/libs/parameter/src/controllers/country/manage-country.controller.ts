@@ -83,7 +83,32 @@ export class ManageCountryController {
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
   @ActivityTitle('Create Country')
-  update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateCountryDto) {
-    return this.service.update(id, body);
+  @UseInterceptors(
+    FileInterceptor('icon', {
+      storage: diskStorage({
+        destination: join('images', 'Countries', 'flags'),
+        filename: (_, file, cb) => {
+          cb(null, `${new Date().getTime()}-${file.originalname}`);
+        },
+      }),
+    }),
+  )
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateCountryDto,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: '.(jpg|jpeg|png|gif)',
+        })
+        .build({
+          fileIsRequired: false,
+        }),
+    )
+    icon?: Express.Multer.File,
+  ) {
+    const country = await this.service.findOne(id);
+    // TODO: I'me not removing the old image
+    return this.service.update(id, body, icon ? join('images', 'Countries', 'flags', icon.filename) : country.data.icon);
   }
 }

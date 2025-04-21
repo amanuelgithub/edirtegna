@@ -18,6 +18,7 @@ import { DataSource } from '../../base';
 // export function useListCountries(filters: Partial<CountryDTO> & PaginationDTO) {
 export function useListCountries(options: PaginationType) {
   return useQuery({
+    // queryKey: countryKeys.getAllCountries(),
     queryKey: countryKeys.specificCountries(options),
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -43,6 +44,8 @@ export function useListCountries(options: PaginationType) {
       );
       return data;
     },
+    // staleTime: 1000, // 5 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 

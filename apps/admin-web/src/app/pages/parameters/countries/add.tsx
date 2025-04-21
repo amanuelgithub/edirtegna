@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Form, Input, Button, Upload, message, Modal, Checkbox } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
 import {
   useCreateCountryMutation,
   useGetCountryById,
@@ -86,13 +85,19 @@ export default function Add({
                 uid: '-1',
                 name: 'Uploaded Image',
                 status: 'done',
-                url: countryData.icon,
+                url: countryData.icon
+                  ? `http://localhost/${countryData.icon}`
+                  : null, // Ensure full URL is constructed
+
+                // const fullSrc =
+                // url: countryData.icon,
               },
             ]
           : [],
       });
     }
   }, [id, countryData, reset]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = (data) => {
     if (id) {
@@ -100,16 +105,16 @@ export default function Add({
     } else {
       createMutate(data);
     }
+
+    onSubmit(true);
   };
 
   useEffect(() => {
     if (isCreationSuccess) {
-      message.success('Country created successfully!');
       handleOk();
       onSubmit(true);
     }
     if (isUpdateSuccess) {
-      message.success('Country updated successfully!');
       handleOk();
       onSubmit(true);
     }
@@ -118,117 +123,121 @@ export default function Add({
   const beforeUpload = (file: File) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG files!');
+      messageApi.error('You can only upload JPG/PNG files!');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('Image must be smaller than 2MB!');
+      messageApi.error('Image must be smaller than 2MB!');
     }
     return isJpgOrPng && isLt2M ? false : Upload.LIST_IGNORE;
   };
 
   return (
-    <Modal
-      title={id ? 'Edit Country' : 'Add Country'}
-      open={isModalOpen}
-      footer={null}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      okButtonProps={{ hidden: true }}
-      cancelButtonProps={{ hidden: true }}
-    >
-      <Form layout="vertical" onFinish={handleSubmit(onFinish)}>
-        <div className="flex justify-center items-center">
+    <>
+      {contextHolder}
+
+      <Modal
+        title={id ? 'Edit Country' : 'Add Country'}
+        open={isModalOpen}
+        footer={null}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okButtonProps={{ hidden: true }}
+        cancelButtonProps={{ hidden: true }}
+      >
+        <Form layout="vertical" onFinish={handleSubmit(onFinish)}>
+          <div className="flex justify-center items-center">
+            <Form.Item
+              validateStatus={errors.icon ? 'error' : ''}
+              help={errors.icon?.message}
+            >
+              <Controller
+                name="icon"
+                control={control}
+                render={({ field }) => (
+                  <Upload
+                    listType="picture-circle"
+                    beforeUpload={beforeUpload}
+                    accept="image/*"
+                    fileList={fileList}
+                    maxCount={1}
+                    onChange={({ fileList }) => {
+                      setFileList(fileList);
+                      field.onChange(fileList);
+                    }}
+                  >
+                    {fileList.length < 1 && '+ Upload Logo/Flag'}
+                  </Upload>
+                )}
+              />
+            </Form.Item>
+          </div>
+
           <Form.Item
-            validateStatus={errors.icon ? 'error' : ''}
-            help={errors.icon?.message}
+            label="Country Name"
+            validateStatus={errors.countryName ? 'error' : ''}
+            help={errors.countryName?.message}
           >
             <Controller
-              name="icon"
+              name="countryName"
               control={control}
               render={({ field }) => (
-                <Upload
-                  listType="picture-circle"
-                  beforeUpload={beforeUpload}
-                  accept="image/*"
-                  fileList={fileList}
-                  maxCount={1}
-                  onChange={({ fileList }) => {
-                    setFileList(fileList);
-                    field.onChange(fileList);
-                  }}
-                >
-                  {fileList.length < 1 && '+ Upload Logo/Flag'}
-                </Upload>
+                <Input {...field} placeholder="Enter country name" />
               )}
             />
           </Form.Item>
-        </div>
 
-        <Form.Item
-          label="Country Name"
-          validateStatus={errors.countryName ? 'error' : ''}
-          help={errors.countryName?.message}
-        >
-          <Controller
-            name="countryName"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} placeholder="Enter country name" />
-            )}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Short Name"
-          validateStatus={errors.shortName ? 'error' : ''}
-          help={errors.shortName?.message}
-        >
-          <Controller
-            name="shortName"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} placeholder="Enter short name" />
-            )}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Phone Prefix"
-          validateStatus={errors.phonePrefix ? 'error' : ''}
-          help={errors.phonePrefix?.message}
-        >
-          <Controller
-            name="phonePrefix"
-            control={control}
-            render={({ field }) => (
-              <Input {...field} placeholder="Enter phone prefix" />
-            )}
-          />
-        </Form.Item>
-
-        <Form.Item name="isActive" valuePropName="checked">
-          <Controller
-            name="isActive"
-            control={control}
-            render={({ field }) => (
-              <Checkbox {...field} checked={field.value}>
-                Is Active
-              </Checkbox>
-            )}
-          />
-        </Form.Item>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={isCreationPending || isUpdatePending}
+          <Form.Item
+            label="Short Name"
+            validateStatus={errors.shortName ? 'error' : ''}
+            help={errors.shortName?.message}
           >
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
+            <Controller
+              name="shortName"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter short name" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Phone Prefix"
+            validateStatus={errors.phonePrefix ? 'error' : ''}
+            help={errors.phonePrefix?.message}
+          >
+            <Controller
+              name="phonePrefix"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter phone prefix" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item name="isActive" valuePropName="checked">
+            <Controller
+              name="isActive"
+              control={control}
+              render={({ field }) => (
+                <Checkbox {...field} checked={field.value}>
+                  Is Active
+                </Checkbox>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isCreationPending || isUpdatePending}
+            >
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }

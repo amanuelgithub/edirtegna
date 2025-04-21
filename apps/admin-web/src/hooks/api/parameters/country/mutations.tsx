@@ -7,7 +7,6 @@ import {
 import { AxiosError } from 'axios';
 import { Country } from '@/core/models';
 import { countryKeys } from './query-keys';
-import { message } from 'antd';
 import { axiosInstance } from '@/config';
 
 export function useCreateCountryMutation(
@@ -42,8 +41,14 @@ export function useCreateCountryMutation(
       queryClient.invalidateQueries({
         queryKey: countryKeys.specificCountries(variables.pageOptions),
       });
-      // show toast message
-      message.success('Country created successfully!');
+      queryClient.invalidateQueries({
+        queryKey: countryKeys.getAllCountries(),
+      });
+      queryClient.removeQueries({
+        queryKey: countryKeys.getAllCountries(),
+      });
+      queryClient.clear();
+      console.log('country invalidated');
     },
     ...options,
   });
@@ -64,7 +69,7 @@ export function useUpdateCountryMutation(
       formData.append('icon', payload.icon[0].originFileObj);
 
       const { data } = await axiosInstance.put<Country>(
-        `/manage/countries/${payload.countryId}`,
+        `/manage/countries/${payload.id}`,
         formData,
         {
           headers: {
@@ -78,8 +83,6 @@ export function useUpdateCountryMutation(
       queryClient.invalidateQueries({
         queryKey: countryKeys.specificCountries(variables.pageOptions),
       });
-      // show toast message
-      message.success('Country updated successfully!');
     },
     ...options,
   });
