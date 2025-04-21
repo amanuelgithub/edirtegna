@@ -1,6 +1,10 @@
 export { useCreateStateMutation, useUpdateStateMutation } from './mutations';
 
-export { useListStates, useGetStateById } from './queries';
+export {
+  useListStates,
+  useGetStateById,
+  createGetStatesQueryOptions,
+} from './queries';
 
 // types
 export {

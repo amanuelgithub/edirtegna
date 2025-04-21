@@ -9,7 +9,8 @@ export const CityPageConfigDto: PaginateConfig<CityEntity> = {
   sortableColumns: ['cityName'],
   searchableColumns: ['id', 'cityName'],
   defaultSortBy: [['createdAt', 'DESC']],
-  select: ['id', 'countryName', 'createdAt', 'updatedAt'],
+  select: ['id', 'cityName', 'createdAt', 'updatedAt', 'country.id', 'country.countryName', 'state.id', 'state.stateName'],
+  relations: ['country', 'state'],
   filterableColumns: {
     countryName: [FilterOperator.ILIKE],
   },

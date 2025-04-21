@@ -22,6 +22,7 @@ export const StatePageConfigDto: PaginateConfig<StateEntity> = {
   relations: ['country'],
   filterableColumns: {
     stateName: [FilterOperator.ILIKE],
+    countryId: [FilterOperator.EQ],
   },
 };
 
