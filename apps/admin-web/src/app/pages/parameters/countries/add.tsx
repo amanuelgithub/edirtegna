@@ -2,36 +2,12 @@ import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Form, Input, Button, Upload, message, Modal, Checkbox } from 'antd';
 import {
+  countryCreateFormSchema,
   useCreateCountryMutation,
   useGetCountryById,
   useUpdateCountryMutation,
 } from '@/hooks/api/parameters';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-const schema = z.object({
-  countryName: z.string().nonempty('Country name is required'),
-  shortName: z.string().nonempty('Short name is required'),
-  phonePrefix: z.string().nonempty('Phone prefix is required'),
-  isActive: z.boolean(),
-  icon: z
-    .array(
-      z.object({
-        originFileObj: z
-          .instanceof(File)
-          .refine(
-            (file) =>
-              file.size / 1024 / 1024 < 2 &&
-              (file.type === 'image/jpeg' || file.type === 'image/png'),
-            {
-              message: 'File must be a JPG/PNG and smaller than 2MB',
-            },
-          ),
-      }),
-    )
-    .min(1, 'Please upload an image'),
-  // .optional(),
-});
 
 type AddCountryProps = {
   id: number | undefined;
@@ -54,7 +30,11 @@ export default function Add({
     formState: { errors },
     reset,
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(
+      countryCreateFormSchema,
+      // countryUpdateFormSchema,
+      // id ? countryUpdateFormSchema : countryCreateFormSchema,
+    ),
   });
 
   const [fileList, setFileList] = useState<any[]>([]);
@@ -73,34 +53,52 @@ export default function Add({
 
   useEffect(() => {
     if (id && countryData) {
-      console.log('Country Data:', countryData);
       reset({
         countryName: countryData.countryName,
         shortName: countryData.shortName,
         phonePrefix: countryData.phonePrefix,
         isActive: countryData.isActive || false, // Ensure isActive is set to a boolean value
-        icon: countryData.icon
-          ? [
-              {
-                uid: '-1',
-                name: 'Uploaded Image',
-                status: 'done',
-                url: countryData.icon
-                  ? `http://localhost/${countryData.icon}`
-                  : null, // Ensure full URL is constructed
+        // icon: (() => {
+        //   const arr = countryData.icon
+        //     ? [
+        //         {
+        //           uid: '-1',
+        //           name: 'Uploaded Image',
+        //           status: 'done',
+        //           url: (() => {
+        //             const fullSrc = countryData.icon
+        //               ? `http://localhost/${countryData.icon}`
+        //               : null; // Ensure full URL is constructed
+        //             return fullSrc;
+        //           })(),
+        //         },
+        //       ]
+        //     : ([] as any[]);
 
-                // const fullSrc =
-                // url: countryData.icon,
-              },
-            ]
-          : [],
+        //   setFileList(arr);
+
+        //   return arr;
+        // })(),
       });
+
+      if (countryData.icon) {
+        const arr = [
+          {
+            uid: '-1',
+            name: 'Uploaded Image',
+            status: 'done',
+            url: `http://localhost/${countryData.icon}`,
+          },
+        ];
+        setFileList(arr);
+      }
     }
   }, [id, countryData, reset]);
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = (data) => {
     if (id) {
+      console.log('onFinish data: ', data);
       updateMutate({ id, ...data });
     } else {
       createMutate(data);

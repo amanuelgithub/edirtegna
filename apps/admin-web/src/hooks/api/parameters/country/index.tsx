@@ -4,3 +4,15 @@ export {
 } from './mutations';
 
 export { useListCountries, useGetCountryById } from './queries';
+
+// types
+export {
+  countrySchema,
+  countryCreateFormSchema,
+  countryUpdateFormSchema,
+} from './types';
+export type {
+  CountryType,
+  CountryCreateFormType,
+  CountryUpdateFormType,
+} from './types';

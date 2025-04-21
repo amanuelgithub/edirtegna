@@ -66,7 +66,9 @@ export function useUpdateCountryMutation(
       formData.append('shortName', payload.shortName);
       formData.append('phonePrefix', payload.phonePrefix);
       formData.append('isActive', payload.isActive);
-      formData.append('icon', payload.icon[0].originFileObj);
+      if (payload.icon && payload.icon.length > 0) {
+        formData.append('icon', payload.icon[0].originFileObj);
+      }
 
       const { data } = await axiosInstance.put<Country>(
         `/manage/countries/${payload.id}`,
