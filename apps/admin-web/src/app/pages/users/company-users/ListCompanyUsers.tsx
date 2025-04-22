@@ -22,7 +22,7 @@ import {
   User,
 } from '@/core/models';
 import EditCompanyUser from './EditCompanyUser';
-import { USER_STATUS, UserStatus } from '@/core/enums';
+import { ROLES_SEED, USER_STATUS, UserStatus } from '@/core/enums';
 import { parseUrlParams } from '@/hooks/api/base/url-builder';
 
 const renderAccountStatus = (status: string) => {
@@ -115,7 +115,6 @@ export default function ListCompanyUsers() {
   // const hasSelected = selectedRowKeys.length > 0;
 
   const handleFilterByStatusChange = (value: UserStatus) => {
-    console.log('filter by status: ', value);
     setFilters((prev) => {
       const newFilters = [...prev];
       const index = newFilters.findIndex((f) => f.name === 'status');
@@ -123,6 +122,18 @@ export default function ListCompanyUsers() {
         newFilters[index].value = value;
       } else {
         newFilters.push({ name: 'status', value, operator: FilterOperator.EQ });
+      }
+      return newFilters;
+    });
+  };
+  const handleFilterByRoleChange = (value: UserStatus) => {
+    setFilters((prev) => {
+      const newFilters = [...prev];
+      const index = newFilters.findIndex((f) => f.name === 'roleId');
+      if (index > -1) {
+        newFilters[index].value = value;
+      } else {
+        newFilters.push({ name: 'roleId', value, operator: FilterOperator.EQ });
       }
       return newFilters;
     });
@@ -281,7 +292,18 @@ export default function ListCompanyUsers() {
           <div className="flex gap-2">
             {/* filtering options */}
             <Select
-              style={{ width: 220 }}
+              style={{ width: 200 }}
+              allowClear
+              options={ROLES_SEED.map((role) => ({
+                value: role.id,
+                label: role.name,
+              }))}
+              placeholder="Filter by role..."
+              onChange={handleFilterByRoleChange}
+            />
+
+            <Select
+              style={{ width: 140 }}
               allowClear
               options={Object.entries(USER_STATUS).map(([key, value]) => ({
                 value: value,

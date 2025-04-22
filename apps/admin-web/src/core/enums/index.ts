@@ -11,3 +11,4 @@ export * from './notification-type.enum';
 export * from './customer-level.enum';
 export * from './drcr-status.enum';
 export * from './group.enum';
+export * from './02-role';
