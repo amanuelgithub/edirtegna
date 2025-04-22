@@ -10,6 +10,8 @@ import {
   Tag,
   Select,
   Breadcrumb,
+  Dropdown,
+  Menu,
 } from 'antd';
 import type { TableProps } from 'antd';
 import {
@@ -18,6 +20,7 @@ import {
   EyeOutlined,
   EyeFilled,
   EditFilled,
+  DownOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useListCustomerUsers } from '@/hooks/api/users';
@@ -28,35 +31,79 @@ import {
   IDatasourceParameters,
   User,
 } from '@/core/models';
-// import EditCustomerUser from './EditCustomerUser';
 import { ROLES_SEED, USER_STATUS, UserStatus } from '@/core/enums';
 import { parseUrlParams } from '@/hooks/api/base/url-builder';
 import { Link } from 'react-router-dom';
+import { axiosInstance } from '@/config';
+import { useQueryClient } from '@tanstack/react-query';
 
-const renderAccountStatus = (status: string) => {
+const handleStatusChange = async (
+  userId: number,
+  newStatus: UserStatus,
+  refetch: () => void,
+) => {
+  try {
+    await axiosInstance.put(`/web/customer-users/${userId}/status`, {
+      status: newStatus,
+    });
+    message.success('Status updated successfully');
+    // Refetch the user list data
+    refetch();
+  } catch (error) {
+    message.error('Failed to update status');
+  }
+};
+
+const getStatusColor = (status: string) => {
   switch (status) {
     case USER_STATUS.ACTIVE:
-      return <Tag color="green">Active</Tag>;
+      return 'green';
     case USER_STATUS.PENDING:
-      return <Tag color="orange">Pending</Tag>;
+      return 'orange';
     case USER_STATUS.BLOCKED:
-      return <Tag color="red">Blocked</Tag>;
+      return 'red';
     case USER_STATUS.SUSPENDED:
-      return <Tag color="purple">Suspended</Tag>;
+      return 'purple';
     case USER_STATUS.SELF_REG:
-      return <Tag color="blue">Self Registered</Tag>;
+      return 'blue';
     default:
-      return <Tag>Unknown</Tag>;
+      return 'default';
   }
+};
+
+const renderAccountStatusWithDropdown = (
+  status: string,
+  userId: number,
+  refetch: () => void,
+) => {
+  const menu = (
+    <Menu
+      onClick={({ key }) =>
+        handleStatusChange(userId, key as UserStatus, refetch)
+      }
+      items={['ACTIVE', 'BLOCKED'].map((value) => ({
+        key: value,
+        label: value,
+      }))}
+    />
+  );
+
+  return (
+    <Dropdown overlay={menu} trigger={['click']}>
+      <Tag color={getStatusColor(status)}>
+        {status} <DownOutlined />
+      </Tag>
+    </Dropdown>
+  );
 };
 
 type TableRowSelection<T extends object = object> =
   TableProps<T>['rowSelection'];
 
 export default function ListCustomerUsers() {
+  const queryClient = useQueryClient();
   const initialParams = parseUrlParams(window.location.search);
 
-  // const [sortBy, setSortBy] = useState(initialSort);
   const [orders, setOrders] = useState<IDatasourceOrder[]>(
     initialParams?.orders || [{ name: 'id', dir: 'desc' }],
   );
@@ -71,16 +118,13 @@ export default function ListCustomerUsers() {
     pageSize: initialParams.take || 20,
   });
   const [id, setId] = useState<number | undefined>(undefined);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data, isLoading, error } = useListCustomerUsers({
+  const { data, isLoading, error, refetch } = useListCustomerUsers({
     page: pagination.current,
     take: pagination.pageSize,
-    // sort: sortBy,
     orders: orders,
     fullTextFilter: search,
     filters: filters,
-    // search,
   } as IDatasourceParameters);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -92,7 +136,6 @@ export default function ListCustomerUsers() {
     filters: any,
     sorter: any,
   ) => {
-    // console.log('table sorter: ', sorter);
     setPagination(paginationData);
     setOrders(() =>
       sorter.field
@@ -119,8 +162,6 @@ export default function ListCustomerUsers() {
     selectedRowKeys,
     onChange: onTableRowSelectChange,
   };
-
-  // const hasSelected = selectedRowKeys.length > 0;
 
   const handleFilterByStatusChange = (value: UserStatus) => {
     setFilters((prev) => {
@@ -153,30 +194,12 @@ export default function ListCustomerUsers() {
 
   const showModal = (id?: number) => {
     setId(id);
-    // setIsModalOpen(true);
   };
-
-  // const handleOk = () => {
-  //   console.log('handle ok');
-  //   // setIsModalOpen(false);
-  //   setId(undefined);
-  //   messageApi.open({
-  //     type: 'success',
-  //     content: 'User saved successfully',
-  //   });
-  // };
-
-  // const handleCancel = () => {
-  //   console.log('handle cancel');
-  //   setIsModalOpen(false);
-  //   setId(undefined);
-  // };
 
   const columns: TableProps<User>['columns'] = [
     {
       title: 'Customer User',
       dataIndex: 'userProfile',
-      // sorter: true,
       key: 'userProfile.firstName',
       render: (userProfile) => (
         <Flex align="center" gap="small">
@@ -218,7 +241,8 @@ export default function ListCustomerUsers() {
       dataIndex: 'status',
       sorter: true,
       key: 'status',
-      render: (value) => renderAccountStatus(value),
+      render: (value, record) =>
+        renderAccountStatusWithDropdown(value, record.id, refetch),
     },
     {
       title: 'Created At',
@@ -247,7 +271,6 @@ export default function ListCustomerUsers() {
             size="small"
             type="link"
             variant="text"
-            // color="cyan"
             color="danger"
             onClick={() => showModal(record.id)}
           >
@@ -257,7 +280,6 @@ export default function ListCustomerUsers() {
             size="small"
             type="link"
             variant="text"
-            // color="cyan"
             color="primary"
             onClick={() => showModal(record.id)}
           >
@@ -282,18 +304,6 @@ export default function ListCustomerUsers() {
           background: '#f0f2f5',
         }}
       >
-        {/* items={[
-            {
-              key: '1',
-              title: (
-                <a onClick={() => window.history.pushState({}, '', '/')}>
-                  Dashboard
-                </a>
-              ),
-            },
-            { key: '2', title: 'Users' },
-          ]} */}
-
         <Breadcrumb
           items={[
             { key: '1', title: <Link to="/dashboard">Dashboard</Link> },
@@ -321,7 +331,6 @@ export default function ListCustomerUsers() {
           <Input.Search
             allowClear
             enterButton
-            // width={150}
             size="middle"
             style={{ width: 300 }}
             loading={isLoading}
@@ -377,18 +386,7 @@ export default function ListCustomerUsers() {
         onChange={handleTableChange}
         rowSelection={rowSelection}
         rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
-        // rowSelection={{ type: selectionType, ...rowSelection }}
       />
-
-      {/* {isModalOpen && (
-        <EditCustomerUser
-          id={id}
-          isModalOpen={isModalOpen}
-          handleCancel={handleCancel}
-          handleOk={handleOk}
-          onSubmit={handleOk}
-        />
-      )} */}
     </>
   );
 }

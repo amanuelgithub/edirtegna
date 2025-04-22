@@ -57,7 +57,7 @@ export class GetUserService {
         leftJoinAndSelect: {
           userAccesses: 'user.userAccesses',
           userProfile: 'user.userProfile',
-          partner: 'userProfile.partner',
+          // partner: 'userProfile.partner',
           role: 'user.role',
           accessDevices: 'userAccesses.accessDevices',
         },

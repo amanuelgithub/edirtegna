@@ -102,10 +102,10 @@ export class UpdateUserDto {
   @IsNotEmpty()
   profilePic?: string;
 
-  @IsNumber()
-  @Type(() => Number)
-  @IsOptional()
-  partnerId?: number;
+  // @IsNumber()
+  // @Type(() => Number)
+  // @IsOptional()
+  // partnerId?: number;
 
   @IsNumber()
   @Type(() => Number)
@@ -156,7 +156,7 @@ export class UpdateUserPayload {
   private _address?: string;
   private _nationalId?: string;
   private _postalCode?: string;
-  private _partnerId?: number;
+  // private _partnerId?: number;
 
   // Customer profile
   private _commission?: number;
@@ -174,7 +174,20 @@ export class UpdateUserPayload {
   private _device?: AccessUserAgent;
 
   constructor(dto: UpdateUserDto, userId: number, channel: Channel, ip: string, updatedBy: number, device?: AccessUserAgent) {
-    const { firstName, middleName, lastName, phone, roleId, email, status, profilePic, address, postalCode, nationalId, partnerId } = dto;
+    const {
+      firstName,
+      middleName,
+      lastName,
+      phone,
+      roleId,
+      email,
+      status,
+      profilePic,
+      address,
+      postalCode,
+      nationalId,
+      // partnerId
+    } = dto;
 
     this._userId = userId;
     this._firstName = firstName ? StringUtil.toTitleCase(firstName) : undefined;
@@ -188,7 +201,7 @@ export class UpdateUserPayload {
     this._roleId = roleId;
     this._email = email?.trim();
     this._profilePic = profilePic;
-    this._partnerId = partnerId;
+    // this._partnerId = partnerId;
     this._channel = channel;
     this._status = status;
     this._address = address;
@@ -225,7 +238,7 @@ export class UpdateUserPayload {
         address: this._address,
         postalCode: this._postalCode,
         nationalId: this._nationalId,
-        partnerId: this._partnerId,
+        // partnerId: this._partnerId,
       },
       // customerProfile: {
       //   commission: this._commission,

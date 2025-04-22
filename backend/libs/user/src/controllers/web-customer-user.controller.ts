@@ -71,7 +71,7 @@ export class WebCustomerUserController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(ValidationPipe)
-  @Roles(CUSTOMER)
+  // @Roles(CUSTOMER)
   @ActivityTitle('Register Partner User')
   @UploadProfilePic('profile-image', 'profilePic')
   async registerCompanyUser(@Body() dto: RegisterCustomerStaffDto, @UploadedFile() file: Express.Multer.File, @RequestInfo() info: IRequestDetail) {
@@ -102,7 +102,7 @@ export class WebCustomerUserController {
   @Put(':id')
   @HttpCode(HttpStatus.ACCEPTED)
   @UsePipes(ValidationPipe)
-  @Roles(CUSTOMER)
+  // @Roles(CUSTOMER)
   @ActivityTitle('Update Partner User')
   @UploadProfilePic('profile-image', 'profilePic')
   updateCompanyUser(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File, @Body() dto: UpdateUserDto, @RequestInfo() info: IRequestDetail) {
@@ -116,8 +116,8 @@ export class WebCustomerUserController {
   @Put(':id/status')
   @HttpCode(HttpStatus.ACCEPTED)
   @UsePipes(ValidationPipe)
-  @Roles(CUSTOMER)
-  @ActivityTitle('Update Partner User Status')
+  // @Roles(CUSTOMER)
+  @ActivityTitle('Update Customer User Status')
   updateCompanyUserStatus(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserStatusDto, @RequestInfo() info: IRequestDetail) {
     const userId = Number(info.user.uid);
     const payload = new UpdateUserStatusPayload(dto, id, 'WEB', info.ip, userId, info.device);
@@ -127,7 +127,7 @@ export class WebCustomerUserController {
   @Delete(':id')
   @HttpCode(HttpStatus.ACCEPTED)
   @UsePipes(ValidationPipe)
-  @Roles(CUSTOMER)
+  // @Roles(CUSTOMER)
   @ActivityTitle('Delete Company User Status')
   deleteCompanyUser(@Param('id', ParseIntPipe) id: number) {
     return this.updateUserService.delete(id);
