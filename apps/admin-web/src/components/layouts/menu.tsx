@@ -32,11 +32,11 @@ export const menuItems: MenuItem[] = [
     icon: <UsergroupAddOutlined />,
     children: [
       {
-        key: '/company-users',
+        key: '/users/company-users',
         label: <Link to="/users/company-users">Company Users</Link>,
       },
       {
-        key: '/customer-users',
+        key: '/users/customer-users',
         label: <Link to="/users/customer-users">Customer Users</Link>,
       },
     ],
