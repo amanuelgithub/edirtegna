@@ -366,6 +366,46 @@ export default function ListCustomerUsers() {
             />
           </div>
         </div>
+
+        {selectedRowKeys.length > 0 && (
+          <div className="flex justify-start gap-4 align-items-center mb-3 px-2 py-1 bg-red-50 rounded-md">
+            <div className="text-gray-500 flex items-end justify-start">
+              <span>{selectedRowKeys.length} user(s) selected</span>
+            </div>
+            <Select
+              // style={{ width: 200, backgroundColor: '#1890ff', color: '#fff' }}
+              style={{
+                width: 200,
+              }}
+              // variant="filled"
+              size="small"
+              placeholder="Batch update status..."
+              options={['ACTIVE', 'BLOCKED'].map((value) => ({
+                value: value,
+                label: value,
+              }))}
+              onChange={async (newStatus) => {
+                try {
+                  await Promise.all(
+                    selectedRowKeys.map((userId) =>
+                      axiosInstance.put(
+                        `/web/customer-users/${userId}/status`,
+                        {
+                          status: newStatus,
+                        },
+                      ),
+                    ),
+                  );
+                  message.success('Batch status update successful');
+                  refetch();
+                  setSelectedRowKeys([]);
+                } catch (error) {
+                  message.error('Batch status update failed');
+                }
+              }}
+            />
+          </div>
+        )}
       </Card>
 
       <Table<User>
