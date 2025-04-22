@@ -16,14 +16,32 @@ import { getUrl, getUrlParams } from '../base/url-builder';
 
 // ********** QUERY HOOKS ********** //
 // export function useListUsers(filters: Partial<UserDTO> & PaginationDTO) {
-export function useListUsers(options: IDatasourceParameters) {
-  // const { url, params } = useGetUrl('', options);
-
+export function useListCompanyUsers(options: IDatasourceParameters) {
   return useQuery({
     // queryKey: userKeys.getAllUsers(),
     queryKey: userKeys.specificUsers(options),
     queryFn: async () => {
       const url = getUrl('/manage/company-users', options);
+      const params = getUrlParams(options);
+      // Push the search parameters to the browser's search field
+      const currentUrl = new URL(window.location.href);
+      params.forEach((value, key) => {
+        currentUrl.searchParams.set(key, value);
+      });
+      window.history.replaceState({}, '', currentUrl);
+
+      const { data } = await axiosInstance.get<DataSource<User>>(url);
+      return data;
+    },
+  });
+}
+
+export function useListCustomerUsers(options: IDatasourceParameters) {
+  return useQuery({
+    // queryKey: userKeys.getAllUsers(),
+    queryKey: userKeys.specificUsers(options),
+    queryFn: async () => {
+      const url = getUrl('/web/customer-users', options);
       const params = getUrlParams(options);
       // Push the search parameters to the browser's search field
       const currentUrl = new URL(window.location.href);

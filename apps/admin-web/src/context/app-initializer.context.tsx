@@ -51,7 +51,6 @@ export const AppInitializerProvider = ({
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: (error: any) => {
-      console.error('Error refreshing the page:', error);
       // setIsInitialized(true); // Mark as initialized even on error to avoid hanging
       setTimeout(() => {
         setIsInitialized(true); // Initialization is complete
@@ -74,7 +73,6 @@ export const AppInitializerProvider = ({
   // Set profile and mark initialization complete when profile is fetched
   useLayoutEffect(() => {
     if (isProfileSuccess) {
-      console.log('Profile:', userProfileData?.data);
       setProfile(userProfileData?.data);
       setTimeout(() => {
         setIsInitialized(true); // Initialization is complete

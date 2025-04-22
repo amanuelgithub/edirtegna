@@ -1,6 +1,10 @@
 export { useCreateUserMutation, useUpdateUserMutation } from './mutations';
 
-export { useListUsers, useGetUserById } from './queries';
+export {
+  useListCompanyUsers,
+  useListCustomerUsers,
+  useGetUserById,
+} from './queries';
 
 // types
 export {

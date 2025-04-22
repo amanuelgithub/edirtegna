@@ -1,4 +1,4 @@
-import { COMPANY_ADMIN, ROLE, UserEntity } from '@app/db';
+import { COMPANY_ADMIN, COMPANY_ROLE, ROLE, ROLES_SEED, UserEntity } from '@app/db';
 import { UserNotificationService } from '@app/notification';
 import {
   ActivityTitle,
@@ -29,6 +29,7 @@ import {
   UpdateUserStatusPayload,
   UserPageConfig,
 } from '../../dtos';
+import { In } from 'typeorm';
 
 @Controller('manage/company-users')
 @Roles(COMPANY_ADMIN)
@@ -47,7 +48,10 @@ export class ManageCompanyUserController {
   @ApiOkPaginatedResponse(UserEntity, UserPageConfig)
   @ApiPaginationQuery(UserPageConfig)
   findAll(@Paginate() query: PaginateQuery): Promise<Paginated<UserEntity>> {
-    return this.listUsersService.getAll(query);
+    const where = {
+      roleId: In([COMPANY_ROLE]),
+    };
+    return this.listUsersService.getAll(query, where);
   }
 
   @Get('/validate-registration')

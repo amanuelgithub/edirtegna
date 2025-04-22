@@ -20,7 +20,7 @@ import {
   EditFilled,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { useListCompanyUsers } from '@/hooks/api/users';
+import { useListCustomerUsers } from '@/hooks/api/users';
 import {
   FilterOperator,
   IDatasourceFilter,
@@ -28,7 +28,7 @@ import {
   IDatasourceParameters,
   User,
 } from '@/core/models';
-import EditCompanyUser from './EditCompanyUser';
+// import EditCustomerUser from './EditCustomerUser';
 import { ROLES_SEED, USER_STATUS, UserStatus } from '@/core/enums';
 import { parseUrlParams } from '@/hooks/api/base/url-builder';
 import { Link } from 'react-router-dom';
@@ -53,7 +53,7 @@ const renderAccountStatus = (status: string) => {
 type TableRowSelection<T extends object = object> =
   TableProps<T>['rowSelection'];
 
-export default function ListCompanyUsers() {
+export default function ListCustomerUsers() {
   const initialParams = parseUrlParams(window.location.search);
 
   // const [sortBy, setSortBy] = useState(initialSort);
@@ -71,9 +71,9 @@ export default function ListCompanyUsers() {
     pageSize: initialParams.take || 20,
   });
   const [id, setId] = useState<number | undefined>(undefined);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data, isLoading, error } = useListCompanyUsers({
+  const { data, isLoading, error } = useListCustomerUsers({
     page: pagination.current,
     take: pagination.pageSize,
     // sort: sortBy,
@@ -153,28 +153,28 @@ export default function ListCompanyUsers() {
 
   const showModal = (id?: number) => {
     setId(id);
-    setIsModalOpen(true);
+    // setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    console.log('handle ok');
-    setIsModalOpen(false);
-    setId(undefined);
-    messageApi.open({
-      type: 'success',
-      content: 'User saved successfully',
-    });
-  };
+  // const handleOk = () => {
+  //   console.log('handle ok');
+  //   // setIsModalOpen(false);
+  //   setId(undefined);
+  //   messageApi.open({
+  //     type: 'success',
+  //     content: 'User saved successfully',
+  //   });
+  // };
 
-  const handleCancel = () => {
-    console.log('handle cancel');
-    setIsModalOpen(false);
-    setId(undefined);
-  };
+  // const handleCancel = () => {
+  //   console.log('handle cancel');
+  //   setIsModalOpen(false);
+  //   setId(undefined);
+  // };
 
   const columns: TableProps<User>['columns'] = [
     {
-      title: 'Company User',
+      title: 'Customer User',
       dataIndex: 'userProfile',
       // sorter: true,
       key: 'userProfile.firstName',
@@ -297,13 +297,13 @@ export default function ListCompanyUsers() {
         <Breadcrumb
           items={[
             { key: '1', title: <Link to="/dashboard">Dashboard</Link> },
-            { key: '2', title: 'Company Users' },
+            { key: '2', title: 'Customer Users' },
           ]}
         />
       </div>
 
       <Card
-        title="Company Users"
+        title="Customer Users"
         extra={
           <Flex vertical justify="end" align="end">
             <Button
@@ -380,15 +380,15 @@ export default function ListCompanyUsers() {
         // rowSelection={{ type: selectionType, ...rowSelection }}
       />
 
-      {isModalOpen && (
-        <EditCompanyUser
+      {/* {isModalOpen && (
+        <EditCustomerUser
           id={id}
           isModalOpen={isModalOpen}
           handleCancel={handleCancel}
           handleOk={handleOk}
           onSubmit={handleOk}
         />
-      )}
+      )} */}
     </>
   );
 }

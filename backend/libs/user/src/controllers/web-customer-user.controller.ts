@@ -1,4 +1,4 @@
-import { CUSTOMER_ROLE, CUSTOMER, UserEntity } from '@app/db';
+import { CUSTOMER_ROLE, CUSTOMER, UserEntity, ROLE, COMPANY_ADMIN } from '@app/db';
 import { UserNotificationService } from '@app/notification';
 import {
   ActivityTitle,
@@ -30,7 +30,7 @@ import {
 } from '../dtos';
 import { CreateUserService, GetUserService, ListUsersService, PhoneAndEmailValidationService, UpdateUserService } from '../services';
 
-@Roles(CUSTOMER)
+@Roles(...ROLE)
 @Controller('web/customer-users')
 @ApiTags(API_TAGS.USER_MANAGEMENT)
 export class WebCustomerUserController {
@@ -44,14 +44,14 @@ export class WebCustomerUserController {
   ) {}
 
   @Get('/')
+  @Roles(COMPANY_ADMIN)
   @ApiOkPaginatedResponse(UserEntity, UserPageConfig)
   @ApiPaginationQuery(UserPageConfig)
-  async findAll(@Paginate() query: PaginateQuery, @RequestInfo() info: IRequestDetail) {
-    //const partnerId = info?.user?.coid;
-    //return this.listUsersService.getAll(query, {
-    //userProfile: { partnerId },
-    //roleId: In(CUSTOMER),
-    //});
+  findAll(@Paginate() query: PaginateQuery): Promise<Paginated<UserEntity>> {
+    const where = {
+      roleId: In([CUSTOMER_ROLE]),
+    };
+    return this.listUsersService.getAll(query, where);
   }
 
   @Get('/validate-registration')
