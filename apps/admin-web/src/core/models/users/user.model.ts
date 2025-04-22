@@ -1,3 +1,4 @@
+import { BaseModel } from '../base.model';
 import {
   Group,
   GroupMembership,
@@ -16,7 +17,7 @@ import { Role } from './role.model';
 import { UserAccess } from './user-access.model';
 import { UserProfile } from './user-profile.model';
 
-export interface User {
+export interface User extends BaseModel {
   idpId: string;
   email?: string;
   phone?: string;

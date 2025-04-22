@@ -115,8 +115,8 @@ export const UserPageConfig: PaginateConfig<UserEntity> = {
     'email',
     'phone',
     'status',
-    'userProfile.partnerId',
-    'userProfile.partner.partnerName',
+    // 'userProfile.partnerId',
+    // 'userProfile.partner.partnerName',
     'createdAt',
     'updatedAt',
   ],
@@ -129,10 +129,11 @@ export const UserPageConfig: PaginateConfig<UserEntity> = {
     id: [FilterOperator.ILIKE],
     status: [FilterOperator.EQ],
     'userProfile.firstName': [FilterOperator.ILIKE],
-    'userProfile.partnerId': [FilterOperator.EQ],
-    'userProfile.partner.partnerName': [FilterOperator.ILIKE],
+    // 'userProfile.partnerId': [FilterOperator.EQ],
+    // 'userProfile.partner.partnerName': [FilterOperator.ILIKE],
   },
-  relations: ['userProfile', 'userProfile.partner', 'role'],
+  // relations: ['userProfile', 'userProfile.partner', 'role'],
+  relations: ['userProfile', 'role'],
 };
 
 export const UserSelectOneConfig = copyConfig(UserPageConfig) as SelectOneConfig<UserEntity>;

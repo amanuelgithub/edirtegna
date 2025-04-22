@@ -87,10 +87,6 @@ export const menuItems: MenuItem[] = [
         key: '/cities',
         label: <Link to="/cities">Cities List</Link>,
       },
-      {
-        key: '/subjects',
-        label: <Link to="/subjects">Subjects List</Link>,
-      },
     ],
   },
   {

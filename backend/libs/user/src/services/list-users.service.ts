@@ -6,10 +6,7 @@ import { UserPageConfig, UserPageOptionsDto } from '../dtos';
 import { GetUserService } from '../services';
 @Injectable()
 export class ListUsersService {
-  constructor(
-    private readonly ds: DataSource,
-    private getUserService: GetUserService,
-  ) {}
+  constructor(private readonly ds: DataSource, private getUserService: GetUserService) {}
 
   public async getUsersWebVersion(pageOptionsDto: UserPageOptionsDto): Promise<PageDto<UserEntity> | undefined> {
     const qb = this.ds.getRepository(UserEntity).createQueryBuilder('user');

@@ -4,6 +4,7 @@ import ProtectedRoute from '@/components/protected-route.tsx';
 import UsersPage from './users/index.tsx';
 import { AdminDashboardLayout } from '@/components/layouts/layout.tsx';
 import { parametersRouter } from './parameters/parameters.router.tsx';
+import { usersRouter } from './users/users.router.tsx';
 
 export const pageRouter: RouteObject[] = [
   {
@@ -20,12 +21,7 @@ export const pageRouter: RouteObject[] = [
         // element: <ProtectedRoute />,
         // children: [{ index: true, element: <DashboardPage /> }],
       },
-      {
-        path: '/users',
-        element: <UsersPage />,
-        // element: <ProtectedRoute />,
-        // children: [{ index: true, element: <UsersPage /> }],
-      },
+      ...usersRouter,
       ...parametersRouter,
     ],
   },
