@@ -12,17 +12,18 @@ import {
 } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useListUsers } from '@/hooks/api/users';
 import {
   FilterOperator,
   IDatasourceFilter,
   IDatasourceOrder,
+  IDatasourceParameters,
   User,
 } from '@/core/models';
 import EditCompanyUser from './EditCompanyUser';
 import { USER_STATUS, UserStatus } from '@/core/enums';
+import { parseUrlParams } from '@/hooks/api/base/url-builder';
 
 const renderAccountStatus = (status: string) => {
   switch (status) {
@@ -45,26 +46,21 @@ type TableRowSelection<T extends object = object> =
   TableProps<T>['rowSelection'];
 
 export default function ListCompanyUsers() {
-  // Read URL search parameters
-  const [searchUrlParams] = useSearchParams();
-  const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '20');
-  // const initialSortBy = searchUrlParams.get('sortBy') || 'id';
-  // const initialSort = initialSortBy.split(':')[0] || 'id';
-  // const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
-  const initialQ = searchUrlParams.get('search') || '';
+  const initialParams = parseUrlParams(window.location.search);
 
   // const [sortBy, setSortBy] = useState(initialSort);
-  const [orders, setOrders] = useState<IDatasourceOrder[]>([
-    { name: 'id', dir: 'desc' },
-  ]);
-  const [filters, setFilters] = useState<IDatasourceFilter[]>([]);
-  const [search, setSearch] = useState(initialQ);
+  const [orders, setOrders] = useState<IDatasourceOrder[]>(
+    initialParams?.orders || [{ name: 'id', dir: 'desc' }],
+  );
+  const [filters, setFilters] = useState<IDatasourceFilter[]>(
+    initialParams.filters || [],
+  );
+  const [search, setSearch] = useState(initialParams.fullTextFilter || '');
 
   // Initialize pagination state from URL
   const [pagination, setPagination] = useState({
-    current: initialPage,
-    pageSize: initialLimit,
+    current: initialParams.page || 1,
+    pageSize: initialParams.take || 20,
   });
   const [id, setId] = useState<number | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,7 +73,7 @@ export default function ListCompanyUsers() {
     fullTextFilter: search,
     filters: filters,
     // search,
-  });
+  } as IDatasourceParameters);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
@@ -100,8 +96,6 @@ export default function ListCompanyUsers() {
           ]
         : [],
     );
-    // filters
-    console.log('table filters: ', filters);
   };
 
   const handleTableFullTextSearch = (value: string) => {
@@ -280,7 +274,7 @@ export default function ListCompanyUsers() {
             style={{ width: 300 }}
             loading={isLoading}
             placeholder="search by name, email, phone..."
-            defaultValue={initialQ}
+            defaultValue={search}
             onSearch={handleTableFullTextSearch}
           />
 
