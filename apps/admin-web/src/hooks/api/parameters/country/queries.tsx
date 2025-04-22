@@ -2,7 +2,7 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 import { countryKeys } from './query-keys';
 import { axiosInstance } from '@/config';
 import { Country, IDatasourceParameters } from '@/core/models';
-import { DataSource, getUrl } from '../../base';
+import { DataSource, getUrl, getUrlParams } from '../../base';
 
 // ********** QUERY OPTION DEFINITIONS ********** //
 export function createGetCountriesQueryOptions(options: IDatasourceParameters) {
@@ -24,27 +24,19 @@ export function useListCountries(options: IDatasourceParameters) {
     // queryKey: countryKeys.getAllCountries(),
     queryKey: countryKeys.specificCountries(options),
     queryFn: async () => {
-      // const params = new URLSearchParams({
-      //   page: String(options.page),
-      //   limit: String(options.limit),
-      //   sortBy: `${options.sort ?? 'id'}:${options.order ?? 'DESC'}`,
-      //   search: options.search ?? '',
-      //   // filter: JSON.stringify(filters.filter ?? {}),
-      // });
-
-      // // Push the search parameters to the browser's search field
-      // const url = new URL(window.location.href);
-      // params.forEach((value, key) => {
-      //   url.searchParams.set(key, value);
-      // });
-      // window.history.replaceState({}, '', url);
-
       const url = getUrl('/manage/countries', options);
+
+      const params = getUrlParams(options);
+      // Push the search parameters to the browser's search field
+      const currentUrl = new URL(window.location.href);
+      params.forEach((value, key) => {
+        currentUrl.searchParams.set(key, value);
+      });
+      window.history.replaceState({}, '', currentUrl);
+
       const { data } = await axiosInstance.get<DataSource<Country>>(url);
       return data;
     },
-    // staleTime: 1000, // 5 minutes
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 

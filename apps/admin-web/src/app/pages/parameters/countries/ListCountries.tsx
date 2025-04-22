@@ -11,9 +11,15 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useListCountries } from '@/hooks/api/parameters/country';
-import { Country } from '@/core/models';
+import {
+  Country,
+  IDatasourceFilter,
+  IDatasourceOrder,
+  IDatasourceParameters,
+} from '@/core/models';
 import { Order } from '@/core/enums';
 import EditCountry from './EditCountry';
+import { parseUrlParams } from '@/hooks/api/base/url-builder';
 
 const info = () => {
   message.info('This is a normal message');
@@ -21,33 +27,45 @@ const info = () => {
 
 export default function ListCountries() {
   // Read URL search parameters
-  const [searchUrlParams] = useSearchParams();
-  const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '20');
-  const initialSortBy = searchUrlParams.get('sortBy') || 'id';
-  const initialSort = initialSortBy.split(':')[0] || 'id';
-  const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
-  const initialQ = searchUrlParams.get('search') || '';
+  // const [searchUrlParams] = useSearchParams();
+  // const initialPage = parseInt(searchUrlParams.get('page') || '1');
+  // const initialLimit = parseInt(searchUrlParams.get('limit') || '20');
+  // const initialSortBy = searchUrlParams.get('sortBy') || 'id';
+  // const initialSort = initialSortBy.split(':')[0] || 'id';
+  // const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
+  // const initialQ = searchUrlParams.get('search') || '';
 
-  const [sort, setSort] = useState(initialSort);
-  const [order, setOrder] = useState<Order>(initialOrder);
-  const [search, setSearch] = useState(initialQ);
+  // const [sort, setSort] = useState(initialSort);
+  // const [order, setOrder] = useState<Order>(initialOrder);
+  // const [search, setSearch] = useState(initialQ);
+
+  const initialParams = parseUrlParams(window.location.search);
+
+  const [orders, setOrders] = useState<IDatasourceOrder[]>(
+    initialParams?.orders || [{ name: 'id', dir: 'desc' }],
+  );
+  const [filters, setFilters] = useState<IDatasourceFilter[]>(
+    initialParams.filters || [],
+  );
+  const [search, setSearch] = useState(initialParams.fullTextFilter || '');
 
   // Initialize pagination state from URL
+  // Initialize pagination state from URL
   const [pagination, setPagination] = useState({
-    current: initialPage,
-    pageSize: initialLimit,
+    current: initialParams.page || 1,
+    pageSize: initialParams.take || 20,
   });
+
   const [id, setId] = useState<number | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data, isLoading, error } = useListCountries({
     page: pagination.current,
-    limit: pagination.pageSize,
-    sort,
-    order,
-    search,
-  });
+    take: pagination.pageSize,
+    orders: orders,
+    fullTextFilter: search,
+    filters: filters,
+  } as IDatasourceParameters);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -56,11 +74,17 @@ export default function ListCountries() {
     filters: any,
     sorter: any,
   ) => {
-    console.log('table sorter: ', sorter);
     setPagination(paginationData);
-    setSort(sorter.field ?? 'id');
-
-    setOrder(sorter?.order === 'ascend' ? 'ASC' : 'DESC');
+    setOrders(() =>
+      sorter.field
+        ? [
+            {
+              name: sorter.field,
+              dir: sorter.order === 'ascend' ? 'asc' : 'desc',
+            },
+          ]
+        : [],
+    );
   };
 
   const handleTableFullTextSearch = (value: string) => {
@@ -219,7 +243,7 @@ export default function ListCountries() {
           enterButton="Search"
           loading={isLoading}
           placeholder="Search countries"
-          defaultValue={initialQ}
+          defaultValue={search}
           onSearch={handleTableFullTextSearch}
         />
       </Card>
@@ -240,7 +264,7 @@ export default function ListCountries() {
           showTotal: (total) => `Total ${total} items`,
         }}
         onChange={handleTableChange}
-        rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
+        rowClassName={(_, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
         scroll={{ x: 'max-content' }}
       />
 
