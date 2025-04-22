@@ -241,6 +241,7 @@ export default function ListCountries() {
         }}
         onChange={handleTableChange}
         rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
+        scroll={{ x: 'max-content' }}
       />
 
       {isModalOpen && (

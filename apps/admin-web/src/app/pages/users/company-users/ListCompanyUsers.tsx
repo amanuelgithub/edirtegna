@@ -378,6 +378,7 @@ export default function ListCompanyUsers() {
         rowSelection={rowSelection}
         rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
         // rowSelection={{ type: selectionType, ...rowSelection }}
+        scroll={{ x: 'max-content' }}
       />
 
       {isModalOpen && (

@@ -195,6 +195,7 @@ export default function ListCities() {
           showTotal: (total) => `Total ${total} items`,
         }}
         onChange={handleTableChange}
+        scroll={{ x: 'max-content' }}
       />
 
       {isModalOpen && (

@@ -426,6 +426,7 @@ export default function ListCustomerUsers() {
         onChange={handleTableChange}
         rowSelection={rowSelection}
         rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
+        scroll={{ x: 'max-content' }}
       />
     </>
   );
