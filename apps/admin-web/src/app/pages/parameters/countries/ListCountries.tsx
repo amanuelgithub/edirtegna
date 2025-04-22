@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { Avatar, Button, Card, Input, Table, Flex, Tag, message } from 'antd';
 import type { TableProps } from 'antd';
-import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  EditOutlined,
+  EyeOutlined,
+  EditFilled,
+  EyeFilled,
+} from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useListCountries } from '@/hooks/api/parameters/country';
@@ -17,7 +23,7 @@ export default function ListCountries() {
   // Read URL search parameters
   const [searchUrlParams] = useSearchParams();
   const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '10');
+  const initialLimit = parseInt(searchUrlParams.get('limit') || '20');
   const initialSortBy = searchUrlParams.get('sortBy') || 'id';
   const initialSort = initialSortBy.split(':')[0] || 'id';
   const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
@@ -151,13 +157,31 @@ export default function ListCountries() {
           <Button
             size="small"
             type="link"
+            variant="text"
+            color="blue"
+            onClick={() => showModal(record.id)}
+          >
+            <EditFilled />
+          </Button>
+          <Button
+            size="small"
+            type="link"
+            variant="text"
+            color="cyan"
+            onClick={() => showModal(record.id)}
+          >
+            <EyeFilled />
+          </Button>
+          {/* <Button
+            size="small"
+            type="link"
             variant="outlined"
             color="blue"
             onClick={() => showModal(record.id)}
           >
             <EditOutlined />
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             size="small"
             type="link"
             variant="outlined"
@@ -165,7 +189,7 @@ export default function ListCountries() {
             onClick={() => showModal(record.id)}
           >
             <EyeOutlined />
-          </Button>
+          </Button> */}
         </Flex>
       ),
     },
@@ -216,6 +240,7 @@ export default function ListCountries() {
           showTotal: (total) => `Total ${total} items`,
         }}
         onChange={handleTableChange}
+        rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
       />
 
       {isModalOpen && (

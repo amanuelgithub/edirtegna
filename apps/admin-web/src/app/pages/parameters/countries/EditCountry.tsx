@@ -8,6 +8,7 @@ import {
   useUpdateCountryMutation,
 } from '@/hooks/api/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SaveOutlined } from '@ant-design/icons';
 
 type AddCountryProps = {
   id: number | undefined;
@@ -103,16 +104,10 @@ export default function EditCountry({
     } else {
       createMutate(data);
     }
-
-    onSubmit(true);
   };
 
   useEffect(() => {
-    if (isCreationSuccess) {
-      handleOk();
-      onSubmit(true);
-    }
-    if (isUpdateSuccess) {
+    if (isCreationSuccess || isUpdateSuccess) {
       handleOk();
       onSubmit(true);
     }
@@ -226,13 +221,27 @@ export default function EditCountry({
           </Form.Item>
 
           <Form.Item>
-            <Button
+            {/* <Button
               type="primary"
               htmlType="submit"
               loading={isCreationPending || isUpdatePending}
             >
               Submit
-            </Button>
+            </Button> */}
+
+            <div className="flex justify-end">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isCreationPending || isUpdatePending}
+                icon={<SaveOutlined />}
+                iconPosition={
+                  isCreationPending || isUpdatePending ? 'end' : 'start'
+                }
+              >
+                Save
+              </Button>
+            </div>
           </Form.Item>
         </Form>
       </Modal>

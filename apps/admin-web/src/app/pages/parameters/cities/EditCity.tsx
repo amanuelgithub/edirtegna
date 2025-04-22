@@ -7,14 +7,14 @@ import {
   useCreateCityMutation,
   useGetCityById,
   useUpdateCityMutation,
-  createGetCountriesQueryOptions,
+  useListCountries,
+  useListStates,
   createGetStatesQueryOptions,
 } from '@/hooks/api/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { debounce } from 'lodash';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { debounce, filter } from 'lodash';
+import { useQuery } from '@tanstack/react-query';
 import { FilterOperator } from '@/core/models';
-import { stateKeys } from '@/hooks/api/parameters/state/query-keys';
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
@@ -33,13 +33,11 @@ export default function EditCity({
   handleOk,
   onSubmit,
 }: AddCityProps) {
-  const queryClient = useQueryClient();
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
-    setValue,
   } = useForm({
     resolver: zodResolver(cityCreateFormSchema),
   });
@@ -58,11 +56,9 @@ export default function EditCity({
 
   useEffect(() => {
     if (id && cityData) {
-      setSelectedCountry(cityData.countryId);
       reset({
         cityName: cityData.cityName,
         countryId: cityData.countryId,
-        stateId: cityData.stateId,
       });
     }
   }, [id, cityData, reset]);
@@ -78,15 +74,15 @@ export default function EditCity({
   };
 
   useEffect(() => {
-    if (isCreationSuccess || isUpdateSuccess) {
+    if (isCreationSuccess) {
       handleOk();
       onSubmit(true);
-      reset(); // Reset the form after saving data
-      setSelectedCountry(undefined); // Reset the selected country
-      setSearchCountryTxt(''); // Reset the search country text
-      setSearchStateTxt(''); // Reset the search state text
     }
-  }, [isCreationSuccess, isUpdateSuccess, handleOk, onSubmit, reset]);
+    if (isUpdateSuccess) {
+      handleOk();
+      onSubmit(true);
+    }
+  }, [isCreationSuccess, isUpdateSuccess]);
 
   const [searchCountryTxt, setSearchCountryTxt] = React.useState('');
   const [selectedCountry, setSelectedCountry] = React.useState<
@@ -94,23 +90,20 @@ export default function EditCity({
   >(undefined);
   const [searchStateTxt, setSearchStateTxt] = React.useState('');
 
-  const {
-    data: countriesData,
-    isLoading: isCountriesLoading,
-    refetch: refetchCountries,
-  } = useQuery({
-    ...createGetCountriesQueryOptions({
+  const { data: countriesData, isLoading: isCountriesLoading } =
+    useListCountries({
       page: 1,
-      take: 100,
-      fullTextFilter: searchCountryTxt,
-    }),
-  });
+      limit: 100,
+      search: searchCountryTxt,
+    });
 
-  const {
-    data: statesData,
-    isLoading: isStatesLoading,
-    refetch: refetchStates,
-  } = useQuery({
+  // const { data: statesData, isLoading: isStatesLoading } = useListStates({
+  //   page: 1,
+  //   limit: 100,
+  //   search: searchStateTxt,
+  //   countryId: selectedCountry,
+  // });
+  const { data: statesData, isLoading: isStatesLoading } = useQuery({
     ...createGetStatesQueryOptions({
       page: 1,
       take: 100,
@@ -125,32 +118,6 @@ export default function EditCity({
     }),
     enabled: !!selectedCountry,
   });
-
-  useEffect(() => {
-    refetchCountries(); // Refetch countries when search text changes
-  }, [searchCountryTxt, refetchCountries]);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      refetchStates(); // Refetch states when search text or selected country changes
-      setValue('stateId', undefined);
-    }
-  }, [searchStateTxt, selectedCountry, refetchStates]);
-
-  // Handle on component unmount
-  useEffect(() => {
-    // on component unmount, remove the cache state data
-    return () => {
-      reset(); // Reset all form states when the modal is closed
-      setSelectedCountry(undefined);
-      setSearchCountryTxt('');
-      setSearchStateTxt('');
-
-      queryClient.removeQueries({
-        queryKey: stateKeys.getAllStates(),
-      });
-    };
-  }, []);
 
   const handleCountrySearch = React.useCallback((value: string) => {
     setSearchCountryTxt(value);

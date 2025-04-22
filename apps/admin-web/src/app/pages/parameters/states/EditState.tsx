@@ -8,9 +8,11 @@ import {
   useGetStateById,
   useUpdateStateMutation,
   useListCountries,
+  createGetCountriesQueryOptions,
 } from '@/hooks/api/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { debounce } from 'lodash';
+import { useQuery } from '@tanstack/react-query';
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 
@@ -84,12 +86,21 @@ export default function EditState({
 
   const [searchCountryTxt, setSearchCountryTxt] = React.useState('');
 
-  const { data: countriesData, isLoading: isCountriesLoading } =
-    useListCountries({
+  const {
+    data: countriesData,
+    isLoading: isCountriesLoading,
+    refetch: refetchCountries,
+  } = useQuery({
+    ...createGetCountriesQueryOptions({
       page: 1,
-      limit: 100,
-      search: searchCountryTxt,
-    });
+      take: 50,
+      fullTextFilter: searchCountryTxt,
+    }),
+  });
+
+  useEffect(() => {
+    refetchCountries();
+  }, [searchCountryTxt, refetchCountries]);
 
   const handleCountrySearch = React.useCallback((value: string) => {
     setSearchCountryTxt(value);

@@ -33,5 +33,4 @@ export interface DataSource<T> {
     last: string;
   };
 }
-
-export { getUrl } from './url-builder';
+export { getUrl, getUrlParams } from './url-builder';

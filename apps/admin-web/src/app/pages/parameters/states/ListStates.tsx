@@ -13,7 +13,7 @@ export default function ListStates() {
   // Read URL search parameters
   const [searchUrlParams] = useSearchParams();
   const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '10');
+  const initialLimit = parseInt(searchUrlParams.get('limit') || '20');
   const initialSortBy = searchUrlParams.get('sortBy') || 'id';
   const initialSort = initialSortBy.split(':')[0] || 'id';
   const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;

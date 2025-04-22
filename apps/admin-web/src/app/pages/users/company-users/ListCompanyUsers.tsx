@@ -1,14 +1,28 @@
 import { useState } from 'react';
-import { Button, Card, Input, Table, Flex, message, Avatar, Tag } from 'antd';
+import {
+  Button,
+  Card,
+  Input,
+  Table,
+  Flex,
+  message,
+  Avatar,
+  Tag,
+  Select,
+} from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useSearchParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useListUsers } from '@/hooks/api/users';
-import { User } from '@/core/models';
-import { Order } from '@/core/enums';
+import {
+  FilterOperator,
+  IDatasourceFilter,
+  IDatasourceOrder,
+  User,
+} from '@/core/models';
 import EditCompanyUser from './EditCompanyUser';
-import { USER_STATUS } from '@/core/enums';
+import { USER_STATUS, UserStatus } from '@/core/enums';
 
 const renderAccountStatus = (status: string) => {
   switch (status) {
@@ -34,14 +48,17 @@ export default function ListCompanyUsers() {
   // Read URL search parameters
   const [searchUrlParams] = useSearchParams();
   const initialPage = parseInt(searchUrlParams.get('page') || '1');
-  const initialLimit = parseInt(searchUrlParams.get('limit') || '10');
-  const initialSortBy = searchUrlParams.get('sortBy') || 'id';
-  const initialSort = initialSortBy.split(':')[0] || 'id';
-  const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
+  const initialLimit = parseInt(searchUrlParams.get('limit') || '20');
+  // const initialSortBy = searchUrlParams.get('sortBy') || 'id';
+  // const initialSort = initialSortBy.split(':')[0] || 'id';
+  // const initialOrder = (initialSortBy.split(':')[1] || 'DESC') as Order;
   const initialQ = searchUrlParams.get('search') || '';
 
-  const [sort, setSort] = useState(initialSort);
-  const [order, setOrder] = useState<Order>(initialOrder);
+  // const [sortBy, setSortBy] = useState(initialSort);
+  const [orders, setOrders] = useState<IDatasourceOrder[]>([
+    { name: 'id', dir: 'desc' },
+  ]);
+  const [filters, setFilters] = useState<IDatasourceFilter[]>([]);
   const [search, setSearch] = useState(initialQ);
 
   // Initialize pagination state from URL
@@ -54,10 +71,12 @@ export default function ListCompanyUsers() {
 
   const { data, isLoading, error } = useListUsers({
     page: pagination.current,
-    limit: pagination.pageSize,
-    sort,
-    order,
-    search,
+    take: pagination.pageSize,
+    // sort: sortBy,
+    orders: orders,
+    fullTextFilter: search,
+    filters: filters,
+    // search,
   });
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -69,28 +88,51 @@ export default function ListCompanyUsers() {
     filters: any,
     sorter: any,
   ) => {
-    console.log('table sorter: ', sorter);
+    // console.log('table sorter: ', sorter);
     setPagination(paginationData);
-    setSort(sorter.field ?? 'id');
-
-    setOrder(sorter?.order === 'ascend' ? 'ASC' : 'DESC');
+    setOrders(() =>
+      sorter.field
+        ? [
+            {
+              name: sorter.field,
+              dir: sorter.order === 'ascend' ? 'asc' : 'desc',
+            },
+          ]
+        : [],
+    );
+    // filters
+    console.log('table filters: ', filters);
   };
 
   const handleTableFullTextSearch = (value: string) => {
     setSearch(value);
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+  const onTableRowSelectChange = (newSelectedRowKeys: React.Key[]) => {
     console.log('selectedRowKeys changed: ', newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
   const rowSelection: TableRowSelection<User> = {
     selectedRowKeys,
-    onChange: onSelectChange,
+    onChange: onTableRowSelectChange,
   };
 
   // const hasSelected = selectedRowKeys.length > 0;
+
+  const handleFilterByStatusChange = (value: UserStatus) => {
+    console.log('filter by status: ', value);
+    setFilters((prev) => {
+      const newFilters = [...prev];
+      const index = newFilters.findIndex((f) => f.name === 'status');
+      if (index > -1) {
+        newFilters[index].value = value;
+      } else {
+        newFilters.push({ name: 'status', value, operator: FilterOperator.EQ });
+      }
+      return newFilters;
+    });
+  };
 
   if (error) {
     return <div>Error loading countries</div>;
@@ -121,7 +163,7 @@ export default function ListCompanyUsers() {
     {
       title: 'Company User',
       dataIndex: 'userProfile',
-      sorter: true,
+      // sorter: true,
       key: 'userProfile.firstName',
       render: (userProfile) => (
         <Flex align="center" gap="small">
@@ -155,7 +197,6 @@ export default function ListCompanyUsers() {
     {
       title: 'Role',
       dataIndex: 'role',
-      sorter: true,
       key: 'role.name',
       render: (role) => <span>{role?.name ?? '-'}</span>,
     },
@@ -231,14 +272,32 @@ export default function ListCompanyUsers() {
           </Flex>
         }
       >
-        <Input.Search
-          allowClear
-          enterButton="Search"
-          loading={isLoading}
-          placeholder="Search countries"
-          defaultValue={initialQ}
-          onSearch={handleTableFullTextSearch}
-        />
+        <div className="flex justify-between align-items-center mb-3">
+          <Input.Search
+            allowClear
+            // enterButton="Search"
+            // width={150}
+            style={{ width: 300 }}
+            loading={isLoading}
+            placeholder="search by name, email, phone..."
+            defaultValue={initialQ}
+            onSearch={handleTableFullTextSearch}
+          />
+
+          <div className="flex gap-2">
+            {/* filtering options */}
+            <Select
+              style={{ width: 220 }}
+              allowClear
+              options={Object.entries(USER_STATUS).map(([key, value]) => ({
+                value: value,
+                label: key,
+              }))}
+              placeholder="Filter by status..."
+              onChange={handleFilterByStatusChange}
+            />
+          </div>
+        </div>
       </Card>
 
       <Table<User>
@@ -258,6 +317,7 @@ export default function ListCompanyUsers() {
         }}
         onChange={handleTableChange}
         rowSelection={rowSelection}
+        rowClassName={(record, index) => (index % 2 === 0 ? '' : 'bg-gray-50')}
         // rowSelection={{ type: selectionType, ...rowSelection }}
       />
 
