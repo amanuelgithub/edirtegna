@@ -32,8 +32,12 @@ export const menuItems: MenuItem[] = [
     icon: <UsergroupAddOutlined />,
     children: [
       {
-        key: '/users',
-        label: <Link to="/users">Users List</Link>,
+        key: '/company-users',
+        label: <Link to="/users/company-users">Company Users</Link>,
+      },
+      {
+        key: '/customer-users',
+        label: <Link to="/users/customer-users">Customer Users</Link>,
       },
     ],
   },
@@ -86,6 +90,10 @@ export const menuItems: MenuItem[] = [
       {
         key: '/cities',
         label: <Link to="/cities">Cities List</Link>,
+      },
+      {
+        key: '/subjects',
+        label: <Link to="/subjects">Subjects List</Link>,
       },
     ],
   },

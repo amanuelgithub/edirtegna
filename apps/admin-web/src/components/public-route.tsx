@@ -14,7 +14,7 @@ const PublicRoute: React.FC = () => {
   // console.log('user:', user);
 
   useLayoutEffect(() => {
-    if (user || token) {
+    if (user && token) {
       console.log('public route -> ', user);
       // return <Navigate to="/auth/signin" replace state={{ from: location }} />;
       // redirect back to the previous page

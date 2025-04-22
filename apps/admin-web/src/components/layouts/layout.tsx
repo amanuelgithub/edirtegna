@@ -176,28 +176,10 @@ export function AdminDashboardLayout({
 
           {/* Breadcrumb and Content */}
           <div style={{ paddingTop: 64 }}>
-            {/* Breadcrumb */}
-            <div
-              style={{
-                padding: '4px',
-                paddingLeft: '16px',
-                paddingRight: '16px',
-                background: '#f0f2f5',
-              }}
-            >
-              <Breadcrumb
-                items={[
-                  { key: '1', title: 'Home', href: '/' },
-                  { key: '2', title: 'Dashboard' },
-                ]}
-              />
-            </div>
-
             {/* Content */}
             <Content
               style={{
-                margin: '16px',
-                padding: '16px',
+                padding: '0 16px',
               }}
             >
               {children}

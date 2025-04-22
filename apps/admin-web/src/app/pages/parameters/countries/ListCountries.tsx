@@ -161,7 +161,7 @@ export default function ListCountries() {
             color="blue"
             onClick={() => showModal(record.id)}
           >
-            <EditFilled />
+            <EditFilled style={{ fontSize: '18px' }} />
           </Button>
           <Button
             size="small"
@@ -170,7 +170,7 @@ export default function ListCountries() {
             color="cyan"
             onClick={() => showModal(record.id)}
           >
-            <EyeFilled />
+            <EyeFilled style={{ fontSize: '18px' }} />
           </Button>
           {/* <Button
             size="small"

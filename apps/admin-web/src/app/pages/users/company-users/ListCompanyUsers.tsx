@@ -9,9 +9,16 @@ import {
   Avatar,
   Tag,
   Select,
+  Breadcrumb,
 } from 'antd';
 import type { TableProps } from 'antd';
-import { PlusOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  EditOutlined,
+  EyeOutlined,
+  EyeFilled,
+  EditFilled,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useListUsers } from '@/hooks/api/users';
 import {
@@ -24,6 +31,7 @@ import {
 import EditCompanyUser from './EditCompanyUser';
 import { ROLES_SEED, USER_STATUS, UserStatus } from '@/core/enums';
 import { parseUrlParams } from '@/hooks/api/base/url-builder';
+import { Link } from 'react-router-dom';
 
 const renderAccountStatus = (status: string) => {
   switch (status) {
@@ -234,24 +242,26 @@ export default function ListCompanyUsers() {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
-        <Flex gap="small" key={record.id}>
+        <Flex key={record.id}>
           <Button
             size="small"
             type="link"
-            variant="outlined"
-            color="blue"
+            variant="text"
+            // color="cyan"
+            color="danger"
             onClick={() => showModal(record.id)}
           >
-            <EditOutlined />
+            <EditFilled style={{ fontSize: '18px' }} />
           </Button>
           <Button
             size="small"
             type="link"
-            variant="outlined"
-            color="cyan"
+            variant="text"
+            // color="cyan"
+            color="primary"
             onClick={() => showModal(record.id)}
           >
-            <EyeOutlined />
+            <EyeFilled style={{ fontSize: '18px' }} />
           </Button>
         </Flex>
       ),
@@ -262,13 +272,43 @@ export default function ListCompanyUsers() {
     <>
       {contextHolder}
 
+      {/* Breadcrumb */}
+      <div
+        style={{
+          padding: '4px',
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          marginBottom: '16px',
+          background: '#f0f2f5',
+        }}
+      >
+        {/* items={[
+            {
+              key: '1',
+              title: (
+                <a onClick={() => window.history.pushState({}, '', '/')}>
+                  Dashboard
+                </a>
+              ),
+            },
+            { key: '2', title: 'Users' },
+          ]} */}
+
+        <Breadcrumb
+          items={[
+            { key: '1', title: <Link to="/dashboard">Dashboard</Link> },
+            { key: '2', title: 'Users' },
+          ]}
+        />
+      </div>
+
       <Card
         title="Users"
         extra={
           <Flex vertical justify="end" align="end">
             <Button
               icon={<PlusOutlined />}
-              variant="solid"
+              variant="dashed"
               color="green"
               onClick={() => showModal()}
             >
@@ -277,11 +317,12 @@ export default function ListCompanyUsers() {
           </Flex>
         }
       >
-        <div className="flex justify-between align-items-center mb-3">
+        <div className="flex flex-wrap gap-2 justify-between align-items-center mb-3">
           <Input.Search
             allowClear
-            // enterButton="Search"
+            enterButton
             // width={150}
+            size="middle"
             style={{ width: 300 }}
             loading={isLoading}
             placeholder="search by name, email, phone..."
@@ -293,6 +334,7 @@ export default function ListCompanyUsers() {
             {/* filtering options */}
             <Select
               style={{ width: 200 }}
+              size="middle"
               allowClear
               options={ROLES_SEED.map((role) => ({
                 value: role.id,
@@ -304,6 +346,7 @@ export default function ListCompanyUsers() {
 
             <Select
               style={{ width: 140 }}
+              size="middle"
               allowClear
               options={Object.entries(USER_STATUS).map(([key, value]) => ({
                 value: value,
