@@ -94,7 +94,7 @@ export class WebCustomerUserController {
   updateOwn(@Body() dto: UpdateUserDto, @UploadedFile() file: Express.Multer.File, @RequestInfo() info: IRequestDetail) {
     const userId = Number(info.user.uid);
     const profilePic = file?.path;
-    dto.partnerId = +info.user.coid;
+    // dto.partnerId = +info.user.coid;
     const payload = new UpdateUserPayload({ ...dto, profilePic }, userId, 'WEB', info.ip, userId, info.device);
     return this.updateUserService.updateUser(payload);
   }
