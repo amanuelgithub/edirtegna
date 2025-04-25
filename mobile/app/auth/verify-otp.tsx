@@ -41,6 +41,8 @@ export default function VerifyOtpScreen() {
       return response.data;
     },
     onSuccess: (data: VerifyOtpResponse) => {
+      console.log('Verify OTP Response:', data);
+
       if (!!data) {
         if (!data.success && data.statusCode === 419) {
           router.push({
@@ -74,6 +76,7 @@ export default function VerifyOtpScreen() {
   });
 
   const onSubmit: SubmitHandler<VerifyOtpDTO> = async (data: VerifyOtpDTO) => {
+    console.log('Verify OTP Data:', data);
     verifyOtp(data);
   };
 

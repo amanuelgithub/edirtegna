@@ -36,12 +36,12 @@ export class CustomerBuilder implements IUserBuilder {
     // .setupWallet(currencyId)
     // .setCustomerProfile({ canCreateSubAccounts, maximumDailyWalletThreshold, shareParentWallet, walletAlertThreshold })
     // .setProductPriceList(priceList);
-    this.builder = await this.builder.addUserAccesses(['WEB', 'APP']);
+    this.builder = await this.builder.addUserAccesses(['WEB']);
     const user = this.builder.build();
     return user;
   }
 
-  getNotificationDetail(userId: number, channel?: Channel) {
-    return this.builder.getNotificationDetail(userId, channel);
+  getNotificationDetail(userId: number) {
+    return this.builder.getNotificationDetail(userId);
   }
 }

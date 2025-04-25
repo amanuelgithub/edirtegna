@@ -73,20 +73,20 @@ export class AppAuthController {
   @UseGuards(AppThrottlerGuard)
   @ActivityTitle('End user self register')
   async selfRegister(@Body() dto: RegisterCustomerDto, @RequestInfo() info: IRequestDetail) {
-    // async selfRegister(@Body() dto: RegisterEUserDto, @RequestInfo() info: IRequestDetail) {
+    // async selfRegister(@Body() dto: RegisterCustomerDto, @Req() req, @Ip() ip) {
+    // const device = this.globalConfigService.getUa(req);
+    // const requestInfo: IRequestInfo = { channel: 'WEB', ip, realm: 'CUSTOMER', device };
+
     console.log('selfRegister dto', dto);
-    const builder = CustomerFactory.get({ ...dto, role: CUSTOMER }, info);
+    const builder = CustomerFactory.get({ ...dto, role: CUSTOMER }, { ...info, channel: 'WEB', ip: info.ip, realm: 'CUSTOMER', device: info.device });
     const user = await this.createUserService.createUser(builder);
     // send notifications
-    const smsWebAccess = builder.getNotificationDetail(user.id, 'WEB');
-    const smsAppAccess = builder.getNotificationDetail(user.id, 'APP');
-    await Promise.all([
-      this.notify.sendAuthSMS(smsWebAccess),
-      this.notify.sendAuthSMS(smsAppAccess),
-      this.notify.sendWelcomeEmail(user, smsWebAccess.otpCode, smsWebAccess.password),
-    ]);
+    const smsAccessDetail = builder.getNotificationDetail(user.id);
+    // await Promise.all([this.notify.sendAuthSMS(smsWebAccess), this.notify.sendWelcomeEmail(user, smsWebAccess.otpCode, smsWebAccess.password)]);
+    await this.notify.sendAuthSMS(smsAccessDetail);
+    await this.notify.sendWelcomeEmail(user, smsAccessDetail.otpCode, smsAccessDetail.password);
 
-    console.log('CUSTOMER CREATED: ', 'app access details: ', smsAppAccess, 'web access details: ', smsWebAccess);
+    console.log('CUSTOMER CREATED: ', 'web & app access details: are not similar ', smsAccessDetail);
     return new DetailResponse(null);
   }
 
@@ -123,7 +123,7 @@ export class AppAuthController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   verifyUserOtp(@Body() dto: VerifyOtpDto, @RequestInfo() info: IRequestDetail) {
-    const payload = new VerifyOtpPayload(dto, { channel: 'WEB', ip: info.ip, realm: info.realm, device: info.device });
+    const payload = new VerifyOtpPayload(dto, { ...info, channel: 'WEB', ip: info.ip, realm: info.realm, device: info.device });
     return this.verifyOTPService.verify(payload);
   }
 
@@ -204,7 +204,8 @@ export class AppAuthController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(ValidationPipe)
   resendUserOtp(@Body() dto: ResendOtpDto, @RequestInfo() info: IRequestDetail) {
-    const payload = new ResendOtpPayload(dto, { channel: 'APP', ip: info.ip, realm: info.realm, device: info.device });
+    // const payload = new ResendOtpPayload(dto, { channel: 'APP', ip: info.ip, realm: info.realm, device: info.device });
+    const payload = new ResendOtpPayload(dto, { channel: 'WEB', ip: info.ip, realm: info.realm, device: info.device });
     return this.resendOtpService.resend(payload);
   }
 

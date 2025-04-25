@@ -27,8 +27,8 @@ export class AdministrativeUserBuilder implements IUserBuilder {
     this.builder = await this.builder.addUserAccesses(['WEB']);
     return this.builder.build();
   }
-  getNotificationDetail(userId: number, channel?: Channel) {
-    return this.builder.getNotificationDetail(userId, channel);
+  getNotificationDetail(userId: number) {
+    return this.builder.getNotificationDetail(userId);
   }
 }
 
@@ -55,7 +55,7 @@ export class AdministrativeCustomerUserBuilder implements IUserBuilder {
     this.builder = await this.builder.addUserAccesses(['WEB']);
     return this.builder.build();
   }
-  getNotificationDetail(userId: number, channel?: Channel) {
-    return this.builder.getNotificationDetail(userId, channel);
+  getNotificationDetail(userId: number) {
+    return this.builder.getNotificationDetail(userId);
   }
 }

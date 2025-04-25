@@ -35,6 +35,26 @@ export default function SetPasswordScreen() {
   const { onboardingCompleted, completeOnboarding } = useOnboarding();
   const { login: loginUser } = useAuth();
 
+  // .object({
+  //   identifier: z
+  //     .string()
+  //     .min(9, 'Phone number must be at least 9 digits')
+  //     .max(9, 'Phone number must be at most 9 digits'),
+  //   previousPassword: z.string().min(4, 'Current password is required'),
+  //   password: z.string().min(4, 'New password must be at least 4 characters'),
+  //   confirmPassword: z
+  //     .string()
+  //     .min(4, 'Confirm password must be at least 4 characters'),
+  // })
+  // .superRefine((data, ctx) => {
+  //   if (data.confirmPassword !== data.password) {
+  //     ctx.addIssue({
+  //       code: z.ZodIssueCode.custom,
+  //       message: 'Passwords must match',
+  //     });
+  //   }
+  // });
+
   const { mutate: setPassword, isPending } = useMutation<
     SetPasswordResponse,
     Error,
@@ -95,6 +115,46 @@ export default function SetPasswordScreen() {
 
             {/* Form */}
             <View className="space-y-4">
+              <Controller
+                name="previousPassword"
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View>
+                    <Text className="text-gray-700 dark:text-gray-300 mb-2 font-medium">
+                      Previous Password
+                    </Text>
+                    <View className="relative">
+                      <TextInput
+                        className={`rounded-xl px-4 py-4 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white ${
+                          errors.previousPassword ? 'border border-red-500' : ''
+                        }`}
+                        placeholder="Enter your password"
+                        placeholderTextColor="#6B7280"
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        secureTextEntry={!showPassword}
+                      />
+                      <TouchableOpacity
+                        className="absolute right-4 top-4"
+                        onPress={() => setShowPassword((prev) => !prev)}
+                      >
+                        <Ionicons
+                          name={showPassword ? 'eye-off' : 'eye'}
+                          size={24}
+                          color="#6B7280"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {errors.previousPassword && (
+                      <Text className="text-red-500 text-sm mt-1">
+                        {errors.previousPassword.message}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              />
+
               <Controller
                 name="password"
                 control={control}

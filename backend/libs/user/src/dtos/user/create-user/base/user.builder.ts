@@ -190,18 +190,14 @@ export class UserBuilder {
 
     return this.user;
   }
-  getNotificationDetail(userId: number, channel?: Channel): IAccountSMS {
-    const _channel = channel || this.requestInfo.channel;
-    const _channelName = StringUtil.toTitleCase(_channel);
-    const _credential = this.credentials.find((o) => o.channel === _channel);
-    // const _credential = this.credentials[0];
+  getNotificationDetail(userId: number): IAccountSMS {
+    const _credential = this.credentials.find((o) => o.channel === this.requestInfo.channel);
     return {
       name: this.user?.userProfile?.firstName,
       destination: this.user.phone,
-      msg: `your account registration is successful!\nYour ${_channelName} access detail is:`,
+      msg: `your account registration is successful!`,
       subject: `OTP_VERIFICATION`,
       otpCode: _credential.otpCode,
-      pinCode: _credential.pinCode ?? null,
       password: _credential.password ?? null,
       userId,
     };

@@ -12,7 +12,7 @@ const axiosInstance: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
     origin: 'tms-txn-customer-app',
-    channel: 'APP',
+    channel: 'WEB',
     realm: 'CUSTOMER',
   },
   withCredentials: true,

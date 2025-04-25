@@ -62,9 +62,13 @@ export type SetPasswordDTO = z.infer<typeof setPasswordSchema>;
 export const verifyOtpSchema = z.object({
   identifier: z
     .string()
-    .min(10, 'Phone number must be at least 10 digits')
+    .min(9, 'Phone number must be at least 9 digits')
     .regex(/^\d+$/, 'Phone number must contain only digits'),
-  otp: z.string().length(6, 'OTP must be exactly 6 digits'),
+  // otp: z.string().length(6, 'OTP must be exactly 6 digits'),
+  otp: z
+    .string()
+    .length(4, 'OTP must be exactly 4 digits')
+    .regex(/^\d+$/, 'OTP must contain only digits'),
 });
 export type VerifyOtpDTO = z.infer<typeof verifyOtpSchema>;
 

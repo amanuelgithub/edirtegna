@@ -137,28 +137,28 @@ export class LoginProcessor {
     return new DetailResponse(null);
   }
 
-  public isNewDeviceLogin() {
-    ////
-    const { accessChannel } = this._userAccess;
-    console.log(`\n accessChannel:`, accessChannel);
-    const deviceWithHash = this._requestInfo.device.getFormatedUserAgent(this._userAccess.id);
-    console.log(`\n deviceWithHash:`, deviceWithHash);
-    const accDevice = this._userAccess?.accessDevices.find((o) => o.deviceHash === deviceWithHash?.deviceHash);
-    // const { deviceUuid } = this._userAccess;
-    // app...
-    if (accessChannel === 'APP' && this._userAccess?.deviceUuid !== this._deviceUuid) {
-      console.log(`\n APP----accDevice:`, accDevice);
-      // throw new UnauthorizedException(`New Device Access detected. Please verify your OTP code for the new device`);
-      return new DetailResponse({ identifier: this._identifier }, `New Device Access detected. Please verify your OTP code for the new device`, false, 416);
-    }
-    // web...
-    if (accessChannel === 'WEB' && accDevice?.deviceHash !== deviceWithHash?.deviceHash && !accDevice) {
-      console.log(`\n WEB------accDevice:`, accDevice);
-      // throw new UnauthorizedException(`New Device Access detected. Please verify your OTP code for the new device`);
-      return new DetailResponse({ identifier: this._identifier }, `New Device Access detected. Please verify your OTP code for the new device`, false, 416);
-    }
-    return new DetailResponse(null);
-  }
+  // public isNewDeviceLogin() {
+  //   ////
+  //   const { accessChannel } = this._userAccess;
+  //   console.log(`\n accessChannel:`, accessChannel);
+  //   const deviceWithHash = this._requestInfo.device.getFormatedUserAgent(this._userAccess.id);
+  //   console.log(`\n deviceWithHash:`, deviceWithHash);
+  //   const accDevice = this._userAccess?.accessDevices.find((o) => o.deviceHash === deviceWithHash?.deviceHash);
+  //   // const { deviceUuid } = this._userAccess;
+  //   // app...
+  //   if (accessChannel === 'APP' && this._userAccess?.deviceUuid !== this._deviceUuid) {
+  //     console.log(`\n APP----accDevice:`, accDevice);
+  //     // throw new UnauthorizedException(`New Device Access detected. Please verify your OTP code for the new device`);
+  //     return new DetailResponse({ identifier: this._identifier }, `New Device Access detected. Please verify your OTP code for the new device`, false, 416);
+  //   }
+  //   // web...
+  //   if (accessChannel === 'WEB' && accDevice?.deviceHash !== deviceWithHash?.deviceHash && !accDevice) {
+  //     console.log(`\n WEB------accDevice:`, accDevice);
+  //     // throw new UnauthorizedException(`New Device Access detected. Please verify your OTP code for the new device`);
+  //     return new DetailResponse({ identifier: this._identifier }, `New Device Access detected. Please verify your OTP code for the new device`, false, 416);
+  //   }
+  //   return new DetailResponse(null);
+  // }
   public isValidCredentialSet() {
     const { secretHash, tempSecretHash, accessChannel } = this._userAccess;
     if (!['WEB', 'API', 'APP'].includes(accessChannel)) {
@@ -209,8 +209,8 @@ export class LoginProcessor {
     console.log('isCredValid', isCredValid);
     const doesCredMatch = await this.doesCredentialMatch();
     console.log('doesCredMatch', doesCredMatch);
-    const isNewDevice = this.isNewDeviceLogin();
-    console.log('isNewDevice', isNewDevice);
+    // const isNewDevice = this.isNewDeviceLogin();
+    // console.log('isNewDevice', isNewDevice);
     // if (!isVerified.success) {
     if (!isVerified.success && doesCredMatch.success) {
       return isVerified;
@@ -222,9 +222,9 @@ export class LoginProcessor {
     if (!doesCredMatch.success) {
       return doesCredMatch;
     }
-    if (!isNewDevice.success) {
-      return isNewDevice;
-    }
+    // if (!isNewDevice.success) {
+    // return isNewDevice;
+    // }
     return new DetailResponse('valid');
   }
   public getRequestDto() {
