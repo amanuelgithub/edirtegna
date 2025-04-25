@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createLogoutMutationOptions, useGetProfile } from '@/hooks/api';
 import { useAuth } from '@/context/AuthNewContext';
 import dayjs from 'dayjs';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfileScreen() {
   const { logout, getRefreshToken } = useAuth();
@@ -18,32 +19,72 @@ export default function ProfileScreen() {
   const { data: userData } = useGetProfile();
   console.log('profile', userData);
 
+  const handleEditAvatar = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      alert('Permission to access media library is required!');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!pickerResult.canceled) {
+      console.log('Selected image URI:', pickerResult.assets[0].uri);
+      // Handle the selected image URI (e.g., upload to server or update state)
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <ScrollView className="flex-1">
         {/* Profile Header */}
         <View className="px-4 py-6">
-          <View className="items-center">
-            <View className="w-24 h-24 rounded-full bg-indigo-100 dark:bg-indigo-900 items-center justify-center">
-              <Ionicons name="person" size={40} color="#4F46E5" />
-            </View>
-            <Text className="text-xl font-bold text-gray-900 dark:text-white mt-4">
-              {userData?.userProfile?.firstName ?? '-'}{' '}
-              {userData?.userProfile?.middleName ?? '-'}{' '}
-            </Text>
-            {/* <Text className="text-gray-500 dark:text-gray-400">
-              Member since 2023
-            </Text> */}
-            <Text className="text-gray-500 dark:text-gray-400">
-              {`Member since ${dayjs(userData?.createdAt).format(
-                'MMMM D, YYYY',
-              )}`}
-            </Text>
-
-            <Text className="text-gray-500 dark:text-gray-400">
-              {JSON.stringify(userData)}
-            </Text>
+          <View className="relative items-center">
+            {/* Profile Avatar */}
+            {userData?.userProfile?.profilePic ? (
+              <Image
+                source={{
+                  uri: 'http://localhost/' + userData.userProfile.profilePic,
+                }}
+                className="w-24 h-24 rounded-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <View className="w-24 h-24 rounded-full bg-indigo-100 dark:bg-indigo-900 items-center justify-center">
+                <Ionicons name="person" size={40} color="#4F46E5" />
+              </View>
+            )}
+            <TouchableOpacity
+              className="absolute bottom-0 right-0 bg-indigo-600 p-2 rounded-full"
+              onPress={handleEditAvatar}
+            >
+              <Ionicons name="camera" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
           </View>
+
+          <Text className="text-xl font-bold text-gray-900 dark:text-white mt-4">
+            {userData?.userProfile?.firstName ?? '-'}{' '}
+            {userData?.userProfile?.middleName ?? '-'}{' '}
+          </Text>
+          {/* <Text className="text-gray-500 dark:text-gray-400">
+            Member since 2023
+          </Text> */}
+          <Text className="text-gray-500 dark:text-gray-400">
+            {`Member since ${dayjs(userData?.createdAt).format(
+              'MMMM D, YYYY',
+            )}`}
+          </Text>
+
+          <Text className="text-gray-500 dark:text-gray-400">
+            {JSON.stringify(userData)}
+          </Text>
         </View>
 
         {/* Profile Stats */}
