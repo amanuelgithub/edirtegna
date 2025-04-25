@@ -128,11 +128,11 @@ const general = new GeneralConfigDto({
   responseMethodsBodyToLog: ['POST', 'PUT'],
 });
 const notification = new NotificationConfigDto({
-  companySmsAlertDestinations: [`251911756708`],
+  companySmsAlertDestinations: [`251963158999`],
   isSmsNotificationInSimulation: !(process.env.NODE_ENV === 'production'),
   sendSmsOnAuditMismatchDetection: true,
   sendSmsOnTelebirrApiFailure: true,
-  smsNotificationSimulationDestinations: [`251911756708`],
+  smsNotificationSimulationDestinations: [`251963158999`],
 });
 const auth = new AuthConfigDto({ accessTokenLifespan: EXP_ACC, refreshTokenLifespan: EXP_REF });
 const chunkSize = new ChunkSizeConfigDto({ chunkSize: 1000 });
