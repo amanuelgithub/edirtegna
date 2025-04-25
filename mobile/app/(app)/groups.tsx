@@ -10,7 +10,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function GroupsScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+    <View className="flex-1 bg-white dark:bg-gray-900">
+      {/* <SafeAreaView className="flex-1 bg-white dark:bg-gray-900"> */}
       {/* Search Bar */}
       <View className="px-4 py-4">
         <View className="flex-row items-center bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-2">
@@ -29,14 +30,14 @@ export default function GroupsScreen() {
           <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             My Groups
           </Text>
-          <View className="space-y-4">
+          <View className="space-y-4 flex-1 flex-col gap-2">
             {[1, 2].map((item) => (
               <TouchableOpacity
                 key={item}
                 className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl"
               >
                 <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center space-x-3">
+                  <View className="flex-row items-center gap-2 space-x-3">
                     <View className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full items-center justify-center">
                       <Ionicons name="people" size={24} color="#4F46E5" />
                     </View>
@@ -83,14 +84,14 @@ export default function GroupsScreen() {
           <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Discover Groups
           </Text>
-          <View className="space-y-4">
+          <View className="space-y-4 flex-1 flex-col gap-2">
             {[1, 2, 3].map((item) => (
               <TouchableOpacity
                 key={item}
                 className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl"
               >
                 <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center space-x-3">
+                  <View className="flex-row items-center gap-2 space-x-3">
                     <View className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full items-center justify-center">
                       <Ionicons name="people" size={24} color="#4F46E5" />
                     </View>
@@ -125,6 +126,7 @@ export default function GroupsScreen() {
       <TouchableOpacity className="absolute bottom-6 right-6 bg-indigo-600 w-14 h-14 rounded-full items-center justify-center shadow-lg">
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
-    </SafeAreaView>
+      {/* </SafeAreaView> */}
+    </View>
   );
 }

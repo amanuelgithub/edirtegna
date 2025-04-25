@@ -4,13 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function PaymentsScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
-      <ScrollView className="flex-1">
+    <>
+      {/* <SafeAreaView className="flex-1 bg-white dark:bg-gray-900"> */}
+      <ScrollView className="flex-1 bg-white dark:bg-gray-900">
         {/* Balance Overview */}
         <View className="px-4 py-6 bg-indigo-600">
           <Text className="text-white text-lg">Total Balance</Text>
           <Text className="text-white text-3xl font-bold mt-2">ETB 2,500</Text>
-          <View className="flex-row mt-4 space-x-4">
+          <View className="flex-row mt-4 space-x-4 gap-2">
             <View className="flex-1 bg-white/10 p-4 rounded-xl">
               <Text className="text-white/80 text-sm">Available</Text>
               <Text className="text-white text-lg font-semibold mt-1">
@@ -64,14 +65,14 @@ export default function PaymentsScreen() {
           <Text className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Recent Transactions
           </Text>
-          <View className="space-y-4">
+          <View className="space-y-4 flex-1 flex-col gap-2">
             {[1, 2, 3].map((item) => (
               <View
                 key={item}
                 className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl"
               >
                 <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center space-x-3">
+                  <View className="flex-row items-center gap-2 space-x-3">
                     <View className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-full items-center justify-center">
                       <Ionicons name="arrow-up" size={20} color="#4F46E5" />
                     </View>
@@ -96,6 +97,7 @@ export default function PaymentsScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+      {/* </SafeAreaView> */}
+    </>
   );
 }
