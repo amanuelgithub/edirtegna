@@ -2,8 +2,9 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation } from '@tanstack/react-query';
-import { createLogoutMutationOptions } from '@/hooks/api';
+import { createLogoutMutationOptions, useGetProfile } from '@/hooks/api';
 import { useAuth } from '@/context/AuthNewContext';
+import dayjs from 'dayjs';
 
 export default function ProfileScreen() {
   const { logout, getRefreshToken } = useAuth();
@@ -14,6 +15,9 @@ export default function ProfileScreen() {
       logout();
     },
   });
+  const { data: userData } = useGetProfile();
+  console.log('profile', userData);
+
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       <ScrollView className="flex-1">
@@ -24,10 +28,20 @@ export default function ProfileScreen() {
               <Ionicons name="person" size={40} color="#4F46E5" />
             </View>
             <Text className="text-xl font-bold text-gray-900 dark:text-white mt-4">
-              Abebe Kebede
+              {userData?.userProfile?.firstName ?? '-'}{' '}
+              {userData?.userProfile?.middleName ?? '-'}{' '}
             </Text>
-            <Text className="text-gray-500 dark:text-gray-400">
+            {/* <Text className="text-gray-500 dark:text-gray-400">
               Member since 2023
+            </Text> */}
+            <Text className="text-gray-500 dark:text-gray-400">
+              {`Member since ${dayjs(userData?.createdAt).format(
+                'MMMM D, YYYY',
+              )}`}
+            </Text>
+
+            <Text className="text-gray-500 dark:text-gray-400">
+              {JSON.stringify(userData)}
             </Text>
           </View>
         </View>

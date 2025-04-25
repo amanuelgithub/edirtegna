@@ -18,7 +18,7 @@ export {
   // useLogoutMutation,
   useChangePasswordMutation,
 } from './mutations';
-export {} from './queries';
+export { useGetProfile } from './queries';
 
 // all the api
 export * from './api';
