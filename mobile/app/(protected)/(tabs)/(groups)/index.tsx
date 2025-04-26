@@ -4,11 +4,20 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Button,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-export default function GroupsScreen() {
+export default function HomeGroups() {
+  const router = useRouter();
+
+  const navigateToCreateGroup = () => {
+    // router.push('/(protected)/(tabs)/(groups)/create');
+    router.push('/(protected)/(tabs)/(groups)/create');
+  };
+
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
       {/* <SafeAreaView className="flex-1 bg-white dark:bg-gray-900"> */}
@@ -20,6 +29,13 @@ export default function GroupsScreen() {
             placeholder="Search groups..."
             placeholderTextColor="#6B7280"
             className="flex-1 ml-2 text-gray-900 dark:text-white"
+            // onFocus={() => router.push('/(protected)/(tabs)/(groups)/search')}
+            onFocus={() => {
+              router.push('/(protected)/(tabs)/(groups)/search');
+              TextInput.State.blurTextInput(
+                TextInput.State.currentlyFocusedInput(),
+              );
+            }}
           />
         </View>
       </View>
@@ -123,7 +139,10 @@ export default function GroupsScreen() {
       </ScrollView>
 
       {/* Create Group Button */}
-      <TouchableOpacity className="absolute bottom-6 right-6 bg-indigo-600 w-14 h-14 rounded-full items-center justify-center shadow-lg">
+      <TouchableOpacity
+        className="absolute bottom-6 right-6 bg-indigo-600 w-14 h-14 rounded-full items-center justify-center shadow-lg"
+        onPress={navigateToCreateGroup}
+      >
         <Ionicons name="add" size={30} color="white" />
       </TouchableOpacity>
       {/* </SafeAreaView> */}

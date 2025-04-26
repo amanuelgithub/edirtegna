@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setAccessToken(storedAccessToken);
         setRefreshToken(storedRefreshToken);
         setIsAuthenticated(true);
-        router.replace('/(app)'); // Redirect to home page if authenticated
+        router.replace('/(protected)/(tabs)'); // Redirect to home page if authenticated
       } else {
         router.replace('/auth/signin'); // Redirect to sign-in page if not authenticated
         // router.replace('/auth/sign-in'); // Redirect to sign-in page if not authenticated
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
     setIsAuthenticated(true);
-    router.replace('/(app)'); // Redirect to home page after login
+    router.replace('/(protected)/(tabs)'); // Redirect to home page after login
   };
 
   const logout = async () => {

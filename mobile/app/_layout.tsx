@@ -29,7 +29,7 @@ export default function RootLayout() {
               headerShadowVisible: false,
               headerBackTitle: 'Go Back',
               animation: 'fade',
-              // headerBackVisible: false,
+              headerBackVisible: false,
               // contentStyle: { backgroundColor: "white" },
               headerStyle: {
                 backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
@@ -40,8 +40,8 @@ export default function RootLayout() {
               },
             }}
           >
-            {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-            <Stack.Screen name="(app)" />
+            {/* <Stack.Screen name="(protected)/(tabs)" options={{ headerShown: false }} /> */}
+            <Stack.Screen name="(protected)" />
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="auth" />
             {/* <Stack.Screen name="auth" options={{ headerShown: true }} /> */}

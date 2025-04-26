@@ -60,7 +60,7 @@ export default function SignUpScreen() {
           if (!onboardingCompleted) {
             completeOnboarding('true');
           }
-          router.replace('/(app)/profile');
+          router.replace('/(protected)/(tabs)/profile');
         }
       }
     },

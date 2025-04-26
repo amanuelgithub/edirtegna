@@ -58,7 +58,7 @@ export default function VerifyOtpScreen() {
           if (!onboardingCompleted) {
             completeOnboarding('true');
           }
-          router.replace('/(app)/profile');
+          router.replace('/(protected)/(tabs)/profile');
         }
       }
     },

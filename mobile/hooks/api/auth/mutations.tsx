@@ -171,7 +171,7 @@ export const useLoginMutation = () => {
       //   // });
       //   // this.isLoading = false;
       // } else {
-      //   router.replace('/(app)/profile');
+      //   router.replace('/(protected)/(tabs)/profile');
       // }
     },
     onError: (error) => {

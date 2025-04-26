@@ -58,7 +58,7 @@ export default function SignInScreen() {
             completeOnboarding('true');
           }
           loginUser(data.accessToken, data.refreshToken);
-          router.replace('/(app)/profile');
+          router.replace('/(protected)/(tabs)/profile');
         }
       }
     },
