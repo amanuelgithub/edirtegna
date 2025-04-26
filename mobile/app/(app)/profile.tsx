@@ -52,7 +52,7 @@ export default function ProfileScreen() {
       {/* <SafeAreaView className="flex-1 bg-white dark:bg-gray-900"> */}
       <ScrollView className="flex-1 bg-white dark:bg-gray-900">
         {/* Profile Header */}
-        <View className="px-4 py-6">
+        <View className="px-2 py-6">
           <View className="relative items-center pb-4">
             {/* Profile Avatar */}
             <View className="relative items-center">

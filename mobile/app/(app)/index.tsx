@@ -50,13 +50,13 @@ export default function HomeScreen() {
             <TouchableOpacity className="bg-indigo-100 dark:bg-indigo-900 p-4 rounded-xl w-[45%]">
               <Ionicons name="add-circle-outline" size={24} color="#4F46E5" />
               <Text className="text-indigo-600 dark:text-indigo-400 font-medium mt-2">
-                Join Edir
+                Create Edir
               </Text>
             </TouchableOpacity>
             <TouchableOpacity className="bg-green-100 dark:bg-green-900 p-4 rounded-xl w-[45%]">
               <Ionicons name="people-outline" size={24} color="#047857" />
               <Text className="text-green-600 dark:text-green-400 font-medium mt-2">
-                Find Groups
+                Find Edir
               </Text>
             </TouchableOpacity>
             <TouchableOpacity className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-xl w-[45%]">
